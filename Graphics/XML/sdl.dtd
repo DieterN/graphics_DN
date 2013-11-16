@@ -92,6 +92,12 @@
 	name						ID				#REQUIRED
 >
 
+<!ELEMENT Object EMPTY>
+<!ATTLIST Object
+	fileName					CDATA			#REQUIRED
+	name						ID				#REQUIRED
+>
+
 <!ELEMENT Textures (Texture*)>
 <!ATTLIST Textures>
 

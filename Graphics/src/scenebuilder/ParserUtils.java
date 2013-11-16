@@ -1,4 +1,5 @@
 package scenebuilder;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import mathematics.Color3f;
@@ -489,4 +490,21 @@ public class ParserUtils
             return string;
         }
     }
+    
+
+	/**
+	 * Method to convert a List of integers into an array of integers
+	 * 
+	 * @param integers
+	 * @return
+	 */
+	public static int[] convertIntegerListToArray(List<Integer> integers)
+	{
+	    int[] result = new int[integers.size()];
+	    for (int i=0; i < result.length; i++)
+	    {
+	        result[i] = integers.get(i);
+	    }
+	    return result;
+	}
 }

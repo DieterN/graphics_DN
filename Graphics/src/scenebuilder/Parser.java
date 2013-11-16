@@ -1,4 +1,6 @@
 package scenebuilder;
+import java.util.List;
+
 import mathematics.Color3f;
 import mathematics.Point3f;
 import mathematics.TexCoord2f;
@@ -6,6 +8,7 @@ import mathematics.Vector3f;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+
 import javax.xml.parsers.*;
 
 public final class Parser extends DefaultHandler
@@ -375,6 +378,42 @@ public final class Parser extends DefaultHandler
                 // parse texture coordinate indices (optional)
                 int [] textureCoordinateIndices = ParserUtils.parseIntArray(attributes.getValue("textureCoordinateIndices"));
 
+                // parse name attribute
+                String name = attributes.getValue("name");
+                if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
+
+                // call handler
+                if (echoHandler != null) echoHandler.startIndexedTriangleSet(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
+                if (    handler != null) handler.startIndexedTriangleSet(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
+            }
+            else if (qName.equals("Object"))
+            {
+            	String fileName = attributes.getValue("fileName");
+            	
+            	ObjectParser parser = new ObjectParser();
+            	parser.parseObjectFile(fileName);
+            	
+            	//Coordinates
+            	Point3f [] coordinates = (Point3f[]) parser.getCoordinates().toArray();
+            	
+            	//Normals
+            	Vector3f [] normals = (Vector3f[]) parser.getNormals().toArray();
+            	
+            	//TextureCoordinates
+            	TexCoord2f [] textureCoordinates = (TexCoord2f[]) parser.getTextureCoordinates().toArray();
+            	
+            	//CoordinateIndices
+            	List<Integer> coordinateIndicesList = parser.getCoordinateIndices();
+            	int [] coordinateIndices = ParserUtils.convertIntegerListToArray(coordinateIndicesList);
+            	
+            	//NormalIndices
+            	List<Integer> normalIndicesList = parser.getNormalIndices();
+            	int [] normalIndices = ParserUtils.convertIntegerListToArray(normalIndicesList);
+            	
+            	//TextureIndices
+            	List<Integer> textureCoordinateIndicesList = parser.getTextureCoordinateIndices();
+            	int [] textureCoordinateIndices = ParserUtils.convertIntegerListToArray(textureCoordinateIndicesList);
+            	
                 // parse name attribute
                 String name = attributes.getValue("name");
                 if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
