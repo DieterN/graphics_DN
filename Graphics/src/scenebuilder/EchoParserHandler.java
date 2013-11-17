@@ -323,7 +323,7 @@ public class EchoParserHandler implements ParserHandler
         indent--;
     }
 
-    public void startDiffuseMaterial(Color3f color, String name) throws ParseException
+    public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws ParseException
     {
         indent++;
         for (int i = 0; i < indent; i++) System.out.print(indentString);
@@ -343,7 +343,7 @@ public class EchoParserHandler implements ParserHandler
         indent--;
     }
 
-    public void startPhongMaterial(Color3f color, float shininess, String name) throws Exception
+    public void startPhongMaterial(Color3f color, float shininess, float ambientFactor, String name) throws Exception
     {
         indent++;
         for (int i = 0; i < indent; i++) System.out.print(indentString);

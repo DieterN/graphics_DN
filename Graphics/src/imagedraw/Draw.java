@@ -73,7 +73,11 @@ public class Draw implements MouseListener{
 				HitRecord hr = ic.lookForRayHit(i,j);
 				if(hr != null){	
 					Color3f color = new Color3f();
-					// TODO : ambient + reflective + refraction
+					//AMBIENT
+					color.x = hr.getColor().x*hr.getAmbientFactor();
+					color.y = hr.getColor().y*hr.getAmbientFactor();
+					color.z = hr.getColor().z*hr.getAmbientFactor();
+					// TODO : reflective + refraction
 					if(!ic.inShadow(hr)){
 						Color3f shadingColor = ic.calculateShading(hr);
 						color.x += shadingColor.x;

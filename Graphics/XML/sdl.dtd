@@ -114,6 +114,7 @@
 <!ELEMENT DiffuseMaterial EMPTY>
 <!ATTLIST DiffuseMaterial
 	color						CDATA			#REQUIRED
+	ambientFactor				CDATA			#REQUIRED
 	name						ID				#REQUIRED
 >
 
@@ -121,6 +122,7 @@
 <!ATTLIST PhongMaterial
 	color						CDATA			#REQUIRED
 	shininess					CDATA			#REQUIRED
+	ambientFactor				CDATA			#REQUIRED
 	name						ID				#REQUIRED
 >
 

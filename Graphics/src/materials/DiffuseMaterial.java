@@ -9,7 +9,7 @@ import mathematics.VectorOperations;
 
 public class DiffuseMaterial extends Material{
 	
-	public DiffuseMaterial(Color3f color, String name, float ambientFactor){
+	public DiffuseMaterial(Color3f color, float ambientFactor, String name) {
 		super.color = color;
 		super.name = name;
 		super.ambientFactor = ambientFactor;

@@ -463,14 +463,14 @@ public final class Parser extends DefaultHandler
                 String name = attributes.getValue("name");
                 if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
                 
-//             // parse ambient attribute
-//                String ambientFactorString = attributes.getValue("ambientFactor");
-//                if (ambientFactorString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"ambientFactor\".");
-//                float ambientFactor = ParserUtils.parseFloat(ambientFactorString);
+             // parse ambient attribute
+                String ambientFactorString = attributes.getValue("ambientFactor");
+                if (ambientFactorString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"ambientFactor\".");
+                float ambientFactor = ParserUtils.parseFloat(ambientFactorString);
 
                 // call handler
-                if (echoHandler != null) echoHandler.startDiffuseMaterial(color, name);
-                if (    handler != null) handler.startDiffuseMaterial(color, name);
+                if (echoHandler != null) echoHandler.startDiffuseMaterial(color, ambientFactor, name);
+                if (    handler != null) handler.startDiffuseMaterial(color, ambientFactor, name);
             }
             // PhongMaterial element
             else if (qName.equals("PhongMaterial"))
@@ -489,14 +489,14 @@ public final class Parser extends DefaultHandler
                 String name = attributes.getValue("name");
                 if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
                 
-//             // parse ambient attribute
-//                String ambientFactorString = attributes.getValue("ambientFactor");
-//                if (ambientFactorString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"ambientFactor\".");
-//                float ambientFactor = ParserUtils.parseFloat(ambientFactorString);
+             // parse ambient attribute
+                String ambientFactorString = attributes.getValue("ambientFactor");
+                if (ambientFactorString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"ambientFactor\".");
+                float ambientFactor = ParserUtils.parseFloat(ambientFactorString);
 
                 // call handler
-                if (echoHandler != null) echoHandler.startPhongMaterial(color, shininess, name);
-                if (    handler != null) handler.startPhongMaterial(color, shininess, name);
+                if (echoHandler != null) echoHandler.startPhongMaterial(color, shininess, ambientFactor, name);
+                if (    handler != null) handler.startPhongMaterial(color, shininess, ambientFactor, name);
             }
             // LinearCombinedMaterial element
             else if (qName.equals("LinearCombinedMaterial"))

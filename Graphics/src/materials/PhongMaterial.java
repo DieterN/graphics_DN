@@ -10,7 +10,7 @@ public class PhongMaterial extends Material{
 
 	private float shininess;
 	
-	public PhongMaterial(Color3f color, float shininess, String name, float ambientFactor){
+	public PhongMaterial(Color3f color, float shininess, float ambientFactor, String name){
 		super.color = color;
 		super.name = name;
 		super.ambientFactor = ambientFactor;

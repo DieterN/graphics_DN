@@ -268,9 +268,9 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
-    public void startDiffuseMaterial(Color3f color, String name) throws Exception
+    public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws Exception
     {
-    	DiffuseMaterial dm = new DiffuseMaterial(color, name, 0); //TODO
+    	DiffuseMaterial dm = new DiffuseMaterial(color, ambientFactor, name); //TODO
     	scene.addMaterial(dm);
     }
 
@@ -278,9 +278,9 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
-    public void startPhongMaterial(Color3f color, float shininess, String name) throws Exception
+    public void startPhongMaterial(Color3f color, float shininess, float ambientFactor, String name) throws Exception
     {
-    	PhongMaterial pm = new PhongMaterial(color, shininess, name, 0); //TODO
+    	PhongMaterial pm = new PhongMaterial(color, shininess, ambientFactor, name); //TODO
     	scene.addMaterial(pm);
     }
 
