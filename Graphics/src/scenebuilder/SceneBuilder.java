@@ -228,8 +228,6 @@ public class SceneBuilder implements ParserHandler
 
     public void startTeapot(float size, String name) throws Exception
     {
-    	Teapot teapot = new Teapot(size,name);
-    	scene.addGeometry(teapot);
     }
 
     public void endTeapot() throws Exception

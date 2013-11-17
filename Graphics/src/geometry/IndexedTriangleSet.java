@@ -2,10 +2,10 @@ package geometry;
 
 import imagedraw.HitRecord;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import rays.Ray;
-
 import mathematics.*;
 
 public class IndexedTriangleSet extends Geometry{
@@ -16,6 +16,7 @@ public class IndexedTriangleSet extends Geometry{
 	private int[] coordinateIndices;
 	private int[] normalIndices; //TODO
 	private int[] textureCoordinateIndices; //TODO
+	private List<Triangle> triangles = new ArrayList<Triangle>();
 	
 	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, 
 								int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name){
@@ -26,6 +27,52 @@ public class IndexedTriangleSet extends Geometry{
 		this.normalIndices = normalIndices;
 		this.textureCoordinates = textureCoordinates;
 		this.textureCoordinateIndices = textureCoordinateIndices;
+		this.calculateTriangles();
+		this.calculateNormals();
+		this.calculateTextures();
+	}
+	
+	private void calculateTriangles(){
+		int i = 2;
+		while(i<coordinateIndices.length){
+			int[] cornerPoints = new int[3];
+			cornerPoints[0] = coordinateIndices[i-2];
+			cornerPoints[1] = coordinateIndices[i-1];
+			cornerPoints[2] = coordinateIndices[i];
+			Triangle t = new Triangle(coordinates[cornerPoints[0]],coordinates[cornerPoints[1]],coordinates[cornerPoints[2]]);
+			triangles.add(t);
+			i += 3;
+		}
+	}
+	
+	private void calculateNormals(){
+		int i = 2; //coordinate index
+		int j = 0; //triangle index
+		while(i<normalIndices.length){
+			int[] normal = new int[3];
+			normal[0] = normalIndices[i-2];
+			normal[1] = normalIndices[i-1];
+			normal[2] = normalIndices[i];
+			Triangle t = triangles.get(j);
+			t.setNormal(normals[normal[0]],normals[normal[1]],normals[normal[2]]);
+			i += 3;
+			j++;
+		}
+	}
+	
+	private void calculateTextures(){
+		int i = 2; //coordinate index
+		int j = 0; //triangle index
+		while(i<textureCoordinateIndices.length){
+			int[] texture = new int[3];
+			texture[0] = textureCoordinateIndices[i-2];
+			texture[1] = textureCoordinateIndices[i-1];
+			texture[2] = textureCoordinateIndices[i];
+			Triangle t = triangles.get(j);
+			t.setTexture(textureCoordinates[texture[0]],textureCoordinates[texture[1]],textureCoordinates[texture[2]]);
+			i += 3;
+			j++;
+		}
 	}
 	
 	private void initialiseNormals(Vector3f [] normals){
@@ -41,7 +88,6 @@ public class IndexedTriangleSet extends Geometry{
 	
 	@Override
 	public HitRecord rayObjectHit(Ray ray){
-		ArrayList<Triangle> triangles = this.getTriangles();
 		float smallest_t = Float.POSITIVE_INFINITY;
 		HitRecord hr = null;
 		for(Triangle triangle : triangles){
@@ -60,22 +106,6 @@ public class IndexedTriangleSet extends Geometry{
 		Vector4f normal = triangle.getNormal(); // normaal
 		Vector4f normalized = VectorOperations.normalizeVector4f(normal); // normaliseer normaal
 		return new HitRecord(t,this,ray,hitPoint,normalized);
-	}
-
-	public ArrayList<Triangle> getTriangles(){
-		ArrayList<Triangle> triangles = new ArrayList<Triangle>();
-		int i = 2;
-		while(i<coordinateIndices.length){
-			int[] cornerPoints = new int[3];
-			cornerPoints[0] = coordinateIndices[i-2];
-			cornerPoints[1] = coordinateIndices[i-1];
-			cornerPoints[2] = coordinateIndices[i];
-			Triangle t = new Triangle(coordinates[cornerPoints[0]],coordinates[cornerPoints[1]],coordinates[cornerPoints[2]]);
-			triangles.add(t);
-			i += 3;
-		}
-		return triangles;
-		// TODO : INITALISE NORMALS
 	}
 
 	public Point3f[] getCoordinates() {

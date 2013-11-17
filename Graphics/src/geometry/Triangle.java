@@ -2,6 +2,7 @@ package geometry;
 
 import rays.Ray;
 import mathematics.Point3f;
+import mathematics.TexCoord2f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
@@ -15,6 +16,7 @@ public class Triangle {
 
 	private Point3f[] points = new Point3f[3];
 	private Vector4f[] normal = new Vector4f[3];
+	private TexCoord2f[] texture = new TexCoord2f[3];
 	private float alpha;
 	private float beta;
 	private float gamma;
@@ -92,20 +94,35 @@ public class Triangle {
 			Vector4f vector1A = VectorOperations.subtractPointfromPoint3f(points[0], points[1]);
 			Vector4f vector2A = VectorOperations.subtractPointfromPoint3f(points[0], points[2]);
 			Vector4f vectorA = VectorOperations.crossProduct4f(vector1A, vector2A);
+			normal[0] = vectorA;
 			Vector4f alphaVectorA = VectorOperations.multiplyFloatandVector4f(alpha, vectorA);
 
 			Vector4f vector1B = VectorOperations.subtractPointfromPoint3f(points[1], points[2]);
 			Vector4f vector2B = VectorOperations.subtractPointfromPoint3f(points[1], points[0]);
 			Vector4f vectorB = VectorOperations.crossProduct4f(vector1B, vector2B);
+			normal[1] = vectorB;
 			Vector4f alphaVectorB = VectorOperations.multiplyFloatandVector4f(beta, vectorB);
 
 			Vector4f vector1C = VectorOperations.subtractPointfromPoint3f(points[2], points[0]);
 			Vector4f vector2C = VectorOperations.subtractPointfromPoint3f(points[2], points[1]);
 			Vector4f vectorC = VectorOperations.crossProduct4f(vector1C, vector2C);
+			normal[2] = vectorC;
 			Vector4f alphaVectorC = VectorOperations.multiplyFloatandVector4f(gamma, vectorC);
 			
 			result = VectorOperations.addVectors4f(alphaVectorC, VectorOperations.addVectors4f(alphaVectorA, alphaVectorB));
 		}
 		return result;
+	}
+
+	public void setNormal(Vector4f normal1, Vector4f normal2, Vector4f normal3) {
+		normal[0] = normal1;
+		normal[1] = normal2;
+		normal[2] = normal3;
+	}
+
+	public void setTexture(TexCoord2f texture1, TexCoord2f texture2, TexCoord2f texture3) {
+		texture[0] = texture1;
+		texture[1] = texture2;
+		texture[2] = texture3;
 	}
 }
