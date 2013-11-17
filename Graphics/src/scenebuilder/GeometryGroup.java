@@ -15,7 +15,7 @@ public class GeometryGroup {
 	private boolean closed = false;
 	
 	public GeometryGroup(Geometry geometry){
-		this.geometry.add(geometry);
+		addGeometry(geometry);
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		this.transformationMatrix = matrix; // initialiseer op identiteit
@@ -27,7 +27,12 @@ public class GeometryGroup {
 	}
 
 	public void addGeometry(Geometry geometry) {
-		this.geometry.add(geometry);
+		if(geometry instanceof IndexedTriangleSet){ //TODO : boolean?
+			this.geometry.addAll(((IndexedTriangleSet) geometry).getTriangles());
+		}
+		else{
+			this.geometry.add(geometry);
+		}
 	}
 
 	public Matrix4f getTransformationMatrix() {

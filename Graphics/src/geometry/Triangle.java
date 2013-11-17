@@ -1,6 +1,9 @@
 package geometry;
 
+import imagedraw.HitRecord;
 import rays.Ray;
+import mathematics.Matrix4f;
+import mathematics.MatrixOperations;
 import mathematics.Point3f;
 import mathematics.TexCoord2f;
 import mathematics.Vector4f;
@@ -12,24 +15,40 @@ import mathematics.VectorOperations;
  * @author Dieter
  *
  */
-public class Triangle {
+public class Triangle extends Geometry{
 
 	private Point3f[] points = new Point3f[3];
-	private Vector4f[] normal = new Vector4f[3];
-	private TexCoord2f[] texture = new TexCoord2f[3];
+	private Vector4f[] normals = new Vector4f[3];
+	private TexCoord2f[] texture = new TexCoord2f[3]; //TODO : transformTextures?
 	private float alpha;
 	private float beta;
 	private float gamma;
 	
 	public Triangle(Point3f[] points){
+		super("");
 		this.points = points;
 	}
 	
 	public Triangle(Point3f point1, Point3f point2, Point3f point3){
+		super("");
 		this.setPoints(point1, point2, point3);
 	}
+
+	@Override
+	public HitRecord rayObjectHit(Ray ray) {
+		float t = calculateHitPoint(ray);
+		return calculateHitRecord(t,ray);
+	}
 	
-	public float rayObjectHit(Ray ray){
+	private HitRecord calculateHitRecord(float t, Ray ray){
+		Vector4f t_times_d = VectorOperations.multiplyFloatandVector4f(t, ray.getDirection()); // t*direction
+		Point3f hitPoint = VectorOperations.addVector4fToPoint(t_times_d, ray.getViewPoint()); // hitPoint = viewPoint + t*direction
+		Vector4f normal = getNormal(); // normaal (met interpolatie)
+		Vector4f normalized = VectorOperations.normalizeVector4f(normal); // normaliseer normaal
+		return new HitRecord(t,this,ray,hitPoint,normalized);
+	}
+	
+	public float calculateHitPoint(Ray ray){
 		float result = -1;
 		Point3f pointA = points[0];
 		Point3f pointB = points[1];
@@ -83,46 +102,94 @@ public class Triangle {
 	
 	public Vector4f getNormal(){
 		Vector4f result = new Vector4f();
-		if(normal[0] != null && normal[1] != null && normal[2] != null){
-			Vector4f vectorA = VectorOperations.multiplyFloatandVector4f(alpha, normal[0]);	
-			Vector4f vectorB = VectorOperations.multiplyFloatandVector4f(beta, normal[1]);	
-			Vector4f vectorC = VectorOperations.multiplyFloatandVector4f(gamma, normal[2]);	
+		if(normals[0] != null && normals[1] != null && normals[2] != null){
+			Vector4f vectorA = VectorOperations.multiplyFloatandVector4f(alpha, normals[0]);	
+			Vector4f vectorB = VectorOperations.multiplyFloatandVector4f(beta, normals[1]);	
+			Vector4f vectorC = VectorOperations.multiplyFloatandVector4f(gamma, normals[2]);	
 			
 			result = VectorOperations.addVectors4f(vectorC, VectorOperations.addVectors4f(vectorA, vectorB));
 		}
 		else{
-			Vector4f vector1A = VectorOperations.subtractPointfromPoint3f(points[0], points[1]);
-			Vector4f vector2A = VectorOperations.subtractPointfromPoint3f(points[0], points[2]);
-			Vector4f vectorA = VectorOperations.crossProduct4f(vector1A, vector2A);
-			normal[0] = vectorA;
-			Vector4f alphaVectorA = VectorOperations.multiplyFloatandVector4f(alpha, vectorA);
-
-			Vector4f vector1B = VectorOperations.subtractPointfromPoint3f(points[1], points[2]);
-			Vector4f vector2B = VectorOperations.subtractPointfromPoint3f(points[1], points[0]);
-			Vector4f vectorB = VectorOperations.crossProduct4f(vector1B, vector2B);
-			normal[1] = vectorB;
-			Vector4f alphaVectorB = VectorOperations.multiplyFloatandVector4f(beta, vectorB);
-
-			Vector4f vector1C = VectorOperations.subtractPointfromPoint3f(points[2], points[0]);
-			Vector4f vector2C = VectorOperations.subtractPointfromPoint3f(points[2], points[1]);
-			Vector4f vectorC = VectorOperations.crossProduct4f(vector1C, vector2C);
-			normal[2] = vectorC;
-			Vector4f alphaVectorC = VectorOperations.multiplyFloatandVector4f(gamma, vectorC);
-			
+			Vector4f[] vectors = calculateNormalVectors();
+			Vector4f alphaVectorA = vectors[0];
+			Vector4f alphaVectorB = vectors[1];
+			Vector4f alphaVectorC = vectors[2];
 			result = VectorOperations.addVectors4f(alphaVectorC, VectorOperations.addVectors4f(alphaVectorA, alphaVectorB));
 		}
 		return result;
 	}
+	
+	private Vector4f[] calculateNormalVectors(){
+		Vector4f[] result = new Vector4f[3];
+		Vector4f vector1A = VectorOperations.subtractPointfromPoint3f(points[0], points[1]);
+		Vector4f vector2A = VectorOperations.subtractPointfromPoint3f(points[0], points[2]);
+		Vector4f vectorA = VectorOperations.crossProduct4f(vector1A, vector2A);
+		normals[0] = vectorA;
+		result[0] = VectorOperations.multiplyFloatandVector4f(alpha, vectorA);
+
+		Vector4f vector1B = VectorOperations.subtractPointfromPoint3f(points[1], points[2]);
+		Vector4f vector2B = VectorOperations.subtractPointfromPoint3f(points[1], points[0]);
+		Vector4f vectorB = VectorOperations.crossProduct4f(vector1B, vector2B);
+		normals[1] = vectorB;
+		result[1] = VectorOperations.multiplyFloatandVector4f(beta, vectorB);
+
+		Vector4f vector1C = VectorOperations.subtractPointfromPoint3f(points[2], points[0]);
+		Vector4f vector2C = VectorOperations.subtractPointfromPoint3f(points[2], points[1]);
+		Vector4f vectorC = VectorOperations.crossProduct4f(vector1C, vector2C);
+		normals[2] = vectorC;
+		result[2] = VectorOperations.multiplyFloatandVector4f(gamma, vectorC);
+		
+		return result;
+	}
 
 	public void setNormal(Vector4f normal1, Vector4f normal2, Vector4f normal3) {
-		normal[0] = normal1;
-		normal[1] = normal2;
-		normal[2] = normal3;
+		normals[0] = normal1;
+		normals[1] = normal2;
+		normals[2] = normal3;
 	}
 
 	public void setTexture(TexCoord2f texture1, TexCoord2f texture2, TexCoord2f texture3) {
 		texture[0] = texture1;
 		texture[1] = texture2;
 		texture[2] = texture3;
+	}
+
+	@Override
+	public void transform(Matrix4f transform) {
+		transformPoints(transform);
+		transformNormals(transform);
+	}
+	
+	private void transformPoints(Matrix4f transform){
+		Point3f[] newPoints = new Point3f[3];
+		int i = 0;
+		for(Point3f p : points){
+			Vector4f pVec = VectorOperations.getVectorFromPoint(p);
+			Vector4f pVecTr = MatrixOperations.MatrixVectorProduct(transform, pVec);
+			newPoints[i] = VectorOperations.getPointFromVector(pVecTr);
+			i++;
+		}
+		this.points = newPoints;
+	}
+
+
+	private void transformNormals(Matrix4f transform){
+		Vector4f[] newNormals = new Vector4f[3];
+		int i = 0;
+		for(Vector4f n : normals){
+			newNormals[i] = MatrixOperations.MatrixVectorProduct(transform, n);
+			i++;
+		}
+		this.normals = newNormals;
+	}
+	
+	@Override
+	public void initialiseBBParameters() {
+		this.minX = Math.min(points[0].x, Math.min(points[1].x, points[2].x));
+		this.maxX = Math.max(points[0].x, Math.max(points[1].x, points[2].x));;
+		this.minY = Math.min(points[0].y, Math.min(points[1].y, points[2].y));;
+		this.maxY = Math.max(points[0].y, Math.max(points[1].y, points[2].y));;
+		this.minZ = Math.min(points[0].z, Math.min(points[1].z, points[2].z));;
+		this.maxZ = Math.max(points[0].z, Math.max(points[1].z, points[2].z));;		
 	}
 }

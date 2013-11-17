@@ -40,4 +40,10 @@ public class Torus extends Geometry{
 	public void transform(Matrix4f transform){
 		// TODO
 	}
+
+	@Override
+	public void initialiseBBParameters() {
+		// TODO Auto-generated method stub
+		
+	}
 }

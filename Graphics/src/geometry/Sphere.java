@@ -85,4 +85,14 @@ public class Sphere extends Geometry{
 		Vector4f middelPointVecTr = MatrixOperations.MatrixVectorProduct(transform, middlePointVec);
 		this.middlePoint = VectorOperations.getPointFromVector(middelPointVecTr);
 	}
+
+	@Override
+	public void initialiseBBParameters() {
+		this.minX = middlePoint.x-radius;
+		this.maxX = middlePoint.x+radius;
+		this.minY = middlePoint.y-radius;
+		this.maxY = middlePoint.y+radius;
+		this.minZ = middlePoint.z-radius;
+		this.maxZ = middlePoint.z+radius;
+	}
 }

@@ -11,6 +11,12 @@ public abstract class Geometry {
 	protected String name;
 	protected Material material;
 	protected Color3f color;	
+	protected float minX;
+	protected float maxX;
+	protected float minY;
+	protected float maxY;
+	protected float minZ;
+	protected float maxZ;
 
 	public Geometry(String name){
 		this.name = name;
@@ -49,5 +55,55 @@ public abstract class Geometry {
 		this.color = color;
 	}
 
+	public float getMinX() {
+		return minX;
+	}
+
+	public void setMinX(float minX) {
+		this.minX = minX;
+	}
+
+	public float getMaxX() {
+		return maxX;
+	}
+
+	public void setMaxX(float maxX) {
+		this.maxX = maxX;
+	}
+
+	public float getMinY() {
+		return minY;
+	}
+
+	public void setMinY(float minY) {
+		this.minY = minY;
+	}
+
+	public float getMaxY() {
+		return maxY;
+	}
+
+	public void setMaxY(float maxY) {
+		this.maxY = maxY;
+	}
+
+	public float getMinZ() {
+		return minZ;
+	}
+
+	public void setMinZ(float minZ) {
+		this.minZ = minZ;
+	}
+
+	public float getMaxZ() {
+		return maxZ;
+	}
+
+	public void setMaxZ(float maxZ) {
+		this.maxZ = maxZ;
+	}
+
 	public abstract void transform(Matrix4f transformation);
+	
+	public abstract void initialiseBBParameters();
 }

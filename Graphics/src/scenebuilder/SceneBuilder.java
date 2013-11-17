@@ -1,6 +1,5 @@
 package scenebuilder;
 import geometry.*;
-import imagedraw.*;
 import materials.*;
 import lights.*;
 
