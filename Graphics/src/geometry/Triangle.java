@@ -185,11 +185,11 @@ public class Triangle extends Geometry{
 	
 	@Override
 	public void initialiseBBParameters() {
-		this.minX = Math.min(points[0].x, Math.min(points[1].x, points[2].x));
-		this.maxX = Math.max(points[0].x, Math.max(points[1].x, points[2].x));;
-		this.minY = Math.min(points[0].y, Math.min(points[1].y, points[2].y));;
-		this.maxY = Math.max(points[0].y, Math.max(points[1].y, points[2].y));;
-		this.minZ = Math.min(points[0].z, Math.min(points[1].z, points[2].z));;
-		this.maxZ = Math.max(points[0].z, Math.max(points[1].z, points[2].z));;		
+		this.minX = Math.floor(Math.min(points[0].x, Math.min(points[1].x, points[2].x)));
+		this.maxX = Math.ceil(Math.max(points[0].x, Math.max(points[1].x, points[2].x)));;
+		this.minY = Math.floor(Math.min(points[0].y, Math.min(points[1].y, points[2].y)));;
+		this.maxY = Math.ceil(Math.max(points[0].y, Math.max(points[1].y, points[2].y)));;
+		this.minZ = Math.floor(Math.min(points[0].z, Math.min(points[1].z, points[2].z)));;
+		this.maxZ = Math.ceil(Math.max(points[0].z, Math.max(points[1].z, points[2].z)));;		
 	}
 }

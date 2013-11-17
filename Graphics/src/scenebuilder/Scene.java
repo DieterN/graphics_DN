@@ -19,8 +19,10 @@ public class Scene {
 	private HashMap<String,Material> materials = new HashMap<String,Material>();
 	
 	private Camera camera;
-	private ArrayList<Light> usedLights = new ArrayList<Light>();
-	private SceneGraph scenegraph;;
+	private List<Light> usedLights = new ArrayList<Light>();
+	private List<Geometry> usedGeometryTransformed = new ArrayList<Geometry>(); 
+	//This arrayList is used to save the transformed object from the sceneGraph. It's only called when needed.
+	private SceneGraph scenegraph;
 	
 	private Color3f backgroundColor;
 	
@@ -87,7 +89,7 @@ public class Scene {
 		scenegraph.removeMatrices();
 	}
 
-	public ArrayList<Light> getUsedLights() {
+	public List<Light> getUsedLights() {
 		return usedLights;
 	}
 
@@ -112,5 +114,38 @@ public class Scene {
 
 	public void setScenegraph(SceneGraph scenegraph) {
 		this.scenegraph = scenegraph;
+	}
+	
+	public List<Geometry> getUsedGeometryTransformed() {
+		if(this.usedGeometryTransformed.isEmpty()){
+			usedGeometryTransformed = scenegraph.traverseTransformObject();
+		}
+		return usedGeometryTransformed;
+	}
+
+	public void setUsedGeometryTransformed(ArrayList<Geometry> usedGeometryTransformed) {
+		this.usedGeometryTransformed = usedGeometryTransformed;
+	}
+
+	public double[] getDimensions(){
+		double[] result = new double[6];
+		List<Geometry> geo = getUsedGeometryTransformed();
+		
+		result[0] = Double.POSITIVE_INFINITY; //minX
+		result[1] = Double.NEGATIVE_INFINITY; //maxX
+		result[2] = Double.POSITIVE_INFINITY; //minY
+		result[3] = Double.NEGATIVE_INFINITY; //maxY
+		result[4] = Double.POSITIVE_INFINITY; //minZ
+		result[5] = Double.NEGATIVE_INFINITY; //maxZ
+		
+		for(Geometry g : geo){
+			if(g.getMinX() < result[0]){ result[0] = Math.floor(g.getMinX());}
+			if(g.getMaxX() > result[1]){ result[1] = Math.ceil(g.getMaxX());}
+			if(g.getMinX() < result[2]){ result[2] = Math.floor(g.getMinY());}
+			if(g.getMaxX() > result[3]){ result[3] = Math.ceil(g.getMaxY());}
+			if(g.getMinX() < result[4]){ result[4] = Math.floor(g.getMinZ());}
+			if(g.getMaxX() > result[5]){ result[5] = Math.ceil(g.getMaxZ());}
+		}
+		return result;
 	}
 }

@@ -88,11 +88,11 @@ public class Sphere extends Geometry{
 
 	@Override
 	public void initialiseBBParameters() {
-		this.minX = middlePoint.x-radius;
-		this.maxX = middlePoint.x+radius;
-		this.minY = middlePoint.y-radius;
-		this.maxY = middlePoint.y+radius;
-		this.minZ = middlePoint.z-radius;
-		this.maxZ = middlePoint.z+radius;
+		this.minX = Math.floor(middlePoint.x-radius);
+		this.maxX = Math.ceil(middlePoint.x+radius);
+		this.minY = Math.floor(middlePoint.y-radius);
+		this.maxY = Math.ceil(middlePoint.y+radius);
+		this.minZ = Math.floor(middlePoint.z-radius);
+		this.maxZ = Math.ceil(middlePoint.z+radius);
 	}
 }

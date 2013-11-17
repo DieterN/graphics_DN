@@ -136,12 +136,12 @@ public class IndexedTriangleSet extends Geometry{
 		minZ = triangles.get(0).getMinZ();
 		maxZ = triangles.get(0).getMaxZ();
 		for(Triangle t : triangles){
-			 minX = Math.max(minX,t.getMinX());
-			 maxX = Math.max(maxX,t.getMaxX());
-			 minY = Math.max(minY,t.getMinY());
-			 maxY = Math.max(maxY,t.getMaxY());
-			 minZ = Math.max(minZ,t.getMinZ());
-			 maxZ = Math.max(maxZ,t.getMaxZ());
+			 minX = Math.floor(Math.max(minX,t.getMinX()));
+			 maxX = Math.ceil(Math.max(maxX,t.getMaxX()));
+			 minY = Math.floor(Math.max(minY,t.getMinY()));
+			 maxY = Math.ceil(Math.max(maxY,t.getMaxY()));
+			 minZ = Math.floor(Math.max(minZ,t.getMinZ()));
+			 maxZ = Math.ceil(Math.max(maxZ,t.getMaxZ()));
 		}
 	}
 
