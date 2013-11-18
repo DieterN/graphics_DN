@@ -9,12 +9,12 @@ public class CompactGrid {
 	private float cellDimensionX;
 	private float cellDimensionY;
 	private float cellDimensionZ;
-	private double minX;
-	private double maxX;
-	private double minY;
-	private double maxY;
-	private double minZ;
-	private double maxZ;
+	private float minX;
+	private float maxX;
+	private float minY;
+	private float maxY;
+	private float minZ;
+	private float maxZ;
 	private Cell[] cells;
 	private BoundingBox[] boxes;
 	private Scene scene;
@@ -53,9 +53,9 @@ public class CompactGrid {
 	 */
 	private void makeCells(){
 		int i = 0;
-		double x = minX;
-		double y = minY;
-		double z = minZ;
+		float x = minX;
+		float y = minY;
+		float z = minZ;
 		while(x<maxX){
 			int j = 0;
 			while(y<maxY){
@@ -64,10 +64,13 @@ public class CompactGrid {
 					Cell cell = new Cell(x,(x+cellDimensionX),y,(y+cellDimensionY),z,(z+cellDimensionZ),(i+j+k));
 					cells[i+j+k] = cell;
 					k++;
+					z += cellDimensionZ;
 				}
 				j++;
+				y += cellDimensionY;
 			}
 			i++;
+			x += cellDimensionX;
 		}
 	}
 }

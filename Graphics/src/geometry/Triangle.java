@@ -186,12 +186,21 @@ public class Triangle extends Geometry{
 	
 	@Override
 	public void initialiseBBParameters() {
-		double minX = Math.floor(Math.min(points[0].x, Math.min(points[1].x, points[2].x)));
-		double maxX = Math.ceil(Math.max(points[0].x, Math.max(points[1].x, points[2].x)));
-		double minY = Math.floor(Math.min(points[0].y, Math.min(points[1].y, points[2].y)));
-		double maxY = Math.ceil(Math.max(points[0].y, Math.max(points[1].y, points[2].y)));
-		double minZ = Math.floor(Math.min(points[0].z, Math.min(points[1].z, points[2].z)));
-		double maxZ = Math.ceil(Math.max(points[0].z, Math.max(points[1].z, points[2].z)));
+		float minX = Float.MAX_VALUE;
+		float maxX = -Float.MAX_VALUE;
+		float minY = Float.MAX_VALUE;
+		float maxY = -Float.MAX_VALUE;
+		float minZ = Float.MAX_VALUE;
+		float maxZ = -Float.MAX_VALUE;
+		
+		for(Point3f p : points){
+			 if(minX > p.x) {minX = p.x;}
+			 if(maxX < p.x) {maxX = p.x; }
+			 if(minY > p.y) {minY = p.y; }
+			 if(maxY < p.y) {maxY = p.y; }
+			 if(minZ > p.z) {minZ = p.z; }
+			 if(maxZ < p.z) {maxZ = p.z; }
+		}
 		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
 		box.addGeometry(this);
 		this.initialised = true;

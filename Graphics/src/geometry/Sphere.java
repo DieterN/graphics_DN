@@ -89,12 +89,12 @@ public class Sphere extends Geometry{
 
 	@Override
 	public void initialiseBBParameters() {
-		double minX = Math.floor(middlePoint.x-radius);
-		double maxX = Math.ceil(middlePoint.x+radius);
-		double minY = Math.floor(middlePoint.y-radius);
-		double maxY = Math.ceil(middlePoint.y+radius);
-		double minZ = Math.floor(middlePoint.z-radius);
-		double maxZ = Math.ceil(middlePoint.z+radius);
+		float minX = (middlePoint.x-radius);
+		float maxX = (middlePoint.x+radius);
+		float minY = (middlePoint.y-radius);
+		float maxY = (middlePoint.y+radius);
+		float minZ = (middlePoint.z-radius);
+		float maxZ = (middlePoint.z+radius);
 		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
 		box.addGeometry(this);
 		this.initialised = true;

@@ -12,15 +12,15 @@ import rays.Ray;
 
 public class BoundingBox extends Geometry{
 
-	private double minX;
-	private double maxX;
-	private double minY;
-	private double maxY;
-	private double minZ;
-	private double maxZ;
+	private float minX;
+	private float maxX;
+	private float minY;
+	private float maxY;
+	private float minZ;
+	private float maxZ;
 	private List<Geometry> geometry = new ArrayList<Geometry>();
 	
-	public BoundingBox(double minX, double maxX, double minY, double maxY, double minZ, double maxZ){
+	public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ){
 		super("");
 		this.minX = minX;
 		this.maxX = maxX;
@@ -30,51 +30,51 @@ public class BoundingBox extends Geometry{
 		this.maxZ = maxZ;
 	}
 
-	public double getMinX() {
+	public float getMinX() {
 		return minX;
 	}
 
-	public void setMinX(double minX) {
+	public void setMinX(float minX) {
 		this.minX = minX;
 	}
 
-	public double getMaxX() {
+	public float getMaxX() {
 		return maxX;
 	}
 
-	public void setMaxX(double maxX) {
+	public void setMaxX(float maxX) {
 		this.maxX = maxX;
 	}
 
-	public double getMinY() {
+	public float getMinY() {
 		return minY;
 	}
 
-	public void setMinY(double minY) {
+	public void setMinY(float minY) {
 		this.minY = minY;
 	}
 
-	public double getMaxY() {
+	public float getMaxY() {
 		return maxY;
 	}
 
-	public void setMaxY(double maxY) {
+	public void setMaxY(float maxY) {
 		this.maxY = maxY;
 	}
 
-	public double getMinZ() {
+	public float getMinZ() {
 		return minZ;
 	}
 
-	public void setMinZ(double minZ) {
+	public void setMinZ(float minZ) {
 		this.minZ = minZ;
 	}
 
-	public double getMaxZ() {
+	public float getMaxZ() {
 		return maxZ;
 	}
 
-	public void setMaxZ(int maxZ) {
+	public void setMaxZ(float maxZ) {
 		this.maxZ = maxZ;
 	}
 

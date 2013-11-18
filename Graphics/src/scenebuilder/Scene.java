@@ -127,24 +127,24 @@ public class Scene {
 		this.usedGeometryTransformed = usedGeometryTransformed;
 	}
 
-	public double[] getDimensions(){
-		double[] result = new double[6];
+	public float[] getDimensions(){
+		float[] result = new float[6];
 		List<Geometry> geo = getUsedGeometryTransformed();
 		
-		result[0] = Double.POSITIVE_INFINITY; //minX
-		result[1] = Double.NEGATIVE_INFINITY; //maxX
-		result[2] = Double.POSITIVE_INFINITY; //minY
-		result[3] = Double.NEGATIVE_INFINITY; //maxY
-		result[4] = Double.POSITIVE_INFINITY; //minZ
-		result[5] = Double.NEGATIVE_INFINITY; //maxZ
+		result[0] = Float.MAX_VALUE; //minX
+		result[1] = -Float.MAX_VALUE; //maxX
+		result[2] = Float.MAX_VALUE; //minY
+		result[3] = -Float.MAX_VALUE; //maxY
+		result[4] = Float.MAX_VALUE; //minZ
+		result[5] = -Float.MAX_VALUE; //maxZ
 		
 		for(Geometry g : geo){
-			if(g.getBox().getMinX() < result[0]){ result[0] = Math.floor(g.getBox().getMinX());}
-			if(g.getBox().getMaxX() > result[1]){ result[1] = Math.ceil(g.getBox().getMaxX());}
-			if(g.getBox().getMinX() < result[2]){ result[2] = Math.floor(g.getBox().getMinY());}
-			if(g.getBox().getMaxX() > result[3]){ result[3] = Math.ceil(g.getBox().getMaxY());}
-			if(g.getBox().getMinX() < result[4]){ result[4] = Math.floor(g.getBox().getMinZ());}
-			if(g.getBox().getMaxX() > result[5]){ result[5] = Math.ceil(g.getBox().getMaxZ());}
+			if(g.getBox().getMinX() < result[0]){ result[0] = g.getBox().getMinX();}
+			if(g.getBox().getMaxX() > result[1]){ result[1] = g.getBox().getMaxX();}
+			if(g.getBox().getMinX() < result[2]){ result[2] = g.getBox().getMinY();}
+			if(g.getBox().getMaxX() > result[3]){ result[3] = g.getBox().getMaxY();}
+			if(g.getBox().getMinX() < result[4]){ result[4] = g.getBox().getMinZ();}
+			if(g.getBox().getMaxX() > result[5]){ result[5] = g.getBox().getMaxZ();}
 		}
 		return result;
 	}
