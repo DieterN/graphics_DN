@@ -5,6 +5,8 @@ import imagedraw.HitRecord;
 import java.util.List;
 import java.util.ArrayList;
 
+import acceleration.BoundingBox;
+
 import rays.Ray;
 import mathematics.*;
 
@@ -129,20 +131,31 @@ public class IndexedTriangleSet extends Geometry{
 
 	@Override
 	public void initialiseBBParameters() {
-		minX = triangles.get(0).getMinX();
-		maxX = triangles.get(0).getMaxX();
-		minY = triangles.get(0).getMinY();
-		maxY = triangles.get(0).getMaxY();
-		minZ = triangles.get(0).getMinZ();
-		maxZ = triangles.get(0).getMaxZ();
+		double minX = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+		double minZ = Double.POSITIVE_INFINITY;
+		double maxZ = Double.NEGATIVE_INFINITY;
 		for(Triangle t : triangles){
-			 minX = Math.floor(Math.max(minX,t.getMinX()));
-			 maxX = Math.ceil(Math.max(maxX,t.getMaxX()));
-			 minY = Math.floor(Math.max(minY,t.getMinY()));
-			 maxY = Math.ceil(Math.max(maxY,t.getMaxY()));
-			 minZ = Math.floor(Math.max(minZ,t.getMinZ()));
-			 maxZ = Math.ceil(Math.max(maxZ,t.getMaxZ()));
+			if(!t.initialised){
+				t.initialiseBBParameters();
+			}//TODO : check formules nog is
+			 if(minX > t.getBox().getMinX()) {minX = Math.floor(t.getBox().getMinX()); }
+			 if(maxX < t.getBox().getMaxX()) {maxX = Math.ceil(t.getBox().getMaxX()); }
+			 if(minY > t.getBox().getMinY()) {minY = Math.floor(t.getBox().getMinY()); }
+			 if(maxY < t.getBox().getMaxY()) {maxY = Math.ceil(t.getBox().getMaxY()); }
+			 if(minZ > t.getBox().getMinZ()) {minZ = Math.floor(t.getBox().getMinZ()); }
+			 if(maxZ < t.getBox().getMaxZ()) {maxZ = Math.ceil(t.getBox().getMaxZ()); }
+//			 maxX = Math.ceil(Math.max(maxX,t.getMaxX()));
+//			 minY = Math.floor(Math.max(minY,t.getMinY()));
+//			 maxY = Math.ceil(Math.max(maxY,t.getMaxY()));
+//			 minZ = Math.floor(Math.max(minZ,t.getMinZ()));
+//			 maxZ = Math.ceil(Math.max(maxZ,t.getMaxZ()));
 		}
+		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
+		box.addGeometry(this);
+		this.initialised = true;
 	}
 
 	public Vector4f[] getNormals() {

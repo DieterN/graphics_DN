@@ -1,5 +1,6 @@
 package geometry;
 
+import acceleration.BoundingBox;
 import rays.Ray;
 import imagedraw.HitRecord;
 import mathematics.Matrix4f;
@@ -9,7 +10,7 @@ import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
 /**
- * Class that represents a sphere, that is charcterized by it's middlepoint and radius.
+ * Class that represents a sphere, that is characterized by it's middlepoint and radius.
  * 
  * @author Dieter
  *
@@ -88,11 +89,14 @@ public class Sphere extends Geometry{
 
 	@Override
 	public void initialiseBBParameters() {
-		this.minX = Math.floor(middlePoint.x-radius);
-		this.maxX = Math.ceil(middlePoint.x+radius);
-		this.minY = Math.floor(middlePoint.y-radius);
-		this.maxY = Math.ceil(middlePoint.y+radius);
-		this.minZ = Math.floor(middlePoint.z-radius);
-		this.maxZ = Math.ceil(middlePoint.z+radius);
+		double minX = Math.floor(middlePoint.x-radius);
+		double maxX = Math.ceil(middlePoint.x+radius);
+		double minY = Math.floor(middlePoint.y-radius);
+		double maxY = Math.ceil(middlePoint.y+radius);
+		double minZ = Math.floor(middlePoint.z-radius);
+		double maxZ = Math.ceil(middlePoint.z+radius);
+		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
+		box.addGeometry(this);
+		this.initialised = true;
 	}
 }

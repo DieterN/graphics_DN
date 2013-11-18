@@ -139,12 +139,12 @@ public class Scene {
 		result[5] = Double.NEGATIVE_INFINITY; //maxZ
 		
 		for(Geometry g : geo){
-			if(g.getMinX() < result[0]){ result[0] = Math.floor(g.getMinX());}
-			if(g.getMaxX() > result[1]){ result[1] = Math.ceil(g.getMaxX());}
-			if(g.getMinX() < result[2]){ result[2] = Math.floor(g.getMinY());}
-			if(g.getMaxX() > result[3]){ result[3] = Math.ceil(g.getMaxY());}
-			if(g.getMinX() < result[4]){ result[4] = Math.floor(g.getMinZ());}
-			if(g.getMaxX() > result[5]){ result[5] = Math.ceil(g.getMaxZ());}
+			if(g.getBox().getMinX() < result[0]){ result[0] = Math.floor(g.getBox().getMinX());}
+			if(g.getBox().getMaxX() > result[1]){ result[1] = Math.ceil(g.getBox().getMaxX());}
+			if(g.getBox().getMinX() < result[2]){ result[2] = Math.floor(g.getBox().getMinY());}
+			if(g.getBox().getMaxX() > result[3]){ result[3] = Math.ceil(g.getBox().getMaxY());}
+			if(g.getBox().getMinX() < result[4]){ result[4] = Math.floor(g.getBox().getMinZ());}
+			if(g.getBox().getMaxX() > result[5]){ result[5] = Math.ceil(g.getBox().getMaxZ());}
 		}
 		return result;
 	}

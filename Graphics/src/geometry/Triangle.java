@@ -1,5 +1,6 @@
 package geometry;
 
+import acceleration.BoundingBox;
 import imagedraw.HitRecord;
 import rays.Ray;
 import mathematics.Matrix4f;
@@ -185,11 +186,14 @@ public class Triangle extends Geometry{
 	
 	@Override
 	public void initialiseBBParameters() {
-		this.minX = Math.floor(Math.min(points[0].x, Math.min(points[1].x, points[2].x)));
-		this.maxX = Math.ceil(Math.max(points[0].x, Math.max(points[1].x, points[2].x)));;
-		this.minY = Math.floor(Math.min(points[0].y, Math.min(points[1].y, points[2].y)));;
-		this.maxY = Math.ceil(Math.max(points[0].y, Math.max(points[1].y, points[2].y)));;
-		this.minZ = Math.floor(Math.min(points[0].z, Math.min(points[1].z, points[2].z)));;
-		this.maxZ = Math.ceil(Math.max(points[0].z, Math.max(points[1].z, points[2].z)));;		
+		double minX = Math.floor(Math.min(points[0].x, Math.min(points[1].x, points[2].x)));
+		double maxX = Math.ceil(Math.max(points[0].x, Math.max(points[1].x, points[2].x)));
+		double minY = Math.floor(Math.min(points[0].y, Math.min(points[1].y, points[2].y)));
+		double maxY = Math.ceil(Math.max(points[0].y, Math.max(points[1].y, points[2].y)));
+		double minZ = Math.floor(Math.min(points[0].z, Math.min(points[1].z, points[2].z)));
+		double maxZ = Math.ceil(Math.max(points[0].z, Math.max(points[1].z, points[2].z)));
+		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
+		box.addGeometry(this);
+		this.initialised = true;
 	}
 }

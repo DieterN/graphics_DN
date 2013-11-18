@@ -1,5 +1,6 @@
 package geometry;
 
+import acceleration.BoundingBox;
 import imagedraw.HitRecord;
 import rays.Ray;
 import materials.Material;
@@ -10,13 +11,9 @@ public abstract class Geometry {
 
 	protected String name;
 	protected Material material;
-	protected Color3f color;	
-	protected double minX;
-	protected double maxX;
-	protected double minY;
-	protected double maxY;
-	protected double minZ;
-	protected double maxZ;
+	protected Color3f color;
+	protected BoundingBox box;
+	protected boolean initialised;
 
 	public Geometry(String name){
 		this.name = name;
@@ -55,52 +52,20 @@ public abstract class Geometry {
 		this.color = color;
 	}
 
-	public double getMinX() {
-		return minX;
+	public BoundingBox getBox() {
+		return box;
 	}
 
-	public void setMinX(double minX) {
-		this.minX = minX;
+	public void setBox(BoundingBox box) {
+		this.box = box;
 	}
 
-	public double getMaxX() {
-		return maxX;
+	public boolean isInitialised() {
+		return initialised;
 	}
 
-	public void setMaxX(double maxX) {
-		this.maxX = maxX;
-	}
-
-	public double getMinY() {
-		return minY;
-	}
-
-	public void setMinY(double minY) {
-		this.minY = minY;
-	}
-
-	public double getMaxY() {
-		return maxY;
-	}
-
-	public void setMaxY(double maxY) {
-		this.maxY = maxY;
-	}
-
-	public double getMinZ() {
-		return minZ;
-	}
-
-	public void setMinZ(double minZ) {
-		this.minZ = minZ;
-	}
-
-	public double getMaxZ() {
-		return maxZ;
-	}
-
-	public void setMaxZ(double maxZ) {
-		this.maxZ = maxZ;
+	public void setInitialised(boolean initialised) {
+		this.initialised = initialised;
 	}
 
 	public abstract void transform(Matrix4f transformation);
