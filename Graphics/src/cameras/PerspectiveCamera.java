@@ -1,5 +1,6 @@
 package cameras;
 
+import rays.Ray;
 import mathematics.Point3f;
 import mathematics.Vector4f;
 
@@ -21,5 +22,10 @@ public class PerspectiveCamera extends Camera{
 
 	public static float getFocalLength() {
 		return focalLength;
+	}
+	
+	@Override
+	public Ray getRay(int pixelX, int pixelY) {
+		return Ray.getRay(this,pixelX,pixelY);
 	}
 }

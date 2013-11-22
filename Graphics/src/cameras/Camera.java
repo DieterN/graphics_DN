@@ -1,5 +1,6 @@
 package cameras;
 
+import rays.Ray;
 import mathematics.*;
 
 public abstract class Camera {
@@ -100,4 +101,6 @@ public abstract class Camera {
 	public void setScreen(Screen screen) {
 		this.screen = screen;
 	}
+	
+	public abstract Ray getRay(int pixelX, int pixelY);
 }

@@ -16,7 +16,7 @@ public abstract class IntersectController {
 	}
 	
 	public HitRecord lookForRayHit(int pixelX, int pixelY){
-		Ray ray = Ray.getRay(scene.getCamera(), pixelX, pixelY);		
+		Ray ray = scene.getCamera().getRay(pixelX, pixelY);
 		HitRecord hr = calculateHitRecord(ray);
 		return hr;		
 	}

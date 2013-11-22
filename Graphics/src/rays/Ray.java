@@ -34,21 +34,14 @@ public class Ray {
 	 * @param camera
 	 * @return
 	 */
-	public static Ray getRay(Camera camera, int pixelX, int pixelY){
-		Ray ray = null;
-		if(camera instanceof OrthograpicCamera){
-			ray = new OrthograpicRay(camera,pixelX,pixelY);
-		}
-		else if(camera instanceof PerspectiveCamera){
-			ray = new PerspectiveRay(camera,pixelX,pixelY);
-		}
-		else{
-			System.out.println("There's no right ray for the given objects");
-			throw new IllegalArgumentException();
-		}
-		
-		return ray;
-	}	
+	
+	public static Ray getRay(PerspectiveCamera camera, int pixelX, int pixelY){
+		return new PerspectiveRay(camera, pixelX, pixelY);
+	}
+	
+	public static Ray getRay(OrthograpicCamera camera, int pixelX, int pixelY){
+		return new OrthograpicRay(camera, pixelX, pixelY);
+	}
 
 	public Point3f getViewPoint() {
 		return viewPoint;
