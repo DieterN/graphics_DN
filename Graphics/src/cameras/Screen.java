@@ -1,6 +1,6 @@
 package cameras;
 
-import imagedraw.Draw;
+import imagedraw.DrawController;
 
 public class Screen {
 
@@ -13,10 +13,10 @@ public class Screen {
 	 * Initalise a new standard Screen
 	 */
 	public Screen(){
-		this.l = -Draw.getNx()/2;
-		this.r = Draw.getNx()/2;
-		this.t = Draw.getNy()/2;
-		this.b =  -Draw.getNy()/2; 
+		this.l = -DrawController.getNx()/2;
+		this.r = DrawController.getNx()/2;
+		this.t = DrawController.getNy()/2;
+		this.b =  -DrawController.getNy()/2; 
 	}
 	
 	/**
@@ -28,7 +28,7 @@ public class Screen {
 		double fovyRad = Math.toRadians(fovy);
 		r = (float) (Math.tan(fovyRad/2)*Math.abs(PerspectiveCamera.getFocalLength()));
 		l = -r;
-		t = (Draw.getNy()*r)/(Draw.getNx());
+		t = (DrawController.getNy()*r)/(DrawController.getNx());
 		b = -t;
 	}
 

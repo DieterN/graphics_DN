@@ -3,7 +3,7 @@ package rays;
 import cameras.Camera;
 import cameras.PerspectiveCamera;
 import cameras.Screen;
-import imagedraw.Draw;
+import imagedraw.DrawController;
 import mathematics.*;
 
 /**
@@ -41,8 +41,8 @@ public class PerspectiveRay extends Ray{
 		float r = screen.getR();
 		float t = screen.getT();
 		float b = screen.getB();
-		float nx = Draw.getNx();
-		float ny = Draw.getNy();
+		float nx = DrawController.getNx();
+		float ny = DrawController.getNy();
 		float distance = PerspectiveCamera.getFocalLength();
 		Vector4f uVector = VectorOperations.normalizeVector4f(camera.getU());
 		Vector4f vVector = VectorOperations.normalizeVector4f(camera.getV());

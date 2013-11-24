@@ -53,6 +53,9 @@ public abstract class Geometry {
 	}
 
 	public BoundingBox getBox() {
+		if(!this.initialised){
+			calculateBB(); // Als bounding boxes nog niet berekend, bereken ze dan eerst
+		}
 		return box;
 	}
 
@@ -69,6 +72,12 @@ public abstract class Geometry {
 	}
 
 	public abstract void transform(Matrix4f transformation);
+	
+	// TEMPLATE METHOD
+	public void calculateBB(){
+		initialiseBBParameters();
+		this.initialised = true;
+	}
 	
 	public abstract void initialiseBBParameters();
 }

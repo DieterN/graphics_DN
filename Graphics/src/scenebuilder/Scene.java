@@ -2,8 +2,8 @@ package scenebuilder;
 
 import java.util.*;
 
+import acceleration.BoundingBox;
 import cameras.Camera;
-
 import lights.*;
 import materials.*;
 import mathematics.Color3f;
@@ -22,6 +22,10 @@ public class Scene {
 	private List<Light> usedLights = new ArrayList<Light>();
 	private List<Geometry> usedGeometryTransformed = new ArrayList<Geometry>(); 
 	//This arrayList is used to save the transformed object from the sceneGraph. It's only called when needed.
+	private List<BoundingBox> boxes = new ArrayList<BoundingBox>();
+	//List needed for acceleration, attention, transform objects first!!!
+	private boolean dimensionsCalculated = false;
+	
 	private SceneGraph scenegraph;
 	
 	private Color3f backgroundColor;
@@ -139,6 +143,7 @@ public class Scene {
 		result[5] = -Float.MAX_VALUE; //maxZ
 		
 		for(Geometry g : geo){
+			this.boxes.add(g.getBox());
 			if(g.getBox().getMinX() < result[0]){ result[0] = g.getBox().getMinX();}
 			if(g.getBox().getMaxX() > result[1]){ result[1] = g.getBox().getMaxX();}
 			if(g.getBox().getMinX() < result[2]){ result[2] = g.getBox().getMinY();}
@@ -146,6 +151,14 @@ public class Scene {
 			if(g.getBox().getMinX() < result[4]){ result[4] = g.getBox().getMinZ();}
 			if(g.getBox().getMaxX() > result[5]){ result[5] = g.getBox().getMaxZ();}
 		}
+		dimensionsCalculated = true;
 		return result;
+	}
+
+	public List<BoundingBox> getBoxes() {
+		if(!dimensionsCalculated){
+			getDimensions();
+		}
+		return boxes;
 	}
 }

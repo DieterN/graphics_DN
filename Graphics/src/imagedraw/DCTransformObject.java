@@ -1,17 +1,18 @@
-package rays;
+package imagedraw;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import rays.Ray;
+import scenebuilder.Scene;
 import geometry.Geometry;
-import imagedraw.HitRecord;
 
-public class ICTransformObject extends IntersectController{
+public class DCTransformObject extends DrawController{
 
 	private List<Geometry> geometry = new ArrayList<Geometry>();
 	
-	public ICTransformObject(){
-		
+	public DCTransformObject(Scene scene){
+		super(scene);
 	}
 
 	@Override

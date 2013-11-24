@@ -3,7 +3,7 @@ package rays;
 import cameras.Camera;
 import cameras.OrthograpicCamera;
 import cameras.Screen;
-import imagedraw.Draw;
+import imagedraw.DrawController;
 import mathematics.*;
 
 /**
@@ -41,8 +41,8 @@ public class OrthograpicRay extends Ray{
 		float r = screen.getR();
 		float t = screen.getT();
 		float b = screen.getB();
-		float nx = Draw.getNx();
-		float ny = Draw.getNy();
+		float nx = DrawController.getNx();
+		float ny = DrawController.getNy();
 		Point3f viewPoint = camera.getViewPoint();
 		Vector4f uVector = camera.getU();
 		Vector4f vVector = camera.getV();

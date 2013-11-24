@@ -203,6 +203,5 @@ public class Triangle extends Geometry{
 		}
 		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
 		box.addGeometry(this);
-		this.initialised = true;
 	}
 }

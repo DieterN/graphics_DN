@@ -1,23 +1,24 @@
-package rays;
+package imagedraw;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import geometry.Geometry;
-import imagedraw.HitRecord;
 import mathematics.Matrix4f;
 import mathematics.MatrixOperations;
 import mathematics.Point3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
+import rays.Ray;
 import scenebuilder.GeometryGroup;
+import scenebuilder.Scene;
 
-public class ICTransformRay extends IntersectController{
+public class DCTransformRay extends DrawController{
 
 	private List<GeometryGroup> geometry = new ArrayList<GeometryGroup>();
 	
-	public ICTransformRay(){
-		
+	public DCTransformRay(Scene scene){
+		super(scene);		
 	}
 	
 	@Override

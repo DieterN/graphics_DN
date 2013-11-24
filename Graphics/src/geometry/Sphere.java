@@ -97,6 +97,5 @@ public class Sphere extends Geometry{
 		float maxZ = (middlePoint.z+radius);
 		this.box = new BoundingBox(minX, maxX, minY, maxY, minZ, maxZ);
 		box.addGeometry(this);
-		this.initialised = true;
 	}
 }
