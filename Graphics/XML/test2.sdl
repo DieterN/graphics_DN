@@ -12,20 +12,21 @@
    </Lights>
    
    <Geometry>
+   	   <Object fileName="sphere.obj" name="sphere" />
 	   <IndexedTriangleSet coordinates="0 0 0, 0 10 0, 10 0 0, 10 10 0" coordinateIndices="0, 3, 1, 0, 2, 3" name="index1" />
 	   <Sphere radius="5" name="sphere1" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.75 0.75 1" name="dif1"/> 
-      <PhongMaterial color="0.75 0.75 0.75" shininess="50" name="phong1" />  
+      <DiffuseMaterial color="0.75 0.75 1" ambientFactor="0.1" name="dif1"/> 
+      <PhongMaterial color="0.75 0.75 0.75" shininess="50" ambientFactor="0.1" name="phong1" />  
       <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
    </Materials>   
    
    <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-   <Shape geometry="index1" material="lc1"/>
-      <Translate vector="-10 -10 0">
-      	<Shape geometry="sphere1" material="dif1" />
-      </Translate>
+   		<Shape geometry="sphere" material="lc1"/>
+      	<Translate vector="-10 -10 0">
+      		<Shape geometry="sphere1" material="dif1" />
+     	</Translate>
    </Scene>
 </Sdl>
