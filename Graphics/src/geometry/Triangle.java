@@ -177,11 +177,17 @@ public class Triangle extends Geometry{
 	private void transformNormals(Matrix4f transform){
 		Vector4f[] newNormals = new Vector4f[3];
 		int i = 0;
-		for(Vector4f n : normals){
-			newNormals[i] = MatrixOperations.MatrixVectorProduct(transform, n);
-			i++;
+		if(normals[0] != null){
+			for(Vector4f n : normals){
+				newNormals[i] = MatrixOperations.MatrixVectorProduct(transform, n);
+				i++;
+			}
+			this.normals = newNormals;
 		}
-		this.normals = newNormals;
+		else{
+			calculateNormalVectors();
+			transformNormals(transform);
+		}
 	}
 	
 	@Override

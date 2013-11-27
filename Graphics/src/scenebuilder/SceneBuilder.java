@@ -270,6 +270,7 @@ public class SceneBuilder implements ParserHandler
 
     public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws Exception
     {
+    	System.out.println("Ambient: " + ambientFactor);
     	DiffuseMaterial dm = new DiffuseMaterial(color, ambientFactor, name); //TODO
     	scene.addMaterial(dm);
     }
@@ -321,7 +322,7 @@ public class SceneBuilder implements ParserHandler
     	HashMap<String,Geometry> geometrics = scene.getGeometrics();
     	Geometry geometry = geometrics.get(geometryName);
     	HashMap<String,Material> materials = scene.getMaterials();
-    	Material material = materials.get(materialName);
+    	Material material = materials.get(materialName); //triangle set, dan ook triangles
     	geometry.setMaterial(material);
     	//TODO : Textures
     	scene.addGeometryToSceneGraph(geometryName);

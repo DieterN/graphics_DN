@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import acceleration.BoundingBox;
 import rays.Ray;
+import materials.Material;
 import mathematics.*;
 
 public class IndexedTriangleSet extends Geometry{
@@ -189,5 +190,12 @@ public class IndexedTriangleSet extends Geometry{
 
 	public void setTriangles(List<Triangle> triangles) {
 		this.triangles = triangles;
+	}
+	
+	@Override
+	public void setMaterial(Material material){
+		for(Triangle t : triangles){
+			t.setMaterial(material);
+		}
 	}
 }
