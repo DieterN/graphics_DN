@@ -33,6 +33,7 @@ public class DCCompactGrid extends DrawController{
 			Cell cell = grid.mapCoordinateToCell(ray.getViewPoint()); //if ray starts in grid, get starting cell
 			float[] t = cell.getDeltas(ray); //check ok if negative t
 			cellNumber = cell.getCellNumber();  
+			current = ray.getViewPoint();
 			current.x += t[0]; //minX eraf --> negatief getal, dus optellen
 			current.y += t[2]; //minY eraf --> negatief getal, dus optellen
 			current.z += t[4]; //minZ eraf --> negatief getal, dus optellen
