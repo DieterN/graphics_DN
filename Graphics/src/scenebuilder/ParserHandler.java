@@ -52,6 +52,9 @@ public interface ParserHandler
 
     public void startIndexedTriangleSet(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name) throws Exception;
     public void endIndexedTriangleSet() throws Exception;
+    
+    public void startObject(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name) throws Exception;
+    public void endObject() throws Exception;
 
     public void startTextures() throws Exception;
     public void endTextures() throws Exception;

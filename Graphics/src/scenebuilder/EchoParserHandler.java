@@ -275,6 +275,30 @@ public class EchoParserHandler implements ParserHandler
         System.out.println("</IndexedTriangleSet>");
         indent--;
     }
+    
+    public void startObject(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, int[] coordinateIndices, int[] normalIndices, int[] textureCoordinateIndices, String name)  throws ParseException
+    {
+        indent++;
+        for (int i = 0; i < indent; i++) System.out.print(indentString);
+        System.out.println(
+            "<IndexedTriangleSet"
+            + " coordinates=\"" + ParserUtils.formatTuple3fArray(coordinates) + "\""
+            + (normals == null ? "" : " normals=\"" + ParserUtils.formatTuple3fArray(normals) + "\"")
+            + (textureCoordinates == null ? "" : " textureCoordinates=\"" + ParserUtils.formatTuple2fArray(textureCoordinates) + "\"")
+            + " coordinateIndices=\"" + ParserUtils.formatIntArray(coordinateIndices) + "\""
+            + (normalIndices == null ? "" : " normalIndices=\"" + ParserUtils.formatIntArray(normalIndices) + "\"")
+            + (textureCoordinateIndices == null ? "" : " textureCoordinateIndices=\"" + ParserUtils.formatIntArray(textureCoordinateIndices) + "\"")
+            + " name=\"" + name + "\""
+            + ">"
+        );
+    }
+
+    public void endObject() throws ParseException
+    {
+        for (int i = 0; i < indent; i++) System.out.print(indentString);
+        System.out.println("</IndexedTriangleSet>");
+        indent--;
+    }
 
     public void startTextures() throws ParseException
     {

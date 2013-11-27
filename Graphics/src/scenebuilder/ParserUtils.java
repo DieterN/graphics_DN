@@ -65,7 +65,7 @@ public class ParserUtils
      * @throws SDLParseException
      */
 
-    static Vector3f parseVector3f(String string) throws ParseException
+    public static Vector3f parseVector3f(String string) throws ParseException
     {
         StringTokenizer stringTokenizer = new StringTokenizer(string, " ");
 
@@ -98,7 +98,7 @@ public class ParserUtils
      * @throws SDLParseException
      */
 
-    static Point3f parsePoint3f(String string) throws ParseException
+    public static Point3f parsePoint3f(String string) throws ParseException
     {
         StringTokenizer stringTokenizer = new StringTokenizer(string, " ");
 
@@ -164,7 +164,7 @@ public class ParserUtils
      * @throws SDLParseException
      */
 
-    static TexCoord2f parseTexCoord2f(String string) throws ParseException
+    public static TexCoord2f parseTexCoord2f(String string) throws ParseException
     {
         StringTokenizer stringTokenizer = new StringTokenizer(string, " ");
 

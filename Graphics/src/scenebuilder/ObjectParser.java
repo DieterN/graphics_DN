@@ -7,11 +7,11 @@ import mathematics.*;
 
 public class ObjectParser {
 
-	private final static String vertex = "v";
+	private final static String vertex = "v ";
 	private final static String normal = "vn";
 	private final static String texture = "vt";
 	private final static String face = "f";
-	
+	private final static String path = "Objects/";
 	
 	private List<Point3f> coordinates = new ArrayList<Point3f>();
 	private List<Vector3f> normals = new ArrayList<Vector3f>();
@@ -25,7 +25,8 @@ public class ObjectParser {
 	}
 	
 	public void parseObjectFile(String filename) throws IOException, ParseException{
-		File file = new File(filename);
+		String pathname = path + filename;
+		File file = new File(pathname);
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		
 		while(br.ready()){ //zolang er iets te lezen valt
@@ -71,9 +72,9 @@ public class ObjectParser {
 		for(int i=1; i<=3; i++){
 			String indices = st1.nextToken();
 			StringTokenizer st2 = new StringTokenizer(indices,"/");
-			coordinateIndices.add(Integer.parseInt(st2.nextToken()));
-			textureCoordinateIndices.add(Integer.parseInt(st2.nextToken()));
-			normalIndices.add(Integer.parseInt(st2.nextToken()));
+			coordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
+			textureCoordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
+			normalIndices.add(Integer.parseInt(st2.nextToken())-1);
 		}
 //		v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 
 	}

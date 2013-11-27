@@ -394,13 +394,16 @@ public final class Parser extends DefaultHandler
             	parser.parseObjectFile(fileName);
             	
             	//Coordinates
-            	Point3f [] coordinates = (Point3f[]) parser.getCoordinates().toArray();
+            	List<Point3f> coordinatesList = parser.getCoordinates();
+            	Point3f[] coordinates = coordinatesList.toArray(new Point3f[coordinatesList.size()]);
             	
             	//Normals
-            	Vector3f [] normals = (Vector3f[]) parser.getNormals().toArray();
+            	List<Vector3f> normalList = parser.getNormals();
+            	Vector3f[] normals = normalList.toArray(new Vector3f[normalList.size()]);
             	
             	//TextureCoordinates
-            	TexCoord2f [] textureCoordinates = (TexCoord2f[]) parser.getTextureCoordinates().toArray();
+            	List<TexCoord2f> textureCoordinatesList = parser.getTextureCoordinates();
+            	TexCoord2f[] textureCoordinates = textureCoordinatesList.toArray(new TexCoord2f[textureCoordinatesList.size()]);
             	
             	//CoordinateIndices
             	List<Integer> coordinateIndicesList = parser.getCoordinateIndices();
@@ -419,8 +422,8 @@ public final class Parser extends DefaultHandler
                 if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
 
                 // call handler
-                if (echoHandler != null) echoHandler.startIndexedTriangleSet(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
-                if (    handler != null) handler.startIndexedTriangleSet(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
+                if (echoHandler != null) echoHandler.startObject(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
+                if (    handler != null) handler.startObject(coordinates, normals, textureCoordinates, coordinateIndices, normalIndices, textureCoordinateIndices, name);
             }
             // Textures element
             else if (qName.equals("Textures"))
@@ -728,6 +731,13 @@ public final class Parser extends DefaultHandler
                 // call handler
                 if (echoHandler != null) echoHandler.endIndexedTriangleSet();
                 if (    handler != null) handler.endIndexedTriangleSet();
+            }
+            // IndexedTriangleSet element
+            else if (qName.equals("Object"))
+            {
+                // call handler
+                if (echoHandler != null) echoHandler.endObject();
+                if (    handler != null) handler.endObject();
             }
             // Textures element
             else if (qName.equals("Textures"))

@@ -20,12 +20,12 @@ public class IndexedTriangleSet extends Geometry{
 	private int[] textureCoordinateIndices;
 	private List<Triangle> triangles = new ArrayList<Triangle>();
 	
-	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, 
+	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normal, TexCoord2f [] textureCoordinates, 
 								int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name){
 		super(name);
 		this.coordinates = coordinates;
 		this.coordinateIndices = coordinateIndices;
-		initialiseNormals(normals);
+		initialiseNormals(normal);
 		this.normalIndices = normalIndices;
 		this.textureCoordinates = textureCoordinates;
 		this.textureCoordinateIndices = textureCoordinateIndices;
@@ -84,12 +84,14 @@ public class IndexedTriangleSet extends Geometry{
 	
 	private void initialiseNormals(Vector3f [] normals){
 		if(normals != null){
+			Vector4f[] newNormals = new Vector4f[normals.length];
 			int i = 0;
 			for(Vector3f normal : normals){
 				Vector4f normal4 = new Vector4f(normal);
-				this.normals[i] = normal4;
+				newNormals[i] = normal4;
 				i++;
 			}
+			this.normals = newNormals;
 		}
 	}
 	

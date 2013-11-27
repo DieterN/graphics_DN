@@ -243,6 +243,16 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
+    public void startObject(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name) throws Exception
+    { 
+    	IndexedTriangleSet its = new IndexedTriangleSet(coordinates,normals,textureCoordinates,coordinateIndices,normalIndices,textureCoordinateIndices,name);
+    	scene.addGeometry(its);
+    }
+
+    public void endObject() throws Exception
+    {
+    }
+
     public void startTextures() throws Exception
     {
     }

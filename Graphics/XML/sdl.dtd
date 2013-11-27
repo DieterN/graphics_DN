@@ -43,7 +43,7 @@
 	name						ID				#REQUIRED
 >
 
-<!ELEMENT Geometry ((Sphere|Cylinder|Cone|Torus|Teapot|IndexedTriangleSet)+)>
+<!ELEMENT Geometry ((Sphere|Cylinder|Cone|Torus|Teapot|IndexedTriangleSet|Object)+)>
 <!ATTLIST Geometry>
 
 <!ELEMENT Sphere EMPTY>
