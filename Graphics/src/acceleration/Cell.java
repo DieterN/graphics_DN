@@ -71,7 +71,8 @@ public class Cell {
 		this.cellNumber = cellNumber;
 	}
 
-	public CellHitRecord travel(Ray ray){
+	public float[] getDeltas(Ray ray){
+		float[] t = new float[6];
 		int[] sign = ray.getSign();
 		float invDirectionX = ray.getInv_directionX();
 		float invDirectionY = ray.getInv_directionY();
@@ -80,37 +81,13 @@ public class Cell {
 		float originY = ray.getViewPoint().y;
 		float originZ = ray.getViewPoint().z;
 		
-		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
-		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
-		float tymin = (bounds[sign[1]].y - originY) * invDirectionY;
-		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
-		//check if these two intervals overlap, if not, return null
-		if(tmin > tymax || tymin > tmax){
-			return null;
-		}//else take the greatest min value
-		if(tymin > tmin){
-			tmin = tymin;
-		}//and take the smallest max value
-		if(tymax < tmax){
-			tmax = tymax;
-		}
-		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
-		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
+		t[0] = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
+		t[1] = (bounds[1-sign[0]].x - originX) * invDirectionX;
+		t[2] = (bounds[sign[1]].y - originY) * invDirectionY;
+		t[3] = (bounds[1-sign[1]].y - originY) * invDirectionY;
+		t[4] = (bounds[sign[2]].z - originZ) * invDirectionZ; 
+		t[5] = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
 		
-		//check if the three intervals overlap, if not, return null
-		if(tmin > tzmax || tzmin > tmax){
-			return null;
-		}//else take the greatest min value
-		if(tzmin > tmin){
-			tmin = tzmin;
-		}//and take the smallest max value
-		if(tzmax < tmax){
-			tmax = tzmax;
-		}
-		//enterPoint
-		Point3f enterPoint = VectorOperations.addVector4fToPoint(VectorOperations.multiplyFloatandVector4f(tmin, ray.getDirection()), ray.getViewPoint());
-		//leavePoint
-		Point3f leavePoint = VectorOperations.addVector4fToPoint(VectorOperations.multiplyFloatandVector4f(tmax, ray.getDirection()), ray.getViewPoint());
-		return new CellHitRecord(enterPoint, leavePoint, tmin, tmax);
+		return t;
 	}
 }

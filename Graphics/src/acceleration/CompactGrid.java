@@ -26,6 +26,7 @@ public class CompactGrid {
 	private BoundingBox[] boxes;
 	private Map<Integer,ArrayList<BoundingBox>> tempMap = new HashMap<Integer,ArrayList<BoundingBox>>(); //tempMap for boxes to cell
 	private Scene scene;
+	private Point3f current;
 	
 	public CompactGrid(int gridDensity, Scene scene){
 		this.gridDensity = gridDensity;
@@ -64,12 +65,12 @@ public class CompactGrid {
 	 * @param maxZ
 	 */
 	private void calculateCellDimensions(){ //numbers used to calculate number of boxes
-		box.setMinX(scene.getDimensions()[0] - 0.5f); // TODO 0.5 voor safety dat alles er binnen valt?
-		box.setMaxX(scene.getDimensions()[1] + 0.5f);
-		box.setMinY(scene.getDimensions()[2] - 0.5f);
-		box.setMaxY(scene.getDimensions()[3] + 0.5f);
-		box.setMinZ(scene.getDimensions()[4] - 0.5f);
-		box.setMaxZ(scene.getDimensions()[5] + 0.5f);
+		box.setMinX(scene.getDimensions()[0] - 0.05f); // TODO 0.5 voor safety dat alles er binnen valt?
+		box.setMaxX(scene.getDimensions()[1] + 0.05f);
+		box.setMinY(scene.getDimensions()[2] - 0.05f);
+		box.setMaxY(scene.getDimensions()[3] + 0.05f);
+		box.setMinZ(scene.getDimensions()[4] - 0.05f);
+		box.setMaxZ(scene.getDimensions()[5] + 0.05f);
 		this.cellDimensionX = ((box.getMaxX() - box.getMinX())/gridDensity); //FIXME
 		this.cellDimensionY = ((box.getMaxY() - box.getMinY())/gridDensity); //FIXME
 		this.cellDimensionZ = ((box.getMaxZ() - box.getMinZ())/gridDensity); //FIXME
@@ -119,7 +120,7 @@ public class CompactGrid {
 		else{
 			for(int i = leftBottomFront; i<=rightBottomFront; i += 1){ //x-direction, add 1
 				for(int j = 0; (leftBottomFront+j)<=leftTopFront; j += gridDensity){ //y-direction, add griddensity
-					for(int k = 0; (leftBottomFront+k)<=leftBottomBack; k+= gridDensity*gridDensity){ //z-direction, add griddesity²
+					for(int k = 0; (leftBottomFront+k)<=leftBottomBack; k+= gridDensity*gridDensity){ //z-direction, add griddesity
 						cells.add(i+j+k);
 					}
 				}
@@ -212,13 +213,100 @@ public class CompactGrid {
 		return boxList;
 	}
 
+	/**
+	 * Return null if no hit
+	 * 
+	 * @param ray
+	 * @return
+	 */
 	public Point3f hit(Ray ray) {
 		HitRecord hr = this.box.rayObjectHit(ray);
-		return hr.getHitPoint();
+		if(hr != null){
+			return hr.getHitPoint();
+		}
+		return null;
 	}
 	
 	public Cell mapCoordinateToCell(Point3f point){
 		int cellNumber = mapCoordinateToCellNumber(point);
 		return mapCellNumberToCell(cellNumber);
+	}
+	
+	/**
+	 * Call when X changed point is next
+	 * 
+	 * @param point
+	 * @param cellNumber
+	 */
+	public int getNextCellNumberX(float x, int cellNumber){
+		if(x < current.x && x > box.getMinX()){
+			current.x = x;
+			return getCellLeft(cellNumber);
+		}
+		else if(x > current.x && x < box.getMaxX()){ //FIXME : floats, vgl ok? (0.5f)
+			current.x = x;
+			return getCellRight(cellNumber);
+		}
+		return -1; //outside grid
+	}
+	
+	/**
+	 * Call when Y changed point is next
+	 * 
+	 * @param point
+	 * @param cellNumber
+	 */
+	public int getNextCellNumberY(float y, int cellNumber){
+		if(y < current.y && y > box.getMinY()){
+			current.y = y;
+			return getCellDown(cellNumber);
+		}
+		else if(y > current.y && y < box.getMaxY()){ //FIXME : floats, vgl ok?
+			current.y = y;
+			return getCellUp(cellNumber);
+		}
+		return -1; //outside grid
+	}
+	
+	/**
+	 * Call when Z changed point is next
+	 * 
+	 * @param point
+	 * @param cellNumber
+	 */
+	public int getNextCellNumberZ(float z, int cellNumber){
+		if(z < current.z && z > box.getMinZ()){
+			current.z = z;
+			return getCellFront(cellNumber);
+		}
+		else if(z > current.z && z < box.getMaxZ()){ //FIXME : floats, vgl ok?
+			current.z = z;
+			return getCellBack(cellNumber);
+		}
+		return -1; //outside grid
+	}
+	
+	private int getCellLeft(int cellNumber){
+		return cellNumber - 1;
+	}
+	
+	private int getCellRight(int cellNumber){
+		return cellNumber + 1;
+	}
+	
+	private int getCellDown(int cellNumber){
+		return cellNumber - gridDensity;
+	}
+	
+	private int getCellUp(int cellNumber){
+		return cellNumber + gridDensity;
+	}
+	
+	private int getCellBack(int cellNumber){
+		return cellNumber + (gridDensity*gridDensity);
+	}
+	
+	private int getCellFront(int cellNumber){
+		return cellNumber - (gridDensity*gridDensity);
 	}
 }

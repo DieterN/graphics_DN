@@ -18,7 +18,7 @@ public class BoundingBox extends Geometry{
 	
 	public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ){
 		super("");
-		bounds[0] = new Point3f(minX,minY,minZ);
+		bounds[0] = new Point3f(minX+0.5f,minY+0.5f,minZ);
 		bounds[1] = new Point3f(maxX,maxY,maxZ);
 	}
 
@@ -82,6 +82,10 @@ public class BoundingBox extends Geometry{
 		this.geometry.add(geo);
 	}
 
+	/**
+	 * Return the closest hit
+	 * 
+	 */
 	@Override
 	public HitRecord rayObjectHit(Ray ray) {
 		int[] sign = ray.getSign();
