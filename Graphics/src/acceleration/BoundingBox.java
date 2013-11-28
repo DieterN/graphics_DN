@@ -83,18 +83,35 @@ public class BoundingBox extends Geometry{
 	}
 
 	/**
-	 * Return the closest hit
+	 * Return null if this box isn't hit, return closest hitRecord otherwise
 	 * 
 	 */
 	@Override
-	public HitRecord rayObjectHit(Ray ray) {
+	public HitRecord rayObjectHit(Ray ray){
+		HitRecord result = null;
+		float smallest_t = Float.POSITIVE_INFINITY;
+		if(this.hits(ray)){ //check if this boundingbox is hit
+			for(Geometry g : this.geometry){ //if hit, try hitting everything inside this box
+				HitRecord hr = g.rayObjectHit(ray);
+				float hr_t = hr.getT();
+				if(hr_t < smallest_t && hr_t >= 0){
+					smallest_t = hr_t;
+					result = hr;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Return if this box is hit
+	 */
+	public boolean hits(Ray ray) {
 		int[] sign = ray.getSign();
 		float invDirectionX = ray.getInv_directionX();
 		float invDirectionY = ray.getInv_directionY();
-		float invDirectionZ = ray.getInv_directionZ();
 		float originX = ray.getViewPoint().x;
 		float originY = ray.getViewPoint().y;
-		float originZ = ray.getViewPoint().z;
 		
 		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
 		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
@@ -102,7 +119,7 @@ public class BoundingBox extends Geometry{
 		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
 		//check if these two intervals overlap, if not, return null
 		if(tmin > tymax || tymin > tmax){
-			return null;
+			return false;
 		}//else take the greatest min value
 		if(tymin > tmin){
 			tmin = tymin;
@@ -110,23 +127,26 @@ public class BoundingBox extends Geometry{
 		if(tymax < tmax){
 			tmax = tymax;
 		}
+		
+		float invDirectionZ = ray.getInv_directionZ();
+		float originZ = ray.getViewPoint().z;
+		
 		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
 		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
 		
 		//check if the three intervals overlap, if not, return null
 		if(tmin > tzmax || tzmin > tmax){
-			return null;
+			return false;
 		}//else take the greatest min value
-		if(tzmin > tmin){
-			tmin = tzmin;
-		}//and take the smallest max value
-		if(tzmax < tmax){
-			tmax = tzmax;
+//		if(tzmin > tmin){
+//			tmin = tzmin;
+//		}//and take the smallest max value
+//		if(tzmax < tmax){
+//			tmax = tzmax;
+//		}
+		else{
+			return true;
 		}
-		//return standard hitRecord, doesn't matter what is in it
-		//TODO : specify interval --> check this
-		Point3f hitPoint = VectorOperations.addVector4fToPoint(VectorOperations.multiplyFloatandVector4f(tmin, ray.getDirection()), ray.getViewPoint());
-		return new HitRecord(tmin, this, ray, hitPoint, null);
 	}
 
 	@Override

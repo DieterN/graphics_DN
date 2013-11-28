@@ -21,10 +21,6 @@ public class Scene {
 	private Camera camera;
 	private List<Light> usedLights = new ArrayList<Light>();
 	private List<Geometry> usedGeometryTransformed = new ArrayList<Geometry>(); 
-	//This arrayList is used to save the transformed object from the sceneGraph. It's only called when needed.
-	private List<BoundingBox> boxes = new ArrayList<BoundingBox>();
-	//List needed for acceleration, attention, transform objects first!!!
-	private boolean dimensionsCalculated = false;
 	
 	private SceneGraph scenegraph;
 	
@@ -129,36 +125,5 @@ public class Scene {
 
 	public void setUsedGeometryTransformed(ArrayList<Geometry> usedGeometryTransformed) {
 		this.usedGeometryTransformed = usedGeometryTransformed;
-	}
-
-	public float[] getDimensions(){
-		float[] result = new float[6];
-		List<Geometry> geo = getUsedGeometryTransformed();
-		
-		result[0] = Float.MAX_VALUE; //minX
-		result[1] = -Float.MAX_VALUE; //maxX
-		result[2] = Float.MAX_VALUE; //minY
-		result[3] = -Float.MAX_VALUE; //maxY
-		result[4] = Float.MAX_VALUE; //minZ
-		result[5] = -Float.MAX_VALUE; //maxZ
-		
-		for(Geometry g : geo){
-			this.boxes.add(g.getBox());
-			if(g.getBox().getMinX() < result[0]){ result[0] = g.getBox().getMinX();}
-			if(g.getBox().getMaxX() > result[1]){ result[1] = g.getBox().getMaxX();}
-			if(g.getBox().getMinX() < result[2]){ result[2] = g.getBox().getMinY();}
-			if(g.getBox().getMaxX() > result[3]){ result[3] = g.getBox().getMaxY();}
-			if(g.getBox().getMinX() < result[4]){ result[4] = g.getBox().getMinZ();}
-			if(g.getBox().getMaxX() > result[5]){ result[5] = g.getBox().getMaxZ();}
-		}
-		dimensionsCalculated = true;
-		return result;
-	}
-
-	public List<BoundingBox> getBoxes() {
-		if(!dimensionsCalculated){
-			getDimensions();
-		}
-		return boxes;
 	}
 }
