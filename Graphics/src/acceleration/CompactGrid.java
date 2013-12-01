@@ -18,7 +18,9 @@ public class CompactGrid {
 	private final int safety = 1; //number between 0.5 and 1
 	//if this is 1, than boxes will be mapped really safe to cells
 	//if it's 0.5, mapping will be a risk and might fail
-	private int cellsInEachDirection; //number of cells in every direction
+	private int nbOfCellsX; //number of cells in x-direction
+	private int nbOfCellsY; //number of cells in y-direction
+	private int nbOfCellsZ; //number of cells in z-direction
 	private float cellDimensionX; //cell width in x-direction
 	private float cellDimensionY; //cell width in y-direction
 	private float cellDimensionZ; //cell width in z-direction
@@ -33,7 +35,7 @@ public class CompactGrid {
 	public CompactGrid(List<? extends Geometry> geometry){
 		calculateRootBoundingBox(geometry); //this initalises the bouding box around the given objects
 		calculateCellsInEachDirection(geometry); //make a grid of the root bounding box
-		cells = new int[(cellsInEachDirection*cellsInEachDirection*cellsInEachDirection)+1]; //instantiate cells array, +1 for index of last
+		cells = new int[(nbOfCellsX*nbOfCellsY*nbOfCellsZ)+1]; //instantiate cells array, +1 for index of last
 		int nbBoxes = calculateCellArray(geometry);
 		boxes = new BoundingBox[nbBoxes]; //instantiate boxes array
 		calculateFinalArrays();
@@ -81,15 +83,13 @@ public class CompactGrid {
 		float volume = xWidth*yWidth*zWidth; //volume of bounding box
 		float nbObjects = geometry.size();
 
-		int Mx = (int) Math.ceil(xWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0)); //round nb of Cells up
-		int My = (int) Math.ceil(yWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0));  //round nb of Cells up
-		int Mz = (int) Math.ceil(zWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0));  //round nb of Cells up
-		
-		//FIXME : evenveel cells in elke richting? of verschillend per richting?
-		
-		this.cellDimensionX = xWidth/cellsInEachDirection;
-		this.cellDimensionY = yWidth/cellsInEachDirection;
-		this.cellDimensionZ = zWidth/cellsInEachDirection;
+		nbOfCellsX = (int) Math.ceil(xWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0)); //round nb of Cells up
+		nbOfCellsY = (int) Math.ceil(yWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0)); //round nb of Cells up
+		nbOfCellsZ = (int) Math.ceil(zWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0)); //round nb of Cells up
+				
+		this.cellDimensionX = xWidth/nbOfCellsX;
+		this.cellDimensionY = yWidth/nbOfCellsY;
+		this.cellDimensionZ = zWidth/nbOfCellsZ;
 	}
 	
 	/**
@@ -167,12 +167,12 @@ public class CompactGrid {
 		int[] min = mapCellNumberToXYZ(leftBottomFront);
 		int[] max = mapCellNumberToXYZ(rightTopBack);
 		
-		int squareGridResolution = cellsInEachDirection*cellsInEachDirection;
+		int cellsXTimescellsY = nbOfCellsX*nbOfCellsY;
 		
-		for(int i = leftBottomFront; i <= (leftBottomFront+(max[0]-min[0])); i++){
+		for(int i = 0; i <= (max[0]-min[0]); i++){
 			for(int j = 0; j <= (max[1]-min[1]); j ++){
 				for(int k = 0; k <= (max[2]-min[2]); k++){
-					cells.add(i+j*cellsInEachDirection+k*squareGridResolution);
+					cells.add(leftBottomFront+i+j*nbOfCellsX+k*cellsXTimescellsY);
 				}
 			}
 		}
@@ -198,8 +198,8 @@ public class CompactGrid {
 			if(x < 0) { x = 0; }
 			if(y < 0) { y = 0; }
 			if(z < 0) { z = 0; }
-			
-			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
+
+			cellNumber = mapXYZToCellNumber(x, y, z);
 		}
 		return cellNumber;
 	}
@@ -220,11 +220,11 @@ public class CompactGrid {
 			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(1-safety)));
 			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(1-safety))); 
 			
-			if(x > (cellsInEachDirection-1)) { x = (cellsInEachDirection-1); }
-			if(y > (cellsInEachDirection-1)) { y = (cellsInEachDirection-1); }
-			if(z > (cellsInEachDirection-1)) { z = (cellsInEachDirection-1); }
-			
-			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
+			if(x > (nbOfCellsX-1)) { x = (nbOfCellsX-1); }
+			if(y > (nbOfCellsY-1)) { y = (nbOfCellsY-1); }
+			if(z > (nbOfCellsZ-1)) { z = (nbOfCellsZ-1); }
+
+			cellNumber = mapXYZToCellNumber(x, y, z);
 		}
 		return cellNumber;
 	}
@@ -245,15 +245,15 @@ public class CompactGrid {
 			int z = (int) (Math.floor((point.z-root.getMinZ())/cellDimensionZ)); // maal aantal in x- en y-richting
 
 			if(x < 0) { x = 0; }
-			if(x > (cellsInEachDirection-1)) { x = (cellsInEachDirection-1); }
+			if(x > (nbOfCellsX-1)) { x = (nbOfCellsX-1); }
 			
 			if(y < 0) { y = 0; }
-			if(y > (cellsInEachDirection-1)) { y = (cellsInEachDirection-1); }
+			if(y > (nbOfCellsY-1)) { y = (nbOfCellsY-1); }
 			
 			if(z < 0) { z = 0; }
-			if(z > (cellsInEachDirection-1)) { z = (cellsInEachDirection-1); }
+			if(z > (nbOfCellsZ-1)) { z = (nbOfCellsZ-1); }
 			
-			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
+			cellNumber = mapXYZToCellNumber(x, y, z);
 		}
 		return cellNumber;
 	}
@@ -263,17 +263,17 @@ public class CompactGrid {
 	 */
 	private int[] mapCellNumberToXYZ(int cellNumber){
 		int[] result = new int[3];
-		if(cellNumber < 0 || cellNumber > ((cellsInEachDirection*cellsInEachDirection*cellsInEachDirection)-1)){
+		if(cellNumber < 0 || cellNumber > ((nbOfCellsX*nbOfCellsY*nbOfCellsZ)-1)){
 			System.out.println("Cellnumber is outside of grid");
 		}
 		else{
-			int resolutionSquare = cellsInEachDirection*cellsInEachDirection;
+			int resolutionSquare = nbOfCellsX*nbOfCellsY;
 			int k = calculateMaxValue(cellNumber,resolutionSquare);
 			result[2] = k-1;
 			cellNumber = cellNumber - (k-1)*resolutionSquare;
-			int l = calculateMaxValue(cellNumber, cellsInEachDirection);
+			int l = calculateMaxValue(cellNumber, nbOfCellsX);
 			result[1] = l-1;
-			cellNumber = cellNumber - (l-1)*cellsInEachDirection;
+			cellNumber = cellNumber - (l-1)*nbOfCellsX;
 			int m = calculateMaxValue(cellNumber, 1);
 			result[0] = m-1;
 		}
@@ -492,9 +492,9 @@ public class CompactGrid {
 	private boolean isValidCellNumber(int nextCell) {
 		boolean isValid = true;
 		int[] xyz = mapCellNumberToXYZ(nextCell);
-		if(xyz[0] < 0 || xyz[0] > (cellsInEachDirection-1) || 
-		   xyz[1] < 0 || xyz[1] > (cellsInEachDirection-1) ||
-		   xyz[2] < 0 || xyz[2] > (cellsInEachDirection-1)){
+		if(xyz[0] < 0 || xyz[0] > (nbOfCellsX-1) || 
+		   xyz[1] < 0 || xyz[1] > (nbOfCellsY-1) ||
+		   xyz[2] < 0 || xyz[2] > (nbOfCellsZ-1)){
 			//cell is outside grid
 			isValid = false;
 		}
@@ -515,7 +515,7 @@ public class CompactGrid {
 				currentT = nextTX; //currentT is now this t
 				nextTX += tDeltaX; //add deltaT to initalise nextT 
 				x += stepX;
-				if(x>(cellsInEachDirection-1) || x<0){
+				if(x>(nbOfCellsX-1) || x<0){
 					return nextCell;
 				}
 			}
@@ -523,7 +523,7 @@ public class CompactGrid {
 				currentT = nextTZ; //currentT is now this t
 				nextTZ += tDeltaZ; //add deltaT to initalise nextT
 				z += stepZ;
-				if(z>(cellsInEachDirection-1) || z<0){
+				if(z>(nbOfCellsZ-1) || z<0){
 					return nextCell;
 				}
 			}
@@ -533,7 +533,7 @@ public class CompactGrid {
 				currentT = nextTY; //currentT is now this t
 				nextTY += tDeltaY; //add deltaT to initalise nextT
 				y += stepY;
-				if(y>(cellsInEachDirection-1) || y<0){
+				if(y>(nbOfCellsY-1) || y<0){
 					return nextCell;
 				}
 			}
@@ -541,19 +541,19 @@ public class CompactGrid {
 				currentT = nextTZ; //currentT is now this t
 				nextTZ += tDeltaZ; //add deltaT to initalise nextT
 				z += stepZ;
-				if(z>(cellsInEachDirection-1) || z<0){
+				if(z>(nbOfCellsZ-1) || z<0){
 					return nextCell;
 				}				
 			}
 		}
-		return mapXYZToCellNumber(); //map current x,y,z value to cellNumber
+		return mapXYZToCellNumber(x,y,z); //map current x,y,z value to cellNumber
 	}
 	
 	/**
 	 * Use current xyz value to get current CellNumber
 	 */
-	private int mapXYZToCellNumber(){
-		return x+y*cellsInEachDirection+z*cellsInEachDirection*cellsInEachDirection;
+	private int mapXYZToCellNumber(int x, int y, int z){
+		return x+y*nbOfCellsX+z*nbOfCellsX*nbOfCellsY;
 	}
 	
 //	private int getCellLeft(int cellNumber){
