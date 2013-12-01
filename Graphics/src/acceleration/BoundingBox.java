@@ -18,7 +18,7 @@ public class BoundingBox extends Geometry{
 	
 	public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ){
 		super("");
-		bounds[0] = new Point3f(minX+0.5f,minY+0.5f,minZ);
+		bounds[0] = new Point3f(minX,minY,minZ);
 		bounds[1] = new Point3f(maxX,maxY,maxZ);
 	}
 
@@ -80,6 +80,14 @@ public class BoundingBox extends Geometry{
 	
 	public void addGeometry(Geometry geo) {
 		this.geometry.add(geo);
+	}
+
+	public Point3f[] getBounds() {
+		return bounds;
+	}
+
+	public void setBounds(Point3f[] bounds) {
+		this.bounds = bounds;
 	}
 
 	/**
@@ -147,6 +155,54 @@ public class BoundingBox extends Geometry{
 		else{
 			return true;
 		}
+	}
+	
+	/**
+	 * Return point at which this box is entered, null if not entered
+	 */
+	public GridHitInfo getEntryPoint(Ray ray) {
+		int[] sign = ray.getSign();
+		float invDirectionX = ray.getInv_directionX();
+		float invDirectionY = ray.getInv_directionY();
+		float originX = ray.getViewPoint().x;
+		float originY = ray.getViewPoint().y;
+		
+		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
+		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
+		float tymin = (bounds[sign[1]].y - originY) * invDirectionY;
+		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
+		//check if these two intervals overlap, if not, return null
+		if(tmin > tymax || tymin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tymin > tmin){
+			tmin = tymin;
+		}//and take the smallest max value
+		if(tymax < tmax){
+			tmax = tymax;
+		}
+		
+		float invDirectionZ = ray.getInv_directionZ();
+		float originZ = ray.getViewPoint().z;
+		
+		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
+		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
+		
+		//check if the three intervals overlap, if not, return null
+		if(tmin > tzmax || tzmin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tzmin > tmin){
+			tmin = tzmin;
+		}//and take the smallest max value
+		if(tzmax < tmax){
+			tmax = tzmax;
+		}
+		
+		//grid enterPoint
+		Point3f entryPoint = VectorOperations.addVector4fToPoint(VectorOperations.multiplyFloatandVector4f(tmin, ray.getDirection()), ray.getViewPoint());
+		GridHitInfo ghi = new GridHitInfo(entryPoint, tmin);
+		return ghi;
 	}
 
 	@Override

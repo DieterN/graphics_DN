@@ -13,6 +13,7 @@ public abstract class DrawController {
 	protected Scene scene;
 	protected final boolean ambient = true;
 	protected final boolean shading = true;
+	public static boolean accelerated = false;
 	private static final int nx = 640; //number of pixels, x-direction
 	private static final int ny = 480; //number of pixels, y-direction
 	

@@ -1,6 +1,5 @@
 package acceleration;
 
-
 import geometry.Geometry;
 import imagedraw.HitRecord;
 
@@ -9,18 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
 import mathematics.Point3f;
+import mathematics.Vector4f;
 import rays.Ray;
-import scenebuilder.Scene;
 
 public class CompactGrid {
 
-	private int gridDensity; //number of cells in every direction
+	private final int gridDensity = 8;
+	private final int safety = 1; //number between 0.5 and 1
+	//if this is 1, than boxes will be mapped really safe to cells
+	//if it's 0.5, mapping will be a risk and might fail
+	private int cellsInEachDirection; //number of cells in every direction
 	private float cellDimensionX; //cell width in x-direction
 	private float cellDimensionY; //cell width in y-direction
 	private float cellDimensionZ; //cell width in z-direction
@@ -28,45 +26,31 @@ public class CompactGrid {
 	private int[] cells;
 	private BoundingBox[] boxes;
 	private Map<Integer,ArrayList<BoundingBox>> tempMap = new HashMap<Integer,ArrayList<BoundingBox>>(); //tempMap for boxes to cell
-	private Point3f current;
 	
-	public CompactGrid(List<Geometry> geometry){
-		//FIXME : gridDensity berekenen
-		calculateCellDimensions(geometry); //this initalises the scene by transforming all objects and calculating boxes around them
+	/*******************
+	 *** CONSTRUCTOR ***
+	 *******************/
+	public CompactGrid(List<? extends Geometry> geometry){
+		calculateRootBoundingBox(geometry); //this initalises the bouding box around the given objects
+		calculateCellsInEachDirection(geometry); //make a grid of the root bounding box
+		cells = new int[(cellsInEachDirection*cellsInEachDirection*cellsInEachDirection)+1]; //instantiate cells array, +1 for index of last
 		int nbBoxes = calculateCellArray(geometry);
 		boxes = new BoundingBox[nbBoxes]; //instantiate boxes array
-		cells = new int[gridDensity*gridDensity*gridDensity]; //instantiate cells array
 		calculateFinalArrays();
 	}
 	
-	//TODO : andersom toevoegen
-	private void calculateFinalArrays() {
-		// add everything at right places in boxes en cells array
-		int j = 0;
-		for(int i=0; i<cells.length ; i++){ 
-			List<BoundingBox> boxForCell = tempMap.get(i); //boxes for cell number i
-			cells[i] = j; //j is place where first element of this cell is located
-			//this is the same number as the previous cell is there are no elements in the cell
-			if(boxForCell != null){ //check if there are boxes in this cell, if not, then go to next, else, add them
-				for(BoundingBox box : boxForCell){
-					boxes[j] = box;
-					j++;
-				}
-			}
-		}
-	}
+	/***********************
+	 *** INITIALISE GRID ***
+	 ***********************/
 	
 	/**
-	 * Calculate the dimensions for the given scene
-	 * 
-	 * @param minX
-	 * @param maxX
-	 * @param minY
-	 * @param maxY
-	 * @param minZ
-	 * @param maxZ
+	 * Calculate the dimensions for this grid, so it contains all objects in the given list
 	 */
-	private void calculateCellDimensions(List<Geometry> geo){ //numbers used to calculate number of boxes
+	private void calculateRootBoundingBox(List<? extends Geometry> geo){ //numbers used to calculate number of boxes
+		if(geo.isEmpty()){
+			System.out.println("Making empty grid");
+			throw new IllegalArgumentException();
+		}
 		float minX = Float.MAX_VALUE; //minX
 		float maxX = -Float.MAX_VALUE; //maxX
 		float minY = Float.MAX_VALUE; //minY
@@ -85,19 +69,52 @@ public class CompactGrid {
 		}
 		
 		root = new BoundingBox(minX-0.05f,maxX+0.05f,minY-0.05f,maxY+0.05f,minZ-0.05f,maxZ+0.05f);
-		this.cellDimensionX = ((root.getMaxX() - root.getMinX())/gridDensity); //FIXME
-		this.cellDimensionY = ((root.getMaxY() - root.getMinY())/gridDensity); //FIXME
-		this.cellDimensionZ = ((root.getMaxZ() - root.getMinZ())/gridDensity); //FIXME
 	}
 	
 	/**
-	 * Make the cells for this CompactGrid, don't do this, calculate arrays immediatly.
-	 * This method returns the number of boundingboxes in the hashmap, this is needed to calculate the size of the boxes array
-	 * 
-	 * @return
+	 * Calculate the number of Cells in each direction and the dimension of these cells
 	 */
-	private int calculateCellArray(List<Geometry> geometrys){
-		int nbBoxes = 0;
+	private void calculateCellsInEachDirection(List<? extends Geometry> geometry){
+		float xWidth = (root.getMaxX()-root.getMinX());
+		float yWidth = (root.getMaxY()-root.getMinY());
+		float zWidth = (root.getMaxZ()-root.getMinZ());
+		float volume = xWidth*yWidth*zWidth; //volume of bounding box
+		float nbObjects = geometry.size();
+
+		int Mx = (int) Math.ceil(xWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0)); //round nb of Cells up
+		int My = (int) Math.ceil(yWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0));  //round nb of Cells up
+		int Mz = (int) Math.ceil(zWidth*Math.pow(((gridDensity*nbObjects)/volume),1/3.0));  //round nb of Cells up
+		
+		//FIXME : evenveel cells in elke richting? of verschillend per richting?
+		
+		this.cellDimensionX = xWidth/cellsInEachDirection;
+		this.cellDimensionY = yWidth/cellsInEachDirection;
+		this.cellDimensionZ = zWidth/cellsInEachDirection;
+	}
+	
+	/**
+	 * Calculate two arrays needed for ray tracing:
+	 * boxes : array with all bounding boxes in this scene
+	 * cells : array with startingIndex of boxes in the cell with number 'index'
+	 */
+	private void calculateFinalArrays() {
+		// add everything at right places in boxes en cells array
+		for(int i=(cells.length-1); i>=0 ; i--){ //start at highest index, go down to first cell
+			List<BoundingBox> boxForCell = tempMap.get(i); //boxes for cell number i
+			if(boxForCell != null){ //check if there are boxes in this cell, if not, then go to next, else, add them
+				for(BoundingBox box : boxForCell){ //add the boxes backwards to the list
+					cells[i]--;
+					boxes[cells[i]] = box;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Make a tempMap containing the mapping between cellnumber and boundingbox
+	 * This method returns the number of boundingboxes in the hashmap, this is needed to calculate the size of the boxes array
+	 */
+	private int calculateCellArray(List<? extends Geometry> geometrys){
 		for(Geometry g : geometrys){ //loop over all bounding boxes and calculate the cell(s) they belong too
 			BoundingBox box = g.getBox();
 			for(Integer i : mapBoundingBoxToCellNumber(box)){ //add all cells where box is in to temporary hashmap
@@ -107,100 +124,169 @@ public class CompactGrid {
 				}
 				mapping.add(box); //add box to list with boxes in this cell
 				tempMap.put(i, mapping); //add new list
-				nbBoxes++;
+				cells[i]++; //adjust the number of boxes in cellNumber i
 			}
 		}
-		return nbBoxes;
+		return countCellArray(); //sum all numbers in the cell array and return total nb of boxes
+	}
+	
+	/**
+	 * Count everything in cellArray
+	 */
+	private int countCellArray(){
+		for(int i = 1; i<cells.length; i++){
+			cells[i] += cells[i-1]; //sum everything in the cell
+		}
+		return cells[cells.length-1];
 	}
 	
 	/**
 	 * Map the given bounding box to cells and return a list with the cells he's in
 	 * 
-	 * @param box
-	 * @return
-	 * 
-	 * TODO : rechtsboven naar rechtsboven en linksonder naar linksonder
+	 * To do this, get the 2 extreme points of the bounding box
+	 * Map the leftbottomfront point to the most leftbottomfront cell if he's near an edge
+	 * Map the righttopback point to the most righttopback cell if he's near an edge
+	 * In this way, we're sure that the bounding box will be in the right cells,
+	 * and there're no problems with floating point calculations
 	 */
-	public List<Integer> mapBoundingBoxToCellNumber(BoundingBox box){
+	private List<Integer> mapBoundingBoxToCellNumber(BoundingBox box){
 		List<Integer> cells = new ArrayList<Integer>();
-		//linkeronderhoek mappen op cell
-		int leftBottomFront = mapCoordinateToCellNumber(new Point3f(box.getMinX(),box.getMinY(),box.getMinZ()));
-		int rightBottomFront = mapCoordinateToCellNumber(new Point3f(box.getMaxX(),box.getMinY(),box.getMinZ()));
-		int leftTopFront = mapCoordinateToCellNumber(new Point3f(box.getMinX(),box.getMaxY(),box.getMinZ()));
-		int leftBottomBack = mapCoordinateToCellNumber(new Point3f(box.getMinX(),box.getMinY(),box.getMaxZ()));
-		// add everything between leftBottomFront and rightBottomFront
-		// all boxes should be in grid, since grid was defined to reach that
-		if(leftBottomBack<0 || rightBottomFront<0 || leftTopFront<0 || leftBottomBack<0){
-			System.out.println("Box outside grid, impossible!");
-			throw new IllegalArgumentException();
+		Point3f[] bounds = box.getBounds();
+		//leftdowncorner on most leftdown cell
+		int leftBottomFront = mapCoordinateToCellNumberDown(bounds[0]);
+		//righttopcorner on most righttop cell
+		int rightTopBack = mapCoordinateToCellNumberUp(bounds[1]);
+
+		//check if the box is outside the grid
+		if(leftBottomFront<0 || rightTopBack<0){
+		System.out.println("Box outside grid, impossible!");
+		throw new IllegalArgumentException();
 		}
-		else{
-			for(int i = leftBottomFront; i<=rightBottomFront; i += 1){ //x-direction, add 1
-				for(int j = 0; (leftBottomFront+j)<=leftTopFront; j += gridDensity){ //y-direction, add griddensity
-					for(int k = 0; (leftBottomFront+k)<=leftBottomBack; k+= gridDensity*gridDensity){ //z-direction, add griddesity
-						cells.add(i+j+k);
-					}
+		
+		//get the cellnumber divided in x,y,z, all are starting at 0 and counting up
+		int[] min = mapCellNumberToXYZ(leftBottomFront);
+		int[] max = mapCellNumberToXYZ(rightTopBack);
+		
+		int squareGridResolution = cellsInEachDirection*cellsInEachDirection;
+		
+		for(int i = leftBottomFront; i <= (leftBottomFront+(max[0]-min[0])); i++){
+			for(int j = 0; j <= (max[1]-min[1]); j ++){
+				for(int k = 0; k <= (max[2]-min[2]); k++){
+					cells.add(i+j*cellsInEachDirection+k*squareGridResolution);
 				}
 			}
 		}
 		return cells;
 	}
 	
+	
 	/**
 	 * Method to check in which cell of the grid the given point is located
+	 * If close to edge, the smallest cell is taken
+	 * 
+	 * @param point
+	 * @return cellNumber where the given point belongs too
+	 * 			-1 if point doesn't belong to grid
+	 */
+	private int mapCoordinateToCellNumberDown(Point3f point){
+		int cellNumber = -1;
+		if(isInGrid(point)){
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-safety)); //TODO : check
+			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-safety));
+			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-safety));
+			
+			if(x < 0) { x = 0; }
+			if(y < 0) { y = 0; }
+			if(z < 0) { z = 0; }
+			
+			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
+		}
+		return cellNumber;
+	}
+	
+	
+	/**
+	 * Method to check in which cell of the grid the given point is located
+	 * If close to edge, the largest cell is taken
+	 * 
+	 * @param point
+	 * @return cellNumber where the given point belongs too
+	 * 			-1 if point doesn't belong to grid
+	 */
+	private int mapCoordinateToCellNumberUp(Point3f point){
+		int cellNumber = -1;
+		if(isInGrid(point)){
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(1-safety))); //TODO : check
+			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(1-safety)));
+			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(1-safety))); 
+			
+			if(x > (cellsInEachDirection-1)) { x = (cellsInEachDirection-1); }
+			if(y > (cellsInEachDirection-1)) { y = (cellsInEachDirection-1); }
+			if(z > (cellsInEachDirection-1)) { z = (cellsInEachDirection-1); }
+			
+			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
+		}
+		return cellNumber;
+	}
+	
+	/**
+	 * Method to check in which cell of the grid the given point is located
+	 * This is used when entering the grid, don't use to map boundingboxes
 	 * 
 	 * @param point
 	 * @return cellNumber where the given point belongs too
 	 * 			-1 if point doesn't belong to grid
 	 */
 	public int mapCoordinateToCellNumber(Point3f point){
-		//FIXME : als er een punt in 2 vakjes ligt --> altijd rechtsboven en linksonder
 		int cellNumber = -1;
 		if(isInGrid(point)){
-			cellNumber = (int) (Math.floor((point.x-root.getMinX())/(root.getMaxX()-root.getMinX())*gridDensity));
-			cellNumber += (Math.floor((point.y-root.getMinY())/(root.getMaxY()-root.getMinY())*gridDensity))*gridDensity; // maal aantal in x-richting
-			cellNumber += (Math.floor((point.z-root.getMinZ())/(root.getMaxZ()-root.getMinZ())*gridDensity))*gridDensity*gridDensity; // maal aantal in x- en y-richting
+			int x = (int) (Math.floor((point.x-root.getMinX())/cellDimensionX));
+			int y = (int) (Math.floor((point.y-root.getMinY())/cellDimensionY)); // maal aantal in x-richting
+			int z = (int) (Math.floor((point.z-root.getMinZ())/cellDimensionZ)); // maal aantal in x- en y-richting
+
+			if(x < 0) { x = 0; }
+			if(x > (cellsInEachDirection-1)) { x = (cellsInEachDirection-1); }
+			
+			if(y < 0) { y = 0; }
+			if(y > (cellsInEachDirection-1)) { y = (cellsInEachDirection-1); }
+			
+			if(z < 0) { z = 0; }
+			if(z > (cellsInEachDirection-1)) { z = (cellsInEachDirection-1); }
+			
+			cellNumber = x + y*cellsInEachDirection + z*cellsInEachDirection*cellsInEachDirection;
 		}
 		return cellNumber;
 	}
 	
-//	/**
-//	 * Method that returns a cell object with the given number
-//	 * 
-//	 * @param point
-//	 * @return Cell if cellnumber exists
-//	 * 			null otherwise
-//	 */
-//	public Cell mapCellNumberToCell(int cellNumber){
-//		Cell cell = null;
-//		if(cellNumber < 0 || cellNumber > (gridDensity*gridDensity*gridDensity-1)){
-//			System.out.println("Cellnumber is outside of grid");
-//		}
-//		else{
-//			int densitySquare = gridDensity*gridDensity;
-//			int k = calculateMaxValue(cellNumber,densitySquare);
-//			float maxiZ = k*cellDimensionZ;
-//			float miniZ = maxiZ - cellDimensionZ;
-//			cellNumber = cellNumber - (k-1)*densitySquare;
-//			int l = calculateMaxValue(cellNumber, gridDensity);
-//			float maxiY = l*cellDimensionY;
-//			float miniY = maxiY - cellDimensionY;
-//			cellNumber = cellNumber - (l-1)*gridDensity;
-//			int m = calculateMaxValue(cellNumber, 1);
-//			float maxiX = m*cellDimensionX;
-//			float miniX = maxiX - cellDimensionX;
-//			cell = new Cell(miniX, maxiX, miniY, maxiY, miniZ, maxiZ,cellNumber);
-//		}
-//		return cell;
-//	}
+	/**
+	 * Get the cellnumber divided in x,y,z, all are starting at 0 and counting up
+	 */
+	private int[] mapCellNumberToXYZ(int cellNumber){
+		int[] result = new int[3];
+		if(cellNumber < 0 || cellNumber > ((cellsInEachDirection*cellsInEachDirection*cellsInEachDirection)-1)){
+			System.out.println("Cellnumber is outside of grid");
+		}
+		else{
+			int resolutionSquare = cellsInEachDirection*cellsInEachDirection;
+			int k = calculateMaxValue(cellNumber,resolutionSquare);
+			result[2] = k-1;
+			cellNumber = cellNumber - (k-1)*resolutionSquare;
+			int l = calculateMaxValue(cellNumber, cellsInEachDirection);
+			result[1] = l-1;
+			cellNumber = cellNumber - (l-1)*cellsInEachDirection;
+			int m = calculateMaxValue(cellNumber, 1);
+			result[0] = m-1;
+		}
+		return result;
+	}
 	
-//	private int calculateMaxValue(int cellNumber, int subtract){
-//		int k = 0;
-//		for(int i = cellNumber; i>=0; i -= subtract){
-//			k++;
-//		}
-//		return k;
-//	}
+	private int calculateMaxValue(int cellNumber, int subtract){
+		int k = 0;
+		for(int i = cellNumber; i>=0; i -= subtract){
+			k++;
+		}
+		return k;
+	}
 	
 	public boolean isInGrid(Point3f point){
 		boolean isIn = false;
@@ -213,118 +299,284 @@ public class CompactGrid {
 		}
 		return isIn;
 	}
+
+	/******************************
+	 *** TRACE RAY THROUGH GRID ***
+	 ******************************/
+
+	private Point3f entryPoint;
+	private float currentT; //t-value where you entered the cell
+	private float tDeltaX; //distance between two hits x
+	private float tDeltaY; //distance between two hits y
+	private float tDeltaZ; //distance between two hits z
+	private float nextTX; //t value of next hit with x
+	private float nextTY; //t value of next hit with y
+	private float nextTZ; //t value of next hit with z
+	private int x; //x value of current cell
+	private int y; //y value of current cell
+	private int z; //z value of current cell
+	private int stepX; //+1 if ray going positive along x, -1 otherwise
+	private int stepY; //+1 if ray going positive along y, -1 otherwise
+	private int stepZ; //+1 if ray going positive along z, -1 otherwise
+	
+	/**
+	 * Hit the grid:
+	 * if grid isn't hit, return null
+	 * else try hitting something in the grid
+	 * if nothing in the grid is hit, return null
+	 * else return closest hitrecord
+	 */
+	public HitRecord hit(Ray ray) {
+		this.clearRayInfo(); //Clear all the info of the previous ray
+		HitRecord result = null;
+		int cellNumber = calculateStartingCellNumber(ray); //calculate cellnumber where ray enters or starts
+		if(cellNumber > 0){ //if cellnumber is greater than 0, a hit occured
+			initialiseRayHitParameters(ray, cellNumber); //initalise deltaT and nextT
+			result = traverse(cellNumber,ray); //start the recursive traversing grid method
+		}		
+		return result;
+	}
+	
+	/**
+	 * Clear all the info of the previous ray
+	 */
+	private void clearRayInfo(){
+		tDeltaX = 0;
+		tDeltaY = 0;
+		tDeltaZ = 0;
+		nextTX = 0;
+		nextTY = 0;
+		nextTZ = 0;
+		currentT = 0;
+		x = 0;
+		y = 0;
+		z = 0;
+		stepX = 0;
+		stepY = 0;
+		stepZ = 0;
+		entryPoint = null;
+	}
+	
+	/**
+	 * Check if the given ray hits the grid and if he does so, initalise parameters
+	 */
+	private int calculateStartingCellNumber(Ray ray){ //geef starting cell number terug ? --> -1 als geen hit
+		int cellNumber = -1;
+		if(isInGrid(ray.getViewPoint())){ //entryPoint = startPoint of ray
+			entryPoint = ray.getViewPoint();
+			currentT = 0; //you start in grid, so currentT should be 0
+		}
+		else{
+			GridHitInfo ghi = this.root.getEntryPoint(ray); //entryPoint = place where grid is hit
+			currentT = ghi.gettHit(); //t distance of grid hit
+		}
+		if(entryPoint != null){ //entryPoint != null, so calculate starting cellNumber
+			cellNumber = mapCoordinateToCellNumber(entryPoint);
+		}
+		return cellNumber;
+	}
+
+	private void initialiseRayHitParameters(Ray ray, int cellNumber){
+		Cell cell = mapCellNumberToCell(cellNumber);
+		initialiseSteps(ray);
+		int[] xyz = mapCellNumberToXYZ(cellNumber); //initialise xyz value of current cell
+		x = xyz[0];
+		y = xyz[1];
+		z = xyz[2];
+		FirstHitRecord fhr = cell.firstGridHit(ray);
+		if(fhr == null){
+			System.out.println("Shouldn't come here --> initialiseRayHitParameters --> outside grid?");
+		}
+		nextTX = fhr.gettMaxX();
+		nextTY = fhr.gettMaxY();
+		nextTZ = fhr.gettMaxZ();
+		tDeltaX = fhr.gettMaxX()-fhr.gettMinX();
+		tDeltaY = fhr.gettMaxY()-fhr.gettMinY();
+		tDeltaZ = fhr.gettMaxZ()-fhr.gettMinZ();
+		}
+	
+	/**
+	 * Initialise steps, if ray goes positive, this is 1, otherwise -1
+	 */
+	private void initialiseSteps(Ray ray){
+		Vector4f direction = ray.getDirection();
+		if(direction.x >= 0){
+			stepX = 1;
+		}
+		else{
+			stepX = -1;
+		}
+		if(direction.y >= 0){
+			stepY = 1;
+		}
+		else{
+			stepY = -1;
+		}
+		if(direction.z >= 0){
+			stepZ = 1;
+		}
+		else{
+			stepZ = -1;
+		}
+	}
+	
+	/**
+	 * Map the given cellNumber to a cell object, needed when starting up the raytracing
+	 */
+	private Cell mapCellNumberToCell(int cellNumber) {
+		int[] xyz = mapCellNumberToXYZ(cellNumber);
+		float minX = xyz[0]*cellDimensionX;
+		float maxX = (xyz[0]+1)*cellDimensionX;
+		float minY = xyz[1]*cellDimensionY;
+		float maxY = (xyz[1]+1)*cellDimensionY;
+		float minZ = xyz[2]*cellDimensionZ;
+		float maxZ = (xyz[2]+1)*cellDimensionZ;
+		
+		return new Cell(minX,maxX,minY,maxY,minZ,maxZ,cellNumber);
+	}
+	
+	/**
+	 * Recursive method for traversing the scene:
+	 * 
+	 * Start with getting the min_t value, this is currentT, the distance at which we entered this cell
+	 * Set max_t value, this is the distance at which we're leaving the cell
+	 * Get all bounding boxes in this cell
+	 * Get closest hit object in this cell (to check if in this cell, use min_t and max_t value
+	 * If something was hit, return it
+	 * Else calculate the next cell
+	 * If this cell is outside the grid, return null
+	 * Else call this method again with the next cell and the same ray
+	 */
+	private HitRecord traverse(int cellNumber, Ray ray){
+		HitRecord smallest = null;
+		float max_t = Math.min(nextTX,Math.min(nextTY,nextTZ)); //leaving t of cell
+		float min_t = Float.POSITIVE_INFINITY; //closest hit
+		List<BoundingBox> boxes = getBoxesForCellNumber(cellNumber);
+		for(BoundingBox b : boxes){ //boxes is empty list if nothing is in the cell
+			HitRecord hr = b.rayObjectHit(ray); //hit all geometry in the box with the ray
+			if(hr != null){
+				//check of hit binnen deze cel is en of het de dichtste hit is
+				if(hr.getT() <= max_t && hr.getT() >= currentT && hr.getT() <= min_t){
+					min_t = hr.getT();
+					smallest = hr;
+				}
+			}
+		}
+		if(smallest == null){ //nothing was hit within this cell
+			int nextCell = getNextCell(); 
+			if(!isValidCellNumber(nextCell)){
+				return smallest; //(should be null)
+			}
+			return traverse(nextCell, ray);
+		}
+		return smallest;
+	}
 	
 	/**
 	 * Get all boundingboxes that are located in the cell with the given number
-	 * 
-	 * @param cellNumber
-	 * @return List with all BoundingBoxes in this cell
 	 */
-	public List<BoundingBox> getBoxesForCellNumber(int cellNumber){
+	private List<BoundingBox> getBoxesForCellNumber(int cellNumber){
 		List<BoundingBox> boxList = new ArrayList<BoundingBox>();
 		int index = cells[cellNumber]; //index of first element in this cell
-		int nextIndex = cells[cellNumber+1]; //index of first element in next cell //FIXME : out of bounds
+		int nextIndex = cells[cellNumber+1]; //index of first element in next cell
 		for(int i = index; index<nextIndex; index++){ //get all elements from this cell
 			boxList.add(boxes[i]); //add all these elements to the returnlist
 		}
 		return boxList;
 	}
-
+	
 	/**
-	 * Return null if no hit
-	 * 
-	 * @param ray
-	 * @return
+	 * Check if the given cellNumber is valid
+	 * Return true if it is, false otherwise
 	 */
-	//TODO : dit uitbreiden
-	public HitRecord hit(Ray ray) {
-		HitRecord result = null;
-		if(this.root.hits(ray)){
-			//overloop alle geometry, check of ray in grid
+	private boolean isValidCellNumber(int nextCell) {
+		boolean isValid = true;
+		int[] xyz = mapCellNumberToXYZ(nextCell);
+		if(xyz[0] < 0 || xyz[0] > (cellsInEachDirection-1) || 
+		   xyz[1] < 0 || xyz[1] > (cellsInEachDirection-1) ||
+		   xyz[2] < 0 || xyz[2] > (cellsInEachDirection-1)){
+			//cell is outside grid
+			isValid = false;
 		}
-		return result;
+		return isValid;
 	}
 	
-//	public Cell mapCoordinateToCell(Point3f point){
-//		int cellNumber = mapCoordinateToCellNumber(point);
-//		return mapCellNumberToCell(cellNumber);
+	/**
+	 * Get the next cell starting from the given cellNumber and along the direction of the given ray
+	 * To do so, first check which is the next plane hit, is it a plane along the x,y or z-axis?
+	 * If you got that, call the right method that will calculate the next cell
+	 * 
+	 * Attention: no check is done to see if the given cellNumber is valid, you should check this in the calling method!!!
+	 */
+	private int getNextCell() {
+		int nextCell = -1;
+		if(nextTX <= nextTY){ //x closer than y
+			if(nextTX <= nextTZ){ //x closer than z
+				currentT = nextTX; //currentT is now this t
+				nextTX += tDeltaX; //add deltaT to initalise nextT 
+				x += stepX;
+				if(x>(cellsInEachDirection-1) || x<0){
+					return nextCell;
+				}
+			}
+			else{ //z closer than x, and x closer than y, so z closest
+				currentT = nextTZ; //currentT is now this t
+				nextTZ += tDeltaZ; //add deltaT to initalise nextT
+				z += stepZ;
+				if(z>(cellsInEachDirection-1) || z<0){
+					return nextCell;
+				}
+			}
+		}
+		else{ //y closer than x
+			if(nextTY <= nextTZ){ //y closer than z
+				currentT = nextTY; //currentT is now this t
+				nextTY += tDeltaY; //add deltaT to initalise nextT
+				y += stepY;
+				if(y>(cellsInEachDirection-1) || y<0){
+					return nextCell;
+				}
+			}
+			else{ //z closer than y, and y closer than x, so z closest
+				currentT = nextTZ; //currentT is now this t
+				nextTZ += tDeltaZ; //add deltaT to initalise nextT
+				z += stepZ;
+				if(z>(cellsInEachDirection-1) || z<0){
+					return nextCell;
+				}				
+			}
+		}
+		return mapXYZToCellNumber(); //map current x,y,z value to cellNumber
+	}
+	
+	/**
+	 * Use current xyz value to get current CellNumber
+	 */
+	private int mapXYZToCellNumber(){
+		return x+y*cellsInEachDirection+z*cellsInEachDirection*cellsInEachDirection;
+	}
+	
+//	private int getCellLeft(int cellNumber){
+//		return cellNumber - 1;
 //	}
 //	
-//	/**
-//	 * Call when X changed point is next
-//	 * 
-//	 * @param point
-//	 * @param cellNumber
-//	 */
-//	public int getNextCellNumberX(float x, int cellNumber){
-//		if(x < current.x && x > box.getMinX()){
-//			current.x = x;
-//			return getCellLeft(cellNumber);
-//		}
-//		else if(x > current.x && x < box.getMaxX()){ //FIXME : floats, vgl ok? (0.5f)
-//			current.x = x;
-//			return getCellRight(cellNumber);
-//		}
-//		return -1; //outside grid
+//	private int getCellRight(int cellNumber){
+//		return cellNumber + 1;
 //	}
 //	
-//	/**
-//	 * Call when Y changed point is next
-//	 * 
-//	 * @param point
-//	 * @param cellNumber
-//	 */
-//	public int getNextCellNumberY(float y, int cellNumber){
-//		if(y < current.y && y > box.getMinY()){
-//			current.y = y;
-//			return getCellDown(cellNumber);
-//		}
-//		else if(y > current.y && y < box.getMaxY()){ //FIXME : floats, vgl ok?
-//			current.y = y;
-//			return getCellUp(cellNumber);
-//		}
-//		return -1; //outside grid
+//	private int getCellDown(int cellNumber){
+//		return cellNumber - gridResolution;
 //	}
 //	
-//	/**
-//	 * Call when Z changed point is next
-//	 * 
-//	 * @param point
-//	 * @param cellNumber
-//	 */
-//	public int getNextCellNumberZ(float z, int cellNumber){
-//		if(z < current.z && z > box.getMinZ()){
-//			current.z = z;
-//			return getCellFront(cellNumber);
-//		}
-//		else if(z > current.z && z < box.getMaxZ()){ //FIXME : floats, vgl ok?
-//			current.z = z;
-//			return getCellBack(cellNumber);
-//		}
-//		return -1; //outside grid
+//	private int getCellUp(int cellNumber){
+//		return cellNumber + gridResolution;
 //	}
-	
-	private int getCellLeft(int cellNumber){
-		return cellNumber - 1;
-	}
-	
-	private int getCellRight(int cellNumber){
-		return cellNumber + 1;
-	}
-	
-	private int getCellDown(int cellNumber){
-		return cellNumber - gridDensity;
-	}
-	
-	private int getCellUp(int cellNumber){
-		return cellNumber + gridDensity;
-	}
-	
-	private int getCellBack(int cellNumber){
-		return cellNumber + (gridDensity*gridDensity);
-	}
-	
-	private int getCellFront(int cellNumber){
-		return cellNumber - (gridDensity*gridDensity);
-	}
+//	
+//	private int getCellBack(int cellNumber){
+//		return cellNumber + (gridResolution*gridResolution); //FIXME : z-axis in screen?
+//	}
+//	
+//	private int getCellFront(int cellNumber){
+//		return cellNumber - (gridResolution*gridResolution); //FIXME : z-axis in screen?
+//	}
 }

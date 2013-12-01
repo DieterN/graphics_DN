@@ -1,11 +1,13 @@
 package geometry;
 
+import imagedraw.DrawController;
 import imagedraw.HitRecord;
 
 import java.util.List;
 import java.util.ArrayList;
 
 import acceleration.BoundingBox;
+import acceleration.CompactGrid;
 import rays.Ray;
 import materials.Material;
 import mathematics.*;
@@ -19,6 +21,8 @@ public class IndexedTriangleSet extends Geometry{
 	private int[] normalIndices;
 	private int[] textureCoordinateIndices;
 	private List<Triangle> triangles = new ArrayList<Triangle>();
+	private CompactGrid grid;
+	private boolean usingGrid = false;
 	
 	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normal, TexCoord2f [] textureCoordinates, 
 								int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name){
@@ -97,6 +101,9 @@ public class IndexedTriangleSet extends Geometry{
 	
 	@Override
 	public HitRecord rayObjectHit(Ray ray){
+		if(DrawController.accelerated && usingGrid){ //if accelerated and using grid, use the grid in this class
+			return rayObjectHitAccelerated(ray);
+		} //else use normal method
 		float smallest_t = Float.POSITIVE_INFINITY;
 		HitRecord smallest = null;
 		for(Triangle triangle : triangles){
@@ -107,6 +114,10 @@ public class IndexedTriangleSet extends Geometry{
 			}
 		}
 		return smallest;
+	}
+	
+	private HitRecord rayObjectHitAccelerated(Ray ray){
+		return grid.hit(ray);
 	}
 
 	public Point3f[] getCoordinates() {
@@ -128,6 +139,12 @@ public class IndexedTriangleSet extends Geometry{
 	public void transform(Matrix4f transform){
 		for(Triangle t : triangles){
 			t.transform(transform);
+		}
+		if(DrawController.accelerated){
+			if(triangles.size() > 10){
+				grid = new CompactGrid(triangles); //TODO : controleer en gebruik in raytracing
+				usingGrid = true;
+			}
 		}
 	}
 
