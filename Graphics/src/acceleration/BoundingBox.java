@@ -101,10 +101,12 @@ public class BoundingBox extends Geometry{
 		if(this.hits(ray)){ //check if this boundingbox is hit
 			for(Geometry g : this.geometry){ //if hit, try hitting everything inside this box
 				HitRecord hr = g.rayObjectHit(ray);
-				float hr_t = hr.getT();
-				if(hr_t < smallest_t && hr_t >= 0){
-					smallest_t = hr_t;
-					result = hr;
+				if(hr != null){ //if the object is hit
+					float hr_t = hr.getT();
+					if(hr_t < smallest_t && hr_t >= 0){
+						smallest_t = hr_t;
+						result = hr;
+					}
 				}
 			}
 		}

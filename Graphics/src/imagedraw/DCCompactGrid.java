@@ -15,14 +15,17 @@ public class DCCompactGrid extends DrawController{
 	}
 	
 	@Override
-	public HitRecord calculateHitRecord(Ray ray) { //TODO : gewoon grid.hit()
+	public HitRecord calculateHitRecord(Ray ray) {
 		return grid.hit(ray);
 	}
 
 	@Override
 	public boolean lookForShadowRayHit(Ray ray) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean hit = false;
+		if(grid.hit(ray) != null){
+			hit = true;
+		}
+		return hit;
 	}
 
 }

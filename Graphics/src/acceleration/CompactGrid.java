@@ -15,7 +15,7 @@ import rays.Ray;
 public class CompactGrid {
 
 	private final int gridDensity = 8;
-	private final int safety = 1; //number between 0.5 and 1
+	private final double safety = 0.75; //number between 0.5 and 1
 	//if this is 1, than boxes will be mapped really safe to cells
 	//if it's 0.5, mapping will be a risk and might fail
 	private int nbOfCellsX; //number of cells in x-direction
@@ -191,7 +191,7 @@ public class CompactGrid {
 	private int mapCoordinateToCellNumberDown(Point3f point){
 		int cellNumber = -1;
 		if(isInGrid(point)){
-			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-safety)); //TODO : check
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-safety));
 			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-safety));
 			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-safety));
 			
@@ -216,7 +216,7 @@ public class CompactGrid {
 	private int mapCoordinateToCellNumberUp(Point3f point){
 		int cellNumber = -1;
 		if(isInGrid(point)){
-			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(1-safety))); //TODO : check
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(1-safety)));
 			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(1-safety)));
 			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(1-safety))); 
 			
@@ -288,11 +288,12 @@ public class CompactGrid {
 		return k;
 	}
 	
-	public boolean isInGrid(Point3f point){
+	public boolean isInGrid(Point3f point){ //FIXME : zou iets minder streng moeten controleren
+		double delta = 0.001;
 		boolean isIn = false;
-		if(point.x >= root.getMinX() & point.x <= root.getMaxX()){
-			if(point.y >= root.getMinY() & point.y <=root.getMaxY()){
-				if(point.z >= root.getMinZ() & point.z <= root.getMaxZ()){
+		if(point.x >= (root.getMinX()-delta) & point.x <= (root.getMaxX()+delta)){
+			if(point.y >= (root.getMinY()-delta) & point.y <= (root.getMaxY()+delta)){
+				if(point.z >= (root.getMinZ()-delta) & point.z <= (root.getMaxZ()+delta)){
 					isIn = true;
 				}
 			}
@@ -368,7 +369,13 @@ public class CompactGrid {
 		}
 		else{
 			GridHitInfo ghi = this.root.getEntryPoint(ray); //entryPoint = place where grid is hit
-			currentT = ghi.gettHit(); //t distance of grid hit
+			if(ghi != null){ //grid is hit
+				currentT = ghi.gettHit(); //t distance of grid hit
+				entryPoint = ghi.getEntryPoint();
+			}
+			else{
+				cellNumber = -2;
+			}
 		}
 		if(entryPoint != null){ //entryPoint != null, so calculate starting cellNumber
 			cellNumber = mapCoordinateToCellNumber(entryPoint);
@@ -425,12 +432,15 @@ public class CompactGrid {
 	 */
 	private Cell mapCellNumberToCell(int cellNumber) {
 		int[] xyz = mapCellNumberToXYZ(cellNumber);
-		float minX = xyz[0]*cellDimensionX;
-		float maxX = (xyz[0]+1)*cellDimensionX;
-		float minY = xyz[1]*cellDimensionY;
-		float maxY = (xyz[1]+1)*cellDimensionY;
-		float minZ = xyz[2]*cellDimensionZ;
-		float maxZ = (xyz[2]+1)*cellDimensionZ;
+		float gridMinX = root.getMinX();
+		float gridMinY = root.getMinY();
+		float gridMinZ = root.getMinZ();
+		float minX = gridMinX+xyz[0]*cellDimensionX;
+		float maxX = gridMinX+(xyz[0]+1)*cellDimensionX;
+		float minY = gridMinY+xyz[1]*cellDimensionY;
+		float maxY = gridMinY+(xyz[1]+1)*cellDimensionY;
+		float minZ = gridMinZ+xyz[2]*cellDimensionZ;
+		float maxZ = gridMinZ+(xyz[2]+1)*cellDimensionZ;
 		
 		return new Cell(minX,maxX,minY,maxY,minZ,maxZ,cellNumber);
 	}
@@ -464,7 +474,7 @@ public class CompactGrid {
 		}
 		if(smallest == null){ //nothing was hit within this cell
 			int nextCell = getNextCell(); 
-			if(!isValidCellNumber(nextCell)){
+			if(nextCell<0){ //getNextCell returns -1 if you go outside of the grid
 				return smallest; //(should be null)
 			}
 			return traverse(nextCell, ray);
@@ -486,27 +496,12 @@ public class CompactGrid {
 	}
 	
 	/**
-	 * Check if the given cellNumber is valid
-	 * Return true if it is, false otherwise
-	 */
-	private boolean isValidCellNumber(int nextCell) {
-		boolean isValid = true;
-		int[] xyz = mapCellNumberToXYZ(nextCell);
-		if(xyz[0] < 0 || xyz[0] > (nbOfCellsX-1) || 
-		   xyz[1] < 0 || xyz[1] > (nbOfCellsY-1) ||
-		   xyz[2] < 0 || xyz[2] > (nbOfCellsZ-1)){
-			//cell is outside grid
-			isValid = false;
-		}
-		return isValid;
-	}
-	
-	/**
 	 * Get the next cell starting from the given cellNumber and along the direction of the given ray
 	 * To do so, first check which is the next plane hit, is it a plane along the x,y or z-axis?
+	 * Adjust the value of the x,y,z vector and check if these values are still valid, if so, than continue
 	 * If you got that, call the right method that will calculate the next cell
 	 * 
-	 * Attention: no check is done to see if the given cellNumber is valid, you should check this in the calling method!!!
+	 * If you go outside the grid, return -1 !!!
 	 */
 	private int getNextCell() {
 		int nextCell = -1;
@@ -555,28 +550,4 @@ public class CompactGrid {
 	private int mapXYZToCellNumber(int x, int y, int z){
 		return x+y*nbOfCellsX+z*nbOfCellsX*nbOfCellsY;
 	}
-	
-//	private int getCellLeft(int cellNumber){
-//		return cellNumber - 1;
-//	}
-//	
-//	private int getCellRight(int cellNumber){
-//		return cellNumber + 1;
-//	}
-//	
-//	private int getCellDown(int cellNumber){
-//		return cellNumber - gridResolution;
-//	}
-//	
-//	private int getCellUp(int cellNumber){
-//		return cellNumber + gridResolution;
-//	}
-//	
-//	private int getCellBack(int cellNumber){
-//		return cellNumber + (gridResolution*gridResolution); //FIXME : z-axis in screen?
-//	}
-//	
-//	private int getCellFront(int cellNumber){
-//		return cellNumber - (gridResolution*gridResolution); //FIXME : z-axis in screen?
-//	}
 }

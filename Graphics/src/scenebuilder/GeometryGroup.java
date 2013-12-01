@@ -27,12 +27,12 @@ public class GeometryGroup {
 	}
 
 	public void addGeometry(Geometry geometry) {
-		if(geometry instanceof IndexedTriangleSet){ //TODO : boolean?
-			this.geometry.addAll(((IndexedTriangleSet) geometry).getTriangles());
-		}
-		else{
+//		if(geometry instanceof IndexedTriangleSet){ //TODO : boolean?
+//			this.geometry.addAll(((IndexedTriangleSet) geometry).getTriangles());
+//		}
+//		else{
 			this.geometry.add(geometry);
-		}
+//		}
 	}
 
 	public Matrix4f getTransformationMatrix() {

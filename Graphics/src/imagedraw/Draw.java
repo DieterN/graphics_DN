@@ -24,8 +24,8 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/test2.sdl");
-			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE
+			scene = sceneBuilder.loadScene("XML/test.sdl");
+			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -64,7 +64,10 @@ public class Draw implements MouseListener{
 	
 	public void drawScene(){
 	for(int i=0; i<DrawController.getNx(); i++){
-		System.out.println("Rendering..." + (i/DrawController.getNx())*100 + " %");
+		if(i%20 == 0){
+			double percentage = (double) i/DrawController.getNx()*100;
+			System.out.println("Rendering... " + percentage + " %");
+		}
 		for(int j=0; j<DrawController.getNy(); j++){
 			Color3f color = ic.calculatePixelColor(i, j);
 			panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 

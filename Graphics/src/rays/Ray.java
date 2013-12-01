@@ -21,7 +21,7 @@ public class Ray {
 	protected float inv_directionY;
 	protected float inv_directionZ;
 	protected int[] sign = new int[3];
-	
+		
 	public Ray(Point3f viewPoint, Vector4f direction){
 		this.viewPoint = viewPoint;
 		this.direction = direction;
