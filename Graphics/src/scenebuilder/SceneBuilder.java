@@ -197,8 +197,6 @@ public class SceneBuilder implements ParserHandler
 
     public void startCylinder(float radius, float height, boolean capped, String name) throws Exception
     {
-    	Cylinder cylinder = new Cylinder(radius,height,capped,name);
-    	scene.addGeometry(cylinder);
     }
 
     public void endCylinder() throws Exception
@@ -207,8 +205,6 @@ public class SceneBuilder implements ParserHandler
 
     public void startCone(float radius, float height, boolean capped, String name) throws Exception
     {
-    	Cone cone = new Cone(radius,height,capped,name);
-    	scene.addGeometry(cone);
     }
 
     public void endCone() throws Exception
@@ -217,8 +213,6 @@ public class SceneBuilder implements ParserHandler
 
     public void startTorus(float innerRadius, float outerRadius, String name) throws Exception
     {
-    	Torus torus = new Torus(innerRadius,outerRadius,name);
-    	scene.addGeometry(torus);
     }
 
     public void endTorus() throws Exception

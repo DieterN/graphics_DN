@@ -65,16 +65,48 @@ public class Draw implements MouseListener{
 	}
 	
 	public void drawScene(){
-	for(int i=0; i<DrawController.getNx(); i++){
-		if(i%20 == 0){
-			double percentage = (double) i/DrawController.getNx()*100;
-			System.out.println("Rendering... " + percentage + " %");
+		for(int i=0; i<DrawController.getNx(); i++){
+			if(i%20 == 0){
+				double percentage = (double) i/DrawController.getNx()*100;
+				System.out.println("Rendering... " + percentage + " %");
+			}
+			for(int j=0; j<DrawController.getNy(); j++){
+				Color3f color = ic.calculatePixelColor(i, j);
+				if(!DrawController.falseColorImage){
+					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
+				}
+				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image
+			}
 		}
-		for(int j=0; j<DrawController.getNy(); j++){
-			Color3f color = ic.calculatePixelColor(i, j);
-			panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
+		if(DrawController.falseColorImage){
+			drawFalseColorImage();
 		}
 	}
+	
+	public void drawFalseColorImage(){
+		System.out.println("Generating false color image");
+		int[] pixels = DrawController.getIntersectionsPerPixel();
+		float maxIntersections = 0;
+		for(int i : pixels){ //get max number intersections
+			if(i>maxIntersections){
+				maxIntersections = i;
+			}
+		}
+		float[] normalizedPixels = new float[pixels.length];
+		for(int j=0; j<pixels.length; j++){ //normalize all pixels, so greatest is 1
+			normalizedPixels[j] = pixels[j]/maxIntersections;
+		}
+		for(int i=0; i<DrawController.getNx(); i++){
+			for(int j=0; j<DrawController.getNy(); j++){
+				Color3f color = new Color3f();
+				color.x = normalizedPixels[i+DrawController.getNx()*j];
+				if(color.x > 1){
+					color.x = 1;
+				}
+				panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden
+			}
+			
+		}
 	}
 	
 }

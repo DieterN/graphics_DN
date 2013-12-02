@@ -106,7 +106,7 @@ public class MatrixOperations {
 	 * Construct a scaling matrix with the given scalingvector. 
 	 * 
 	 * @param vector
-	 * @return rotation matrix
+	 * @return scaling matrix
 	 */
 	public static Matrix4f MakeScalingMatrix(Vector3f scale){
 		Matrix4f matrix = new Matrix4f();

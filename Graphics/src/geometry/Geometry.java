@@ -25,7 +25,7 @@ public abstract class Geometry {
 	 * 
 	 * @param ray
 	 * @return HitRecord if hit, null otherwise
-	 */
+	 */	
 	public abstract HitRecord rayObjectHit(Ray ray);
 
 	public String getName() {

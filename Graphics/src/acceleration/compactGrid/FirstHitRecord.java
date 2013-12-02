@@ -1,4 +1,4 @@
-package acceleration;
+package acceleration.compactGrid;
 
 import mathematics.Point3f;
 

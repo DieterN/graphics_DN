@@ -10,7 +10,7 @@ import mathematics.*;
  */
 public class ShadowRay extends Ray {
 
-	private final float epsilon = 0.0015f;
+	private final float epsilon = 0.05f;
 	
 	public ShadowRay(Point3f viewPoint, Vector4f direction){
 		super();

@@ -6,6 +6,7 @@ import imagedraw.HitRecord;
 import java.util.ArrayList;
 import java.util.List;
 
+import acceleration.compactGrid.GridHitInfo;
 import mathematics.Matrix4f;
 import mathematics.Point3f;
 import mathematics.VectorOperations;
@@ -218,5 +219,50 @@ public class BoundingBox extends Geometry{
 		this.box = new BoundingBox(bounds[0].x, bounds[1].x, bounds[0].y, bounds[1].y, bounds[0].z, bounds[1].z); //useless
 		System.out.println("Not good to make BoundingBox for boundingbox");
 	}
+	
+	public Point3f getCenter(){
+		return new Point3f((bounds[1].x+bounds[0].x)/2,(bounds[1].y+bounds[0].y)/2,(bounds[1].z+bounds[0].z)/2);
+	}
+	
+	/**
+	 * Return the longest axis of this box, 00=x, 01=y, 10=z
+	 */
+	public int getLongestAxis() {
+		if((bounds[1].x-bounds[0].x) >= (bounds[1].y-bounds[0].y)){//x-axis longer than y-axis
+			if((bounds[1].x-bounds[0].x) >= (bounds[1].z-bounds[0].z)){//x-axis longer than z-axis
+				return 00;
+			}
+			else{ //z-axis longer than x-axis, and x-axis longer than y-axis
+				return 10;
+			}
+		}
+		else{ //y-axis longer than x-axis
+			if((bounds[1].y-bounds[0].y) >= (bounds[1].z-bounds[0].z)){ //y-axis longer than z-axis
+				return 01;
+			}
+			else{ //z-axis longer than y-axis, and y-axis longer than x-axis
+				return 10;
+			}
+		}
+	}
 
+	/**
+	 * Return the center of the boundingBox alongst the given axis
+	 * x = 00, y = 01, z = 10
+	 */
+	public float getCenterOfAxis(int splitPlane) {
+		if(splitPlane == 00){
+			return (bounds[1].x+bounds[0].x)/2;
+		}
+		else if(splitPlane == 01){
+			return (bounds[1].y+bounds[0].y)/2;
+		}
+		else if(splitPlane == 10){
+			return (bounds[1].z+bounds[0].z)/2;
+		}
+		else{
+			System.out.println("Can't return center of axis: " + splitPlane + " isn't a valid plane");
+			throw new IllegalArgumentException();
+		}
+	}
 }

@@ -14,11 +14,15 @@ public abstract class DrawController {
 	protected final boolean ambient = true;
 	protected final boolean shading = true;
 	public static boolean accelerated = false;
+	public static boolean falseColorImage = false;
 	private static final int nx = 640; //number of pixels, x-direction
 	private static final int ny = 480; //number of pixels, y-direction
+	private static int[] intersectionsPerPixel; //countNumberOfIntersectionsForEveryPixel
+	public static int currentPixel = 0;
 	
 	public DrawController(Scene scene){
 		this.scene = scene;
+		intersectionsPerPixel = new int[nx*ny];
 	}
 	
 	public Color3f calculatePixelColor(int pixelX, int pixelY){
@@ -127,5 +131,17 @@ public abstract class DrawController {
 
 	public static int getNy() {
 		return ny;
+	}	
+	
+	public static void addIntersection(){
+		intersectionsPerPixel[currentPixel]++;
+	}
+
+	public static int[] getIntersectionsPerPixel() {
+		return intersectionsPerPixel;
+	}
+	
+	public static void setCurrentPixel(int i){
+		currentPixel = i;
 	}
 }

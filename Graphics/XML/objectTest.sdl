@@ -3,25 +3,31 @@
 
 <Sdl>
    <Cameras>
-      <Camera position="0 0 10" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
+      <Camera position="0 3 10" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
       <Camera position="0 0 100" direction="0 0 1" up="0 1 0" fovy="60" name="orthographicCam" /> 
    </Cameras>   
    
    <Lights>
-      <PointLight position="-15 0 15" intensity="1" color="1 1 1" name="light0" />
+      <PointLight position="0 3 10" intensity="1" color="1 1 1" name="light0" />
    </Lights>
    
    <Geometry>
-   	   <Object fileName="bunny.obj" name="bunny" />
+   	   <Object fileName="sphere.obj" name="sphere" />
+   	   <Object fileName="plane.obj" name="plane" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.75 0.75 1" ambientFactor="0.3" name="dif1"/> 
-      <PhongMaterial color="0.75 0.75 0.75" shininess="50" ambientFactor="0.3" name="phong1" />  
+      <DiffuseMaterial color="0.5 0.5 0.5" ambientFactor="0.3" name="dif1"/> 
+      <PhongMaterial color="0.25 0.25 1" shininess="50" ambientFactor="0.3" name="phong1" />  
       <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
    </Materials>   
    
    <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-   		<Shape geometry="bunny" material="lc1"/>
+		<Translate vector="0 3 0">
+			<Shape geometry="sphere" material="phong1"/>
+		</Translate>
+		<Scale scale="80 80 80">
+			<Shape geometry="plane" material="dif1"/>
+		</Scale>
    </Scene>
 </Sdl>

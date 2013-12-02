@@ -1,6 +1,6 @@
 package imagedraw;
 
-import acceleration.CompactGrid;
+import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import scenebuilder.Scene;
 

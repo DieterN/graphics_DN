@@ -1,4 +1,4 @@
-package acceleration;
+package acceleration.compactGrid;
 
 import geometry.Geometry;
 import imagedraw.HitRecord;
@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import acceleration.BoundingBox;
 import mathematics.Point3f;
 import mathematics.Vector4f;
 import rays.Ray;
@@ -15,10 +16,11 @@ import rays.Ray;
 public class CompactGrid {
 
 	private final int gridDensity = 8;
-	private final double safety = 0.25; //number between 0 and 0.5
+	private final double safety = 0.1; //number between 0 and 0.5
 	//the higher this number, the safer you map boxes to cells
 	//the lower this number, the less safer
 	//a lower number has the advantage of drawing faster
+	private float epsilon = 0.05f; //TODO
 	private int nbOfCellsX; //number of cells in x-direction
 	private int nbOfCellsY; //number of cells in y-direction
 	private int nbOfCellsZ; //number of cells in z-direction
@@ -49,7 +51,7 @@ public class CompactGrid {
 	/**
 	 * Calculate the dimensions for this grid, so it contains all objects in the given list
 	 */
-	private void calculateRootBoundingBox(List<? extends Geometry> geo){ //numbers used to calculate number of boxes
+	private void calculateRootBoundingBox(List<? extends Geometry> geo){
 		if(geo.isEmpty()){
 			System.out.println("Making empty grid");
 			throw new IllegalArgumentException();
@@ -71,7 +73,7 @@ public class CompactGrid {
 			if(box.getMaxZ() > maxZ){ maxZ = box.getMaxZ();}
 		}
 		
-		root = new BoundingBox(minX-0.05f,maxX+0.05f,minY-0.05f,maxY+0.05f,minZ-0.05f,maxZ+0.05f);
+		root = new BoundingBox(minX-epsilon,maxX+epsilon,minY-epsilon,maxY+epsilon,minZ-epsilon,maxZ+epsilon);
 	}
 	
 	/**
@@ -506,26 +508,15 @@ public class CompactGrid {
 	 */
 	private int getNextCell() {
 		int nextCell = -1;
-		if(nextTX <= nextTY){ //x closer than y
-			if(nextTX <= nextTZ){ //x closer than z
-				currentT = nextTX; //currentT is now this t
-				nextTX += tDeltaX; //add deltaT to initalise nextT 
-				x += stepX;
-				if(x>(nbOfCellsX-1) || x<0){
+		if(nextTX <= nextTY && nextTX <= nextTZ){ //x closer than y and z
+			currentT = nextTX; //currentT is now this t
+			nextTX += tDeltaX; //add deltaT to initalise nextT 
+			x += stepX;
+			if(x>(nbOfCellsX-1) || x<0){
 					return nextCell;
-				}
-			}
-			else{ //z closer than x, and x closer than y, so z closest
-				currentT = nextTZ; //currentT is now this t
-				nextTZ += tDeltaZ; //add deltaT to initalise nextT
-				z += stepZ;
-				if(z>(nbOfCellsZ-1) || z<0){
-					return nextCell;
-				}
 			}
 		}
-		else{ //y closer than x
-			if(nextTY <= nextTZ){ //y closer than z
+		else if(nextTY <= nextTZ){ //y closer than z and closer than x too than
 				currentT = nextTY; //currentT is now this t
 				nextTY += tDeltaY; //add deltaT to initalise nextT
 				y += stepY;
@@ -541,7 +532,6 @@ public class CompactGrid {
 					return nextCell;
 				}				
 			}
-		}
 		return mapXYZToCellNumber(x,y,z); //map current x,y,z value to cellNumber
 	}
 	

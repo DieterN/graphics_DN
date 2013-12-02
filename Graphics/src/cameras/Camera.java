@@ -26,7 +26,6 @@ public abstract class Camera {
 	public Camera(Point3f viewPoint, Vector4f w, Vector4f u, float fovy, String name){
 		if(!(VectorOperations.scalarProduct4f(u, w) == 0)){
 			System.out.println("u and w have to be perpendicular");
-			throw new IllegalArgumentException();
 		}
 		this.viewPoint = viewPoint;
 		this.u = VectorOperations.normalizeVector4f(u);

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import acceleration.BoundingBox;
-import acceleration.CompactGrid;
+import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import materials.Material;
 import mathematics.*;
@@ -141,7 +141,7 @@ public class IndexedTriangleSet extends Geometry{
 			t.transform(transform);
 		}
 		if(DrawController.accelerated){
-			if(triangles.size() > 1){
+			if(triangles.size() > 15){
 				grid = new CompactGrid(triangles); //TODO : controleer en gebruik in raytracing
 				usingGrid = true;
 			}

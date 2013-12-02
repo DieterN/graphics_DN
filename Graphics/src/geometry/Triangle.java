@@ -1,6 +1,7 @@
 package geometry;
 
 import acceleration.BoundingBox;
+import imagedraw.DrawController;
 import imagedraw.HitRecord;
 import rays.Ray;
 import mathematics.Matrix4f;
@@ -37,6 +38,9 @@ public class Triangle extends Geometry{
 
 	@Override
 	public HitRecord rayObjectHit(Ray ray) {
+		if(DrawController.falseColorImage){
+			DrawController.addIntersection();
+		}
 		float t = calculateHitPoint(ray);
 		return calculateHitRecord(t,ray);
 	}

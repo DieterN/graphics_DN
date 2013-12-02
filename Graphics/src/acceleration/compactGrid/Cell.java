@@ -1,8 +1,7 @@
-package acceleration;
+package acceleration.compactGrid;
 
 import rays.Ray;
 import mathematics.Point3f;
-import mathematics.VectorOperations;
 
 public class Cell {
 

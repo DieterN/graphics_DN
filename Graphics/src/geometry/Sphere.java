@@ -2,6 +2,7 @@ package geometry;
 
 import acceleration.BoundingBox;
 import rays.Ray;
+import imagedraw.DrawController;
 import imagedraw.HitRecord;
 import mathematics.Matrix4f;
 import mathematics.MatrixOperations;
@@ -28,6 +29,9 @@ public class Sphere extends Geometry{
 	
 	@Override
 	public HitRecord rayObjectHit(Ray ray) {
+		if(DrawController.falseColorImage){
+			DrawController.addIntersection();
+		}
 		HitRecord hr = null;
 		Vector4f direction = ray.getDirection();
 		Point3f viewPoint = ray.getViewPoint();
