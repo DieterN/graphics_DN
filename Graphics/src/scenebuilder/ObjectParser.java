@@ -69,14 +69,25 @@ public class ObjectParser {
 	private void calculateFace(String line) {
 		String linex = line.substring(face.length());
 		StringTokenizer st1 = new StringTokenizer(linex," ");
-		for(int i=1; i<=3; i++){
-			String indices = st1.nextToken();
-			StringTokenizer st2 = new StringTokenizer(indices,"/");
-			coordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
-			textureCoordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
-			normalIndices.add(Integer.parseInt(st2.nextToken())-1);
+		if(linex.contains("//")){
+			//v1//vn1 v2//vn2 v3//vn3 
+			for(int i=1; i<=3; i++){
+				String indices = st1.nextToken();
+				StringTokenizer st2 = new StringTokenizer(indices,"//");
+				coordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
+				normalIndices.add(Integer.parseInt(st2.nextToken())-1);
+			}
 		}
-//		v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 
+		else{
+			//v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3 
+			for(int i=1; i<=3; i++){
+				String indices = st1.nextToken();
+				StringTokenizer st2 = new StringTokenizer(indices,"/");
+				coordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
+				textureCoordinateIndices.add(Integer.parseInt(st2.nextToken())-1);
+				normalIndices.add(Integer.parseInt(st2.nextToken())-1);
+			}
+		}
 	}
 
 	public List<Point3f> getCoordinates() {
