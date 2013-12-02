@@ -15,9 +15,10 @@ import rays.Ray;
 public class CompactGrid {
 
 	private final int gridDensity = 8;
-	private final double safety = 0.75; //number between 0.5 and 1
-	//if this is 1, than boxes will be mapped really safe to cells
-	//if it's 0.5, mapping will be a risk and might fail
+	private final double safety = 0.25; //number between 0 and 0.5
+	//the higher this number, the safer you map boxes to cells
+	//the lower this number, the less safer
+	//a lower number has the advantage of drawing faster
 	private int nbOfCellsX; //number of cells in x-direction
 	private int nbOfCellsY; //number of cells in y-direction
 	private int nbOfCellsZ; //number of cells in z-direction
@@ -191,9 +192,9 @@ public class CompactGrid {
 	private int mapCoordinateToCellNumberDown(Point3f point){
 		int cellNumber = -1;
 		if(isInGrid(point)){
-			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-safety));
-			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-safety));
-			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-safety));
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(0.5+safety)));
+			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(0.5+safety)));
+			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(0.5+safety)));
 			
 			if(x < 0) { x = 0; }
 			if(y < 0) { y = 0; }
@@ -216,9 +217,9 @@ public class CompactGrid {
 	private int mapCoordinateToCellNumberUp(Point3f point){
 		int cellNumber = -1;
 		if(isInGrid(point)){
-			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(1-safety)));
-			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(1-safety)));
-			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(1-safety))); 
+			int x = (int) (Math.round(((point.x-root.getMinX())/cellDimensionX)-(0.5-safety)));
+			int y = (int) (Math.round(((point.y-root.getMinY())/cellDimensionY)-(0.5-safety)));
+			int z = (int) (Math.round(((point.z-root.getMinZ())/cellDimensionZ)-(0.5-safety))); 
 			
 			if(x > (nbOfCellsX-1)) { x = (nbOfCellsX-1); }
 			if(y > (nbOfCellsY-1)) { y = (nbOfCellsY-1); }
@@ -288,7 +289,7 @@ public class CompactGrid {
 		return k;
 	}
 	
-	public boolean isInGrid(Point3f point){ //FIXME : zou iets minder streng moeten controleren
+	public boolean isInGrid(Point3f point){
 		double delta = 0.001;
 		boolean isIn = false;
 		if(point.x >= (root.getMinX()-delta) & point.x <= (root.getMaxX()+delta)){
@@ -331,7 +332,7 @@ public class CompactGrid {
 		this.clearRayInfo(); //Clear all the info of the previous ray
 		HitRecord result = null;
 		int cellNumber = calculateStartingCellNumber(ray); //calculate cellnumber where ray enters or starts
-		if(cellNumber > 0){ //if cellnumber is greater than 0, a hit occured
+		if(cellNumber >= 0){ //if cellnumber is greater than 0, a hit occured
 			initialiseRayHitParameters(ray, cellNumber); //initalise deltaT and nextT
 			result = traverse(cellNumber,ray); //start the recursive traversing grid method
 		}		
@@ -489,7 +490,7 @@ public class CompactGrid {
 		List<BoundingBox> boxList = new ArrayList<BoundingBox>();
 		int index = cells[cellNumber]; //index of first element in this cell
 		int nextIndex = cells[cellNumber+1]; //index of first element in next cell
-		for(int i = index; index<nextIndex; index++){ //get all elements from this cell
+		for(int i = index; i<nextIndex; i++){ //get all elements from this cell
 			boxList.add(boxes[i]); //add all these elements to the returnlist
 		}
 		return boxList;

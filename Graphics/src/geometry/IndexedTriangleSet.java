@@ -141,7 +141,7 @@ public class IndexedTriangleSet extends Geometry{
 			t.transform(transform);
 		}
 		if(DrawController.accelerated){
-			if(triangles.size() > 10){
+			if(triangles.size() > 1){
 				grid = new CompactGrid(triangles); //TODO : controleer en gebruik in raytracing
 				usingGrid = true;
 			}

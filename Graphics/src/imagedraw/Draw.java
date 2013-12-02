@@ -24,8 +24,10 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/test.sdl");
+			scene = sceneBuilder.loadScene("XML/objectTest.sdl");
 			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+//			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+//			ic = new DCTransformRay(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 		}
 		catch (Exception e) {
 			e.printStackTrace();

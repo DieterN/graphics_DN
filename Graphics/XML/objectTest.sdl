@@ -3,7 +3,7 @@
 
 <Sdl>
    <Cameras>
-      <Camera position="5 5 10" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
+      <Camera position="0 0 5" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
       <Camera position="0 0 100" direction="0 0 1" up="0 1 0" fovy="60" name="orthographicCam" /> 
    </Cameras>   
    
@@ -12,7 +12,13 @@
    </Lights>
    
    <Geometry>
+   	   <Object fileName="cube.obj" name="cube" />
    	   <Object fileName="sphere.obj" name="sphere" />
+   	   <Object fileName="cone.obj" name="cone" />
+   	   <Object fileName="cylinder.obj" name="cylinder" />
+   	   <Object fileName="plane.obj" name="plane" />
+   	   <Object fileName="torus.obj" name="torus" />
+   	   <Object fileName="teapot.obj" name="teapot" />
 	   <IndexedTriangleSet coordinates="0 0 0, 0 10 0, 10 0 0, 10 10 0" coordinateIndices="0, 3, 1, 0, 2, 3" name="index1" />
 	   <Sphere radius="5" name="sphere1" />
    </Geometry>
@@ -24,6 +30,6 @@
    </Materials>   
    
    <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-   		<Shape geometry="index1" material="lc1"/>
+   		<Shape geometry="teapot" material="lc1"/>
    </Scene>
 </Sdl>
