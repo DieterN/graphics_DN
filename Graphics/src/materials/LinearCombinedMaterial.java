@@ -18,7 +18,7 @@ public class LinearCombinedMaterial extends Material{
 		this.material2 = material2;
 		this.weight2 = weight2;
 		super.color = calculateColor();
-		super.ambientFactor = calculateAmbientFactor();
+		super.reflectiveFactor = calculateReflectiveFactor();
 	}
 
 	public Material getMaterial1() {
@@ -63,9 +63,9 @@ public class LinearCombinedMaterial extends Material{
 		return result;
 	}
 	
-	private float calculateAmbientFactor(){
-		float aF1 = material1.getAmbientFactor();
-		float aF2 = material2.getAmbientFactor();
+	private float calculateReflectiveFactor(){
+		float aF1 = material1.getReflectiveFactor();
+		float aF2 = material2.getReflectiveFactor();
 		float w1 = weight1/(weight1+weight2);
 		float w2 = weight2/(weight1+weight2);
 		float result = aF1*w1 + aF2*w2;

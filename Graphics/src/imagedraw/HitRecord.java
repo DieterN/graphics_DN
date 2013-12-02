@@ -21,7 +21,7 @@ public class HitRecord {
 	private Point3f hitPoint;
 	private Geometry geometry;
 	private Material material;
-	private float ambientFactor;
+	private float reflectiveFactor;
 	private Color3f color;
 	private Vector4f normal;
 	
@@ -31,7 +31,7 @@ public class HitRecord {
 		this.geometry = geometry;
 		this.hitPoint = hitPoint;
 		this.material = geometry.getMaterial();
-		this.ambientFactor = material.getAmbientFactor();
+		this.reflectiveFactor = material.getReflectiveFactor();
 		this.color = geometry.getMaterial().getColor();
 		Vector4f normalizedNormal = VectorOperations.normalizeVector4f(normal); //NORMALIZE
 		this.normal = normalizedNormal;
@@ -94,11 +94,11 @@ public class HitRecord {
 		this.material = material;
 	}
 
-	public float getAmbientFactor() {
-		return ambientFactor;
+	public float getReflectiveFactor() {
+		return reflectiveFactor;
 	}
 
-	public void setAmbientFactor(float ambientFactor) {
-		this.ambientFactor = ambientFactor;
+	public void setReflectiveFactor(float reflectiveFactor) {
+		this.reflectiveFactor = reflectiveFactor;
 	}
 }

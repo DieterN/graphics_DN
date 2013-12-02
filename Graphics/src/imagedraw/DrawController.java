@@ -5,6 +5,7 @@ import mathematics.Color3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 import rays.Ray;
+import rays.ReflectiveRay;
 import rays.ShadowRay;
 import scenebuilder.Scene;
 
@@ -12,7 +13,10 @@ public abstract class DrawController {
 
 	protected Scene scene;
 	protected final boolean ambient = true;
+	protected final float ambientFactor = 0.2f;
 	protected final boolean shading = true;
+	protected final boolean reflection = true;
+	protected final int reflectionDepth = 1;
 	public static boolean accelerated = false;
 	public static boolean falseColorImage = false;
 	private static final int nx = 640; //number of pixels, x-direction
@@ -26,26 +30,35 @@ public abstract class DrawController {
 	}
 	
 	public Color3f calculatePixelColor(int pixelX, int pixelY){
-	HitRecord hr = lookForRayHit(pixelX,pixelY);
-	Color3f color = new Color3f();
-	if(hr != null){	
-		if(ambient){ // ambient
-			color.x = hr.getColor().x*hr.getAmbientFactor();
-			color.y = hr.getColor().y*hr.getAmbientFactor();
-			color.z = hr.getColor().z*hr.getAmbientFactor();
-		}
-		if(shading){ //shading
-			if(!inShadow(hr)){
-				Color3f shadingColor = calculateShading(hr);
-				color.x += shadingColor.x;
-				color.y += shadingColor.y;
-				color.z += shadingColor.z;
-			}
-		}
-		// TODO : reflective + refraction + anti-aliasing
+		HitRecord hr = lookForRayHit(pixelX,pixelY);
+		return calculateColor(hr,reflectionDepth);
 	}
-	Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
-	return rightColor;
+
+	private Color3f calculateColor(HitRecord hr, int i) {
+		Color3f color = new Color3f();
+		if(hr != null){	
+			if(ambient){ // ambient
+				color.x = hr.getColor().x*ambientFactor;
+				color.y = hr.getColor().y*ambientFactor;
+				color.z = hr.getColor().z*ambientFactor;
+			}
+			if(shading){ //shading
+				for(Light l : scene.getUsedLights()){
+					if(!inShadow(hr,l)){
+						Color3f shadingColor = calculateShading(hr);
+						color.x += shadingColor.x;
+						color.y += shadingColor.y;
+						color.z += shadingColor.z;
+					}
+				}
+			}
+			if(reflection){ //reflection
+				calculateReflection(hr, i, color);
+			}
+			// TODO : refraction + anti-aliasing
+		}
+		Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
+		return rightColor;
 	}
 	
 	/**
@@ -76,17 +89,16 @@ public abstract class DrawController {
 	 * @param hr
 	 * @return
 	 */
-	public boolean inShadow(HitRecord hr) {
+	public boolean inShadow(HitRecord hr, Light l) {
 		boolean inShadow = true; // in de schaduw tenzij er geen hit is bij bepaalde ray
-		for(Light l : scene.getUsedLights()){
-			Vector4f direction = VectorOperations.subtractPointfromPoint3f(l.getPosition(), hr.getHitPoint()); //richting naar licht
-			Vector4f normalizedDirection = VectorOperations.normalizeVector4f(direction); // genormaliseerde richting naar licht
-			Ray ray = new ShadowRay(hr.getHitPoint(), normalizedDirection); // nieuwe SchaduwRay (aparte klasse voor epsilon)
-			if(!lookForShadowRayHit(ray)){
-				inShadow = false;
-				break;
-			}
+//		for(Light l : scene.getUsedLights()){
+		Vector4f direction = VectorOperations.subtractPointfromPoint3f(l.getPosition(), hr.getHitPoint()); //richting naar licht
+		Vector4f normalizedDirection = VectorOperations.normalizeVector4f(direction); // genormaliseerde richting naar licht
+		Ray ray = new ShadowRay(hr.getHitPoint(), normalizedDirection); // nieuwe SchaduwRay (aparte klasse voor epsilon)
+		if(!lookForShadowRayHit(ray)){
+			inShadow = false;
 		}
+//		}
 		return inShadow;
 	}
 	
@@ -115,6 +127,32 @@ public abstract class DrawController {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Reflective calculation; i = depth of reflection, color = calculated color till now
+	 */
+	public Color3f calculateReflection(HitRecord hr, int i, Color3f color){
+		if(i==0){
+			return color;
+		}
+		Vector4f direction = hr.getRay().getDirection();
+		Vector4f normal = hr.getNormal();
+		float two_d_times_n = 2*VectorOperations.scalarProduct4f(direction, normal); //2*d*n
+		Vector4f subtract = VectorOperations.multiplyFloatandVector4f(two_d_times_n, normal);
+		Vector4f reflectiveDirection = VectorOperations.subtractVectors4f(direction, subtract);
+		Vector4f normalizedDirection = VectorOperations.normalizeVector4f(reflectiveDirection); // genormaliseerde richting van weerkaatsing
+		Ray ray = new ReflectiveRay(hr.getHitPoint(), normalizedDirection); // nieuwe ReflectiveRay (aparte klasse voor epsilon)
+		HitRecord hit = calculateHitRecord(ray);
+		if(hit == null){
+			return new Color3f(); //return black
+		}
+		Color3f reflectiveColor = calculateColor(hit, i-1);
+		float reflectiveFactor = hr.getReflectiveFactor();
+		color.x += reflectiveFactor*reflectiveColor.x;
+		color.y += reflectiveFactor*reflectiveColor.y;
+		color.z += reflectiveFactor*reflectiveColor.z;
+		return color;
 	}
 
 	public Scene getScene() {

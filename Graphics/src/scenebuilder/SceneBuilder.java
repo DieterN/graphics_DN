@@ -257,7 +257,6 @@ public class SceneBuilder implements ParserHandler
 
     public void startTexture(String src, String name) throws Exception
     {
-    	//TODO
     }
 
     public void endTexture() throws Exception
@@ -272,10 +271,9 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
-    public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws Exception
+    public void startDiffuseMaterial(Color3f color, float reflectiveFactor, String name) throws Exception
     {
-    	System.out.println("Ambient: " + ambientFactor);
-    	DiffuseMaterial dm = new DiffuseMaterial(color, ambientFactor, name); //TODO
+    	DiffuseMaterial dm = new DiffuseMaterial(color, reflectiveFactor, name);
     	scene.addMaterial(dm);
     }
 
@@ -283,9 +281,9 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
-    public void startPhongMaterial(Color3f color, float shininess, float ambientFactor, String name) throws Exception
+    public void startPhongMaterial(Color3f color, float shininess, float reflectiveFactor, String name) throws Exception
     {
-    	PhongMaterial pm = new PhongMaterial(color, shininess, ambientFactor, name); //TODO
+    	PhongMaterial pm = new PhongMaterial(color, shininess, reflectiveFactor, name);
     	scene.addMaterial(pm);
     }
 
@@ -328,7 +326,6 @@ public class SceneBuilder implements ParserHandler
     	HashMap<String,Material> materials = scene.getMaterials();
     	Material material = materials.get(materialName); //triangle set, dan ook triangles
     	geometry.setMaterial(material);
-    	//TODO : Textures
     	scene.addGeometryToSceneGraph(geometryName);
     }
 

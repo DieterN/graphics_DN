@@ -13,8 +13,7 @@
    </Lights>
    
    <Geometry>
-   	   <Object fileName="sphere.obj" name="sphere" />
-   	   <Object fileName="sphere.obj" name="sphere2" />
+   	   <Object fileName="bunny.obj" name="bunny" />
    	   <Object fileName="plane.obj" name="plane" />
    </Geometry>
    
@@ -27,13 +26,10 @@
    
    <Scene camera="perspectiveCam" lights="light0,light1" background="0.3 0.3 0.3">
 		<Translate vector="0 1 0">
-			<Shape geometry="sphere" material="dif2"/>
-		</Translate>
-		<Translate vector="5 1 0">
-			<Shape geometry="sphere2" material="phong1"/>
+			<Shape geometry="bunny" material="dif2"/>
 		</Translate>
 		<Scale scale="80 80 80">
 			<Shape geometry="plane" material="dif1"/>
 		</Scale>
    </Scene>
-</Sdl>
+</Sdl> 

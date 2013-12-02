@@ -347,7 +347,7 @@ public class EchoParserHandler implements ParserHandler
         indent--;
     }
 
-    public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws ParseException
+    public void startDiffuseMaterial(Color3f color, float reflectiveFactor, String name) throws ParseException
     {
         indent++;
         for (int i = 0; i < indent; i++) System.out.print(indentString);
@@ -355,7 +355,7 @@ public class EchoParserHandler implements ParserHandler
             "<DiffuseMaterial"
             + " color=\"" + ParserUtils.formatTuple3f(color) + "\""
             + " name=\"" + name + "\""
-//            + " ambientFactor=\"" + ambientFactor + "\""
+            + " reflectiveFactor=\"" + reflectiveFactor + "\""
             + ">"
         );
     }
@@ -367,7 +367,7 @@ public class EchoParserHandler implements ParserHandler
         indent--;
     }
 
-    public void startPhongMaterial(Color3f color, float shininess, float ambientFactor, String name) throws Exception
+    public void startPhongMaterial(Color3f color, float shininess, float reflectiveFactor, String name) throws Exception
     {
         indent++;
         for (int i = 0; i < indent; i++) System.out.print(indentString);
@@ -376,7 +376,7 @@ public class EchoParserHandler implements ParserHandler
             + " color=\"" + ParserUtils.formatTuple3f(color) + "\""
             + " shininess=\"" + shininess + "\""
             + " name=\"" + name + "\""
-//            + " ambientFactor=\"" + ambientFactor + "\""
+            + " reflectiveFactor=\"" + reflectiveFactor + "\""
             + ">"
         );
     }

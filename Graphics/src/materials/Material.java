@@ -8,7 +8,7 @@ public abstract class Material {
 
 	protected Color3f color;
 	protected String name;
-	protected float ambientFactor;
+	protected float reflectiveFactor;
 	
 	public Material(){
 	}
@@ -41,12 +41,12 @@ public abstract class Material {
 		this.name = name;
 	}
 
-	public float getAmbientFactor() {
-		return ambientFactor;
+	public float getReflectiveFactor() {
+		return reflectiveFactor;
 	}
 
-	public void setAmbientFactor(float ambientFactor) {
-		this.ambientFactor = ambientFactor;
+	public void setReflectiveFactor(float reflectiveFactor) {
+		this.reflectiveFactor = reflectiveFactor;
 	}
 	
 }

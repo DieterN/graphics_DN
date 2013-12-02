@@ -65,10 +65,10 @@ public interface ParserHandler
     public void startMaterials() throws Exception;
     public void endMaterials() throws Exception;
 
-    public void startDiffuseMaterial(Color3f color, float ambientFactor, String name) throws Exception;
+    public void startDiffuseMaterial(Color3f color, float reflectiveFactor, String name) throws Exception;
     public void endDiffuseMaterial() throws Exception;
 
-    public void startPhongMaterial(Color3f color, float shininess, float ambientFactor, String name) throws Exception;
+    public void startPhongMaterial(Color3f color, float shininess, float reflectiveFactor, String name) throws Exception;
     public void endPhongMaterial() throws Exception;
 
     public void startLinearCombinedMaterial(String material1Name, float weight1, String material2Name, float weight2, String name) throws Exception;
