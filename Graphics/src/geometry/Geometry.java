@@ -1,6 +1,5 @@
 package geometry;
 
-import acceleration.BoundingBox;
 import imagedraw.HitRecord;
 import rays.Ray;
 import materials.Material;
@@ -9,14 +8,10 @@ import mathematics.Matrix4f;
 
 public abstract class Geometry {
 
-	protected String name;
-	protected Material material;
-	protected Color3f color;
 	protected BoundingBox box;
 	protected boolean initialised;
-
-	public Geometry(String name){
-		this.name = name;
+	
+	public Geometry(){
 	}
 	
 	/**
@@ -27,31 +22,7 @@ public abstract class Geometry {
 	 * @return HitRecord if hit, null otherwise
 	 */	
 	public abstract HitRecord rayObjectHit(Ray ray);
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 	
-	public Material getMaterial() {
-		return material;
-	}
-	
-	public void setMaterial(Material material) {
-		this.material = material;
-	}
-
-	public Color3f getColor() {
-		return color;
-	}
-
-	public void setColor(Color3f color) {
-		this.color = color;
-	}
-
 	public BoundingBox getBox() {
 		if(!this.initialised){
 			calculateBB(); // Als bounding boxes nog niet berekend, bereken ze dan eerst
@@ -70,8 +41,6 @@ public abstract class Geometry {
 	public void setInitialised(boolean initialised) {
 		this.initialised = initialised;
 	}
-
-	public abstract void transform(Matrix4f transformation);
 	
 	// TEMPLATE METHOD
 	public void calculateBB(){

@@ -8,13 +8,13 @@ import mathematics.Matrix4f;
 
 public class GeometryGroup {
 	
-	private List<Geometry> geometry = new ArrayList<Geometry>();
+	private List<ConcreteGeomerty> geometry = new ArrayList<ConcreteGeomerty>();
 	private Matrix4f transformationMatrix;
 	private Matrix4f inverseTransformationMatrix;
 	private List<GeometryGroup> children = new ArrayList<GeometryGroup>();
 	private boolean closed = false;
 	
-	public GeometryGroup(Geometry geometry){
+	public GeometryGroup(ConcreteGeomerty geometry){
 		addGeometry(geometry);
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -22,17 +22,12 @@ public class GeometryGroup {
 		this.inverseTransformationMatrix = matrix;// initialiseer op identiteit
 	}
 
-	public List<Geometry> getGeometry() {
+	public List<ConcreteGeomerty> getGeometry() {
 		return geometry;
 	}
 
-	public void addGeometry(Geometry geometry) {
-//		if(geometry instanceof IndexedTriangleSet){ //TODO : boolean?
-//			this.geometry.addAll(((IndexedTriangleSet) geometry).getTriangles());
-//		}
-//		else{
+	public void addGeometry(ConcreteGeomerty geometry) {
 			this.geometry.add(geometry);
-//		}
 	}
 
 	public Matrix4f getTransformationMatrix() {

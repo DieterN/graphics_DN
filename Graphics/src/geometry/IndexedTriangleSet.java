@@ -6,13 +6,12 @@ import imagedraw.HitRecord;
 import java.util.List;
 import java.util.ArrayList;
 
-import acceleration.BoundingBox;
 import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import materials.Material;
 import mathematics.*;
 
-public class IndexedTriangleSet extends Geometry{
+public class IndexedTriangleSet extends ConcreteGeomerty{
 
 	private Point3f[] coordinates;
 	private Vector4f[] normals;
@@ -142,7 +141,7 @@ public class IndexedTriangleSet extends Geometry{
 		}
 		if(DrawController.accelerated){
 			if(triangles.size() > 15){
-				grid = new CompactGrid(triangles); //TODO : controleer en gebruik in raytracing
+				grid = new CompactGrid(triangles);
 				usingGrid = true;
 			}
 		}

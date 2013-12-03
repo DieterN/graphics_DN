@@ -57,5 +57,21 @@ public class Point3f extends Tuple3f implements Serializable
         super(p);
     }
 
+    public void setPointValueOfAxis(int axis, float value){
+    	if(axis == 00){//x-as
+    		this.x = value;
+    	}
+    	else if(axis == 01){//y-as
+    		this.y = value;
+    	}
+    	else if(axis == 10){//z-as
+    		this.z = value;
+    	}
+    	else{
+    		System.out.println("No valid plane");
+    		throw new IllegalArgumentException();
+    	}
+    }
+    
 
 }

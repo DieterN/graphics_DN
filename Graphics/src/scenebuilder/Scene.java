@@ -2,7 +2,6 @@ package scenebuilder;
 
 import java.util.*;
 
-import acceleration.BoundingBox;
 import cameras.Camera;
 import lights.*;
 import materials.*;
@@ -14,13 +13,13 @@ import imagedraw.*;
 public class Scene {
 	
 	private HashMap<String,Camera> cameras = new HashMap<String,Camera>();
-	private HashMap<String,Geometry> geometrics = new HashMap<String,Geometry>();
+	private HashMap<String,ConcreteGeomerty> geometrics = new HashMap<String,ConcreteGeomerty>();
 	private HashMap<String,Light> lights = new HashMap<String,Light>();
 	private HashMap<String,Material> materials = new HashMap<String,Material>();
 	
 	private Camera camera;
 	private List<Light> usedLights = new ArrayList<Light>();
-	private List<Geometry> usedGeometryTransformed = new ArrayList<Geometry>(); 
+	private List<ConcreteGeomerty> usedGeometryTransformed = new ArrayList<ConcreteGeomerty>(); 
 	
 	private SceneGraph scenegraph;
 	
@@ -38,11 +37,11 @@ public class Scene {
 		cameras.put(camera.getName(),camera);
 	}
 
-	public HashMap<String, Geometry> getGeometrics() {
+	public HashMap<String, ConcreteGeomerty> getGeometrics() {
 		return geometrics;
 	}
 
-	public void addGeometry(Geometry geometry) {
+	public void addGeometry(ConcreteGeomerty geometry) {
 		geometrics.put(geometry.getName(),geometry);
 	}
 
@@ -72,7 +71,7 @@ public class Scene {
 	}
 
 	public void addGeometryToSceneGraph(String geometryName) {
-		Geometry usedGeometry = geometrics.get(geometryName);
+		ConcreteGeomerty usedGeometry = geometrics.get(geometryName);
 		scenegraph.addGeometry(usedGeometry);
 	}
 	
@@ -116,14 +115,10 @@ public class Scene {
 		this.scenegraph = scenegraph;
 	}
 	
-	public List<Geometry> getUsedGeometryTransformed() {
+	public List<ConcreteGeomerty> getUsedGeometryTransformed() {
 		if(this.usedGeometryTransformed.isEmpty()){
 			usedGeometryTransformed = scenegraph.traverseTransformObject();
 		}
 		return usedGeometryTransformed;
-	}
-
-	public void setUsedGeometryTransformed(ArrayList<Geometry> usedGeometryTransformed) {
-		this.usedGeometryTransformed = usedGeometryTransformed;
 	}
 }

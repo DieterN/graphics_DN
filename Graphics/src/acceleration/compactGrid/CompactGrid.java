@@ -1,5 +1,6 @@
 package acceleration.compactGrid;
 
+import geometry.BoundingBox;
 import geometry.Geometry;
 import imagedraw.HitRecord;
 
@@ -8,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import acceleration.BoundingBox;
 import mathematics.Point3f;
 import mathematics.Vector4f;
 import rays.Ray;

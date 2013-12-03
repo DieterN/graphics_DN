@@ -1,6 +1,5 @@
 package geometry;
 
-import acceleration.BoundingBox;
 import imagedraw.DrawController;
 import imagedraw.HitRecord;
 import rays.Ray;
@@ -17,7 +16,7 @@ import mathematics.VectorOperations;
  * @author Dieter
  *
  */
-public class Triangle extends Geometry{
+public class Triangle extends ConcreteGeomerty{
 
 	private Point3f[] points = new Point3f[3];
 	private Vector4f[] normals = new Vector4f[3];

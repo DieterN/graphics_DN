@@ -5,11 +5,12 @@ import java.util.List;
 
 import rays.Ray;
 import scenebuilder.Scene;
+import geometry.ConcreteGeomerty;
 import geometry.Geometry;
 
 public class DCTransformObject extends DrawController{
 
-	private List<Geometry> geometry = new ArrayList<Geometry>();
+	private List<ConcreteGeomerty> geometry = new ArrayList<ConcreteGeomerty>();
 	
 	public DCTransformObject(Scene scene){
 		super(scene);
@@ -20,7 +21,7 @@ public class DCTransformObject extends DrawController{
 		HitRecord smallest = null;
 		float smallest_t = Float.POSITIVE_INFINITY;	
 		if(geometry.isEmpty()){
-			geometry = scene.getScenegraph().traverseTransformObject(); //TODO
+			geometry = scene.getScenegraph().traverseTransformObject();
 		}
 		for(Geometry g : geometry){
 			HitRecord hr = g.rayObjectHit(ray);
@@ -38,7 +39,7 @@ public class DCTransformObject extends DrawController{
 	public boolean lookForShadowRayHit(Ray ray){
 		boolean hit = false;	
 		if(geometry.isEmpty()){
-			geometry = scene.getScenegraph().traverseTransformObject(); //TODO
+			geometry = scene.getScenegraph().traverseTransformObject();
 		}
 		for(Geometry g : geometry){
 			HitRecord hr = g.rayObjectHit(ray);
@@ -52,7 +53,7 @@ public class DCTransformObject extends DrawController{
 		return hit; // true betekent dat er iets tussen zit, false wil dus zeggen verlicht
 	}
 
-	public List<Geometry> getGeometry() {
+	public List<ConcreteGeomerty> getGeometry() {
 		return geometry;
 	}
 }

@@ -321,8 +321,8 @@ public class SceneBuilder implements ParserHandler
 
     public void startShape(String geometryName, String materialName, String textureName) throws Exception
     {
-    	HashMap<String,Geometry> geometrics = scene.getGeometrics();
-    	Geometry geometry = geometrics.get(geometryName);
+    	HashMap<String,ConcreteGeomerty> geometrics = scene.getGeometrics();
+    	ConcreteGeomerty geometry = geometrics.get(geometryName);
     	HashMap<String,Material> materials = scene.getMaterials();
     	Material material = materials.get(materialName); //triangle set, dan ook triangles
     	geometry.setMaterial(material);

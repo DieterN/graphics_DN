@@ -1,6 +1,5 @@
-package acceleration;
+package geometry;
 
-import geometry.Geometry;
 import imagedraw.HitRecord;
 
 import java.util.ArrayList;
@@ -18,11 +17,15 @@ public class BoundingBox extends Geometry{
 	private List<Geometry> geometry = new ArrayList<Geometry>();
 	
 	public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ){
-		super("");
 		bounds[0] = new Point3f(minX,minY,minZ);
 		bounds[1] = new Point3f(maxX,maxY,maxZ);
 	}
 
+	public BoundingBox(Point3f lowerBound, Point3f upperBound){
+		bounds[0] = lowerBound;
+		bounds[1] = upperBound;
+	}
+	
 	public float getMinX() {
 		return bounds[0].x;
 	}
@@ -209,12 +212,6 @@ public class BoundingBox extends Geometry{
 	}
 
 	@Override
-	public void transform(Matrix4f transformation) {
-		// doe niets, boxes moeten niet getransformed
-		System.out.println("Transforming Bounding Box --> not good");
-	}
-
-	@Override
 	public void initialiseBBParameters() {
 		this.box = new BoundingBox(bounds[0].x, bounds[1].x, bounds[0].y, bounds[1].y, bounds[0].z, bounds[1].z); //useless
 		System.out.println("Not good to make BoundingBox for boundingbox");
@@ -262,6 +259,38 @@ public class BoundingBox extends Geometry{
 		}
 		else{
 			System.out.println("Can't return center of axis: " + splitPlane + " isn't a valid plane");
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public float getMinOfAxis(int splitPlane) {
+		if(splitPlane == 00){
+			return bounds[0].x;
+		}
+		else if(splitPlane == 01){
+			return bounds[0].y;
+		}
+		else if(splitPlane == 10){
+			return bounds[0].z;
+		}
+		else{
+			System.out.println("Can't return min of axis: " + splitPlane + " isn't a valid plane");
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public float getMaxOfAxis(int splitPlane) {
+		if(splitPlane == 00){
+			return bounds[1].x;
+		}
+		else if(splitPlane == 01){
+			return bounds[1].y;
+		}
+		else if(splitPlane == 10){
+			return bounds[1].z;
+		}
+		else{
+			System.out.println("Can't return min of axis: " + splitPlane + " isn't a valid plane");
 			throw new IllegalArgumentException();
 		}
 	}

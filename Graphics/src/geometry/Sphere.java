@@ -1,6 +1,5 @@
 package geometry;
 
-import acceleration.BoundingBox;
 import rays.Ray;
 import imagedraw.DrawController;
 import imagedraw.HitRecord;
@@ -16,7 +15,7 @@ import mathematics.VectorOperations;
  * @author Dieter
  *
  */
-public class Sphere extends Geometry{
+public class Sphere extends ConcreteGeomerty{
 
 	private Point3f middlePoint;
 	private float radius;
@@ -89,6 +88,7 @@ public class Sphere extends Geometry{
 		Vector4f middlePointVec = VectorOperations.getVectorFromPoint(middlePoint);
 		Vector4f middelPointVecTr = MatrixOperations.MatrixVectorProduct(transform, middlePointVec);
 		this.middlePoint = VectorOperations.getPointFromVector(middelPointVecTr);
+		//FIXME : scale --> straal aanpassen?
 	}
 
 	@Override

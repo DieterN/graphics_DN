@@ -9,24 +9,28 @@
    
    <Lights>
       <PointLight position="-15 0 15" intensity="1" color="1 1 1" name="light0" />
+      <PointLight position="15 0 15" intensity="1" color="1 1 1" name="light1" />
    </Lights>
    
    <Geometry>
    	   <Object fileName="sphere.obj" name="sphere" />
 	   <IndexedTriangleSet coordinates="0 0 0, 0 10 0, 10 0 0, 10 10 0" coordinateIndices="0, 3, 1, 0, 2, 3" name="index1" />
 	   <Sphere radius="5" name="sphere1" />
+	   <Object fileName="cube.obj" name="cube" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.75 0.75 1" reflectiveFactor="0.5" name="dif1"/> 
-      <PhongMaterial color="0.75 0.75 0.75" shininess="50" reflectiveFactor="0.5" name="phong1" />  
-      <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
+      <DiffuseMaterial color="0.25 0.25 1" reflectiveFactor="0.2" name="dif1"/> 
+      <PhongMaterial color="0.25 0.5 0.25" shininess="50" reflectiveFactor="0.2" name="phong1" />  
+      <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.2" name="lc1" />   
    </Materials>   
    
-   <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-   		<Shape geometry="index1" material="lc1"/>
+   <Scene camera="perspectiveCam" lights="light0,light1" background="0.3 0.3 0.3">
       	<Translate vector="-10 -10 0">
-      		<Shape geometry="sphere1" material="dif1" />
+			<Scale scale="10 10 10">
+				<Shape geometry="cube" material="dif1" />
+			</Scale>
      	</Translate>
+		<Shape geometry="cube" material="phong1" />
    </Scene>
 </Sdl>
