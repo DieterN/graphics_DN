@@ -43,13 +43,14 @@ public class Node {
 		this.right = right;
 		this.leftNode = null;
 		this.rightNode = null;
-		this.objects = objects;
+		this.objects = objects; //TODO : objects get left tot right??
 	}
 	
 	private void makeNormalNode(BoundingBox box, BoundingBox[] objects, int left, int right){
 		splitPlane = box.getLongestAxis(); // return the longestAxis of this box, so you know which
 		this.left = left; //initialise this box
 		this.right = right; //initialise this box
+		//TODO : objects get left tot right??
 		float splitValue = box.getCenterOfAxis(splitPlane); //return the center of the axis, value to split at
 		SplitInfo info = splitObjectsInTwoGroups(splitValue,objects); //information about the split
 		//We now have information about which objects should be in which child node
@@ -64,7 +65,7 @@ public class Node {
 		float maxL = -Float.MAX_VALUE; //maxX
 		float minR = Float.MAX_VALUE; //minY
 		float maxR = -Float.MAX_VALUE; //maxY
-		int j = right; //index of 
+		int j = right; //TODO : als lijst kleiner is, gewoon die overlopen
 		int i = left;
 		while(i <= j){
 			BoundingBox box = objects[i].getBox(); //get box of everything in this node
