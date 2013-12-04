@@ -24,8 +24,9 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/objectTest.sdl");
-			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+			scene = sceneBuilder.loadScene("XML/sphere.sdl");
+//			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformRay(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 		}
@@ -75,7 +76,7 @@ public class Draw implements MouseListener{
 				if(!DrawController.falseColorImage){
 					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
 				}
-				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image
+				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image //TODO check of dit wel klopt
 			}
 		}
 		if(DrawController.falseColorImage){

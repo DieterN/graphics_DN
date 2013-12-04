@@ -83,4 +83,20 @@ public class Vector4f extends Tuple4f implements Serializable
         z = t.z;
         w = 0.0F;
     }
+
+    public float getVectorValueOfAxis(int axis){
+    	if(axis == 0){//x-as
+    		return this.x;
+    	}
+    	else if(axis == 1){//y-as
+    		return this.y;
+    	}
+    	else if(axis == 2){//z-as
+    		return this.z;
+    	}
+    	else{
+    		System.out.println("No valid plane");
+    		throw new IllegalArgumentException();
+    	}
+    }
 }

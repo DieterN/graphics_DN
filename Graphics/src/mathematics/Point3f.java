@@ -58,13 +58,13 @@ public class Point3f extends Tuple3f implements Serializable
     }
 
     public void setPointValueOfAxis(int axis, float value){
-    	if(axis == 00){//x-as
+    	if(axis == 0){//x-as
     		this.x = value;
     	}
-    	else if(axis == 01){//y-as
+    	else if(axis == 1){//y-as
     		this.y = value;
     	}
-    	else if(axis == 10){//z-as
+    	else if(axis == 2){//z-as
     		this.z = value;
     	}
     	else{
@@ -72,6 +72,21 @@ public class Point3f extends Tuple3f implements Serializable
     		throw new IllegalArgumentException();
     	}
     }
-    
+
+    public float getPointValueOfAxis(int axis){
+    	if(axis == 0){//x-as
+    		return this.x;
+    	}
+    	else if(axis == 1){//y-as
+    		return this.y;
+    	}
+    	else if(axis == 2){//z-as
+    		return this.z;
+    	}
+    	else{
+    		System.out.println("No valid plane");
+    		throw new IllegalArgumentException();
+    	}
+    }
 
 }

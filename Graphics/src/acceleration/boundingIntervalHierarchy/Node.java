@@ -1,63 +1,72 @@
 package acceleration.boundingIntervalHierarchy;
 
 import geometry.BoundingBox;
+import imagedraw.HitRecord;
 
-import java.util.List;
-
+import rays.Ray;
 import mathematics.Point3f;
 
 public class Node {
 
-	private final int nbOfObjectsInOneNode = 1;
-	private int splitPlane; //(00=x,01=y,10=z,11=leaf,-1=invalid)
-	private int left; //first object of this node in array
-	private int right; //last object of this node in array
-	private float leftClip; //value of left clipPlane, empty when leafNode
-	private float rightClip; //value of right clipPlane, empty when leafNode
-	private Node leftNode; // left child node
-	private Node rightNode; // right child node
+	private static final int nbOfObjectsInOneNode = 1;
+	private static final int maxNbOfSplits = 10;
+	private int splitPlane; //(0=x,1=y,2=z,3=leaf,-1=invalid)
+	private int indexFirstElement; //first object of this node in array
+	private int indexLastElement; //last object of this node in array
+	private float[] clipPlanes = new float[2]; //value of left and right clipPlane, empty when leafNode, this is array, cause useful when hitting
+	private Node[] nodes = new Node[2]; // left and right child node
 	private BoundingBox[] objects; //list with bounding boxes of all objects in this node
 	
-	public Node(BoundingBox box, BoundingBox[] objects, int left, int right){ //TODO : depth??
-		initialiseNode(box,objects,left,right);
+	
+	/**********************
+	 *** CONSTRUCT NODE ***
+	 **********************/
+	
+	public Node(BoundingBox box, BoundingBox[] objects){
+		initialiseNode(box,objects,0,objects.length-1,0);
 	}
 	
-	private void initialiseNode(BoundingBox box, BoundingBox[] objects, int left, int right){
-		int nbObjects = right-left; //right is first element of this node, left is first element of this node
+	private Node(BoundingBox box, BoundingBox[] objects, int indexFirstElement, int indexLastElement, int nbOfSplits){
+		initialiseNode(box,objects,indexFirstElement,indexLastElement,nbOfSplits);
+	}
+	
+	private void initialiseNode(BoundingBox box, BoundingBox[] objects, int indexFirstElement, int indexLastElement, int nbOfSplits){
+		this.objects = objects;
+		int nbObjects = indexLastElement-indexFirstElement+1; //right is first element of this node, left is first element of this node
 		if(nbObjects <= 0) { 
-			//empty node (TODO?)
+			//empty node --> shouldn't happen
+			System.out.println("Impossible empty node");
 		}
-		else if(nbObjects <= nbOfObjectsInOneNode){ //min nbOfObjectsInNode reached
-			makeLeaf(box, objects,left,right);
+		else if(nbObjects <= nbOfObjectsInOneNode || nbOfSplits >= maxNbOfSplits){ //min nbOfObjectsInNode or max nb splits reached
+			makeLeaf(box, objects,indexFirstElement,indexLastElement);
 		}
 		else{
-			makeNormalNode(box, objects, left, right);
+			makeNormalNode(box, objects, indexFirstElement, indexLastElement, nbOfSplits);
 		}
 	}
 	
-	private void makeLeaf(BoundingBox box, BoundingBox[] objects, int left, int right){
-		this.splitPlane = 11; //leaf
-		this.leftClip = 0;
-		this.rightClip = 0;
-		this.left = left;
-		this.right = right;
-		this.leftNode = null;
-		this.rightNode = null;
-		this.objects = objects; //TODO : objects get left tot right??
+	private void makeLeaf(BoundingBox box, BoundingBox[] objects, int indexFirstElement, int indexLastElement){
+		this.splitPlane = 3; //leaf
+		this.clipPlanes[0] = 0;
+		this.clipPlanes[1] = 0;
+		this.indexFirstElement = indexFirstElement;
+		this.indexLastElement = indexLastElement;
+		nodes[0] = null;
+		nodes[1] = null;
+		this.objects = objects;
 	}
 	
-	private void makeNormalNode(BoundingBox box, BoundingBox[] objects, int left, int right){
+	private void makeNormalNode(BoundingBox box, BoundingBox[] objects, int indexFirstElement, int indexLastElement, int nbOfSplits){
 		splitPlane = box.getLongestAxis(); // return the longestAxis of this box, so you know which
-		this.left = left; //initialise this box
-		this.right = right; //initialise this box
-		//TODO : objects get left tot right??
+		this.indexFirstElement = indexFirstElement; //initialise this box
+		this.indexLastElement = indexLastElement; //initialise this box
 		float splitValue = box.getCenterOfAxis(splitPlane); //return the center of the axis, value to split at
 		SplitInfo info = splitObjectsInTwoGroups(splitValue,objects); //information about the split
 		//We now have information about which objects should be in which child node
 		//To continue, we calculate the new bounding box for this child nodes, so we can initialise them recursively
 		BoundingBox[] boxes = calculateBoundingBoxes(box, splitValue); //first element in array is new left box, second is new right box
 		//Finally use all this information to make the child nodes
-		makeChildNodes(info,boxes);
+		makeChildNodes(info,boxes,nbOfSplits);
 	}
 	
 	private SplitInfo splitObjectsInTwoGroups(float splitValue, BoundingBox[] objects){
@@ -65,44 +74,44 @@ public class Node {
 		float maxL = -Float.MAX_VALUE; //maxX
 		float minR = Float.MAX_VALUE; //minY
 		float maxR = -Float.MAX_VALUE; //maxY
-		int j = right; //TODO : als lijst kleiner is, gewoon die overlopen
-		int i = left;
-		while(i <= j){
-			BoundingBox box = objects[i].getBox(); //get box of everything in this node
+		int left = indexFirstElement;
+		int right = indexLastElement;
+		while(left <= right){
+			BoundingBox box = objects[left]; //get box of everything in this node
 			float center = box.getCenterOfAxis(splitPlane); //attention, splitPlane should be initialised
 			float minB = box.getMinOfAxis(splitPlane); //minimum of box along axis
 			float maxB = box.getMaxOfAxis(splitPlane); //maximum of box along axis
 			if(center <= splitValue){ //check side at which box is, left
 				if(minB < minL){ minL = minB; } //adjust box parameters
 				if(maxB > maxL){ maxL = maxB; } 
-				//don't sort, left objects already left, just increase i, cause this element is sorted
-				i++;
+				//don't sort, left objects already left, just increase left, cause this element is sorted
+				left++;
 			}
 			else{ //right
 				if(minB < minR){ minR = minB; } //adjust box parameters
 				if(maxB > maxR){ maxR = maxB; } 
 				//sort, this object is right, so should be at other side of array
-				if(i != j){ //if i = j, than it's already sorted --> only one element to sort left
-					BoundingBox tempBox = objects[i];
-					objects[i] = objects[j];
-					objects[j] = tempBox;
+				if(left != right){ //if left = right, than it's already sorted --> only one element to sort left
+					BoundingBox tempBox = objects[left];
+					objects[left] = objects[right];
+					objects[right] = tempBox;
 				}
-				//now decrease j, cause j th element is sorted
-				j--;
+				//now decrease right, cause right th element is sorted
+				right--;
 			}
 		}
-		//i is now the first element that will be in the right box after splitting
-		return new SplitInfo(minL,maxL,minR,maxR,i,j);
+		//left is now the first element that will be in the right box after splitting
+		return new SplitInfo(minL,maxL,minR,maxR,left,right);
 	}
 
 	
 	private BoundingBox[] calculateBoundingBoxes(BoundingBox box, float splitValue) {
 		BoundingBox[] resultBoxes = new BoundingBox[2];
 		Point3f[] bounds = box.getBounds(); //get 2 points of box, adjust planes along the splitAxis
-		Point3f small = bounds[0];
-		Point3f large = bounds[1];
-		Point3f newSmallRight = small;
-		Point3f newLargeLeft = large;
+		Point3f small = new Point3f(bounds[0]);
+		Point3f large = new Point3f(bounds[1]);
+		Point3f newSmallRight = new Point3f(small);
+		Point3f newLargeLeft = new Point3f(large);
 		newSmallRight.setPointValueOfAxis(splitPlane,splitValue); //replace smallest value along axis with splitValue for right node
 		newLargeLeft.setPointValueOfAxis(splitPlane,splitValue); //replace greatest value along axis with splitValue for left node
 		resultBoxes[0] = new BoundingBox(small,newLargeLeft); //new left box
@@ -110,26 +119,114 @@ public class Node {
 		return resultBoxes;
 	}
 
-	private void makeChildNodes(SplitInfo info, BoundingBox[] boxes) {
-		int i = info.getI();
-		if(i > right){ //i was first element of right box, so if i is greater than right, than right box is empty
-			leftClip = info.getMinL(); //FIXME: single node --> check clipping --> special way? //minR en maxR are infinity
-			rightClip = info.getMaxL(); 
-			leftNode = new Node(boxes[0],objects,left,i-1); //recursively split this node further
-			rightNode = null;
+	private void makeChildNodes(SplitInfo info, BoundingBox[] boxes, int nbOfSplits) {
+		int left = info.getLeft();
+		if(left > indexLastElement){ //left was first element of right box, so if left is greater than indexLastElement, than right box is empty
+			clipPlanes[0] = info.getMinL(); //minR en maxR are infinity --> special way
+			clipPlanes[1] = info.getMaxL(); //since we only have one node, we can clip left side too
+			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
+			nodes[1] = null;
 		}
-		else if(i <= left){ //i was first element of right box, so if i is equam to or smaller than left, left box is empty
-			leftClip = info.getMinR(); //FIXME: single node --> check clipping --> special way? //minL en maxL are infinity
-			rightClip = info.getMaxR(); 
-			leftNode = null;
-			rightNode = new Node(boxes[1],objects,i,right); //recursively split this node further
+		else if(left <= indexFirstElement){ //left was first element of right box, so if left is equal to or smaller than indexFirstElement, left box is empty
+			clipPlanes[0] = info.getMinR(); //minL en maxL are infinity --> special way
+			clipPlanes[1] = info.getMaxR(); 
+			nodes[0] = null;
+			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
 		}
 		else{//both nodes are filled
-			leftClip = info.getMaxL();
-			rightClip = info.getMinR(); 
-			leftNode = new Node(boxes[0],objects,left,i-1); //recursively split this node further
-			rightNode = new Node(boxes[1],objects,i,right); //recursively split this node further
+			clipPlanes[0] = info.getMaxL();
+			clipPlanes[1] = info.getMinR(); 
+			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
+			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
 		}
 	}
 
+	/****************
+	 *** HIT NODE ***
+	 ****************/
+	
+	//TODO : check
+	public HitRecord hit(Ray ray, float minHitT, float maxHitT){ 
+		//(minHitT needed for recursion, initialise this value to min hit of boundingbox containing this bounding interval hierarchy)
+		//(maxHitT needed for recursion, initialise this value to max hit of boundingbox containing this bounding interval hierarchy)
+		//check for leaf node first
+		if(splitPlane == 3){
+			return hitLeaf(ray,minHitT,maxHitT); //check for min, max, null is done in hitLeaf method
+		}
+		//else : look at which childNodes of this node are hit
+		//do this by hitting the two clipping planes
+		int signOfRay = ray.getSign()[splitPlane];
+		float invDirection = ray.getInv_directionOfAxis(splitPlane);
+		float direction = ray.getDirection().getVectorValueOfAxis(splitPlane);
+		float viewPoint = ray.getViewPoint().getPointValueOfAxis(splitPlane);
+		float tClipSmall = (clipPlanes[signOfRay] - viewPoint) * invDirection;
+		float tClipLarge = (clipPlanes[1 - signOfRay] - viewPoint) * invDirection;
+		
+		if(direction == 0){
+			//inverseDirection is infinity, so we can't see what is hit, just try intersecting both planes
+			if(nodes[0] != null && nodes[1] == null){ //if node has only one childnode, just hit that one
+				return nodes[0].hit(ray, minHitT, maxHitT);
+			}
+			return hitBothPlanes(ray, minHitT, maxHitT);
+		}
+		else{
+			if(nodes[0] != null && nodes[1] == null){
+				//the planes for this kind of nodes are other than the planes for a normal node, since we had infinity problems
+				if(maxHitT < tClipSmall || tClipLarge < minHitT){ //not hitting 
+					return null;
+				}
+				else{
+					return nodes[0].hit(ray, minHitT, maxHitT); //only this node is filled
+				}
+			}			
+			if(tClipSmall < minHitT){ //first plane isn't hit, since box hit is further than hit of this plane
+				if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
+					//trying to hit something but, ray goes between planes or something has been hit closer than last plane
+					return null;
+				}
+				else{ //going through last plane
+					return nodes[1-signOfRay].hit(ray, minHitT, maxHitT); //just hit last plane recursive with same parameters
+				}
+			}
+			else{ //going through first plane
+				if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
+					return nodes[signOfRay].hit(ray, minHitT, maxHitT); //just hit first plane recursive with same parameters
+				}
+				else{
+					return hitBothPlanes(ray, minHitT, maxHitT);
+				}				
+			}
+		}
+	}
+
+	private HitRecord hitBothPlanes(Ray ray, float minHitT, float maxHitT) {
+		HitRecord result = null;
+		float smallest_t = maxHitT;
+		HitRecord left = nodes[0].hit(ray, minHitT, maxHitT);
+		if(left != null){
+			smallest_t = left.getT(); //normally this is closer
+			result = left;
+		}
+		HitRecord right = nodes[1].hit(ray, minHitT, smallest_t); //hit right with updated t distance
+		if(right != null){
+			result = right; //something has been hit closer in right
+		}
+		return result;
+	}
+	
+	private HitRecord hitLeaf(Ray ray, float minHitT, float maxHitT){
+		HitRecord smallest = null;
+		float smallest_t = maxHitT;
+		for(int i = indexFirstElement; i<=indexLastElement; i++){
+			BoundingBox box = objects[i];
+			HitRecord hr = box.rayObjectHit(ray);
+			if(hr != null){
+				if(hr.getT() >= minHitT && hr.getT() <= smallest_t){
+					smallest = hr;
+					smallest_t = hr.getT();
+				}
+			}
+		}
+		return smallest;
+	}
 }

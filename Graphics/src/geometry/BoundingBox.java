@@ -210,6 +210,54 @@ public class BoundingBox extends Geometry{
 		GridHitInfo ghi = new GridHitInfo(entryPoint, tmin);
 		return ghi;
 	}
+	
+	/**
+	 * Return t values at which box is entered and left
+	 */
+	public float[] getMinAndMaxForBIH(Ray ray) {
+		float[] result = new float[2];
+ 		int[] sign = ray.getSign();
+		float invDirectionX = ray.getInv_directionX();
+		float invDirectionY = ray.getInv_directionY();
+		float originX = ray.getViewPoint().x;
+		float originY = ray.getViewPoint().y;
+		
+		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
+		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
+		float tymin = (bounds[sign[1]].y - originY) * invDirectionY;
+		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
+		//check if these two intervals overlap, if not, return null
+		if(tmin > tymax || tymin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tymin > tmin){
+			tmin = tymin;
+		}//and take the smallest max value
+		if(tymax < tmax){
+			tmax = tymax;
+		}
+		
+		float invDirectionZ = ray.getInv_directionZ();
+		float originZ = ray.getViewPoint().z;
+		
+		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
+		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
+		
+		//check if the three intervals overlap, if not, return null
+		if(tmin > tzmax || tzmin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tzmin > tmin){
+			tmin = tzmin;
+		}//and take the smallest max value
+		if(tzmax < tmax){
+			tmax = tzmax;
+		}
+		
+		result[0] = tmin;
+		result[1] = tmax;
+		return result;
+	}
 
 	@Override
 	public void initialiseBBParameters() {
@@ -227,18 +275,18 @@ public class BoundingBox extends Geometry{
 	public int getLongestAxis() {
 		if((bounds[1].x-bounds[0].x) >= (bounds[1].y-bounds[0].y)){//x-axis longer than y-axis
 			if((bounds[1].x-bounds[0].x) >= (bounds[1].z-bounds[0].z)){//x-axis longer than z-axis
-				return 00;
+				return 0;
 			}
 			else{ //z-axis longer than x-axis, and x-axis longer than y-axis
-				return 10;
+				return 2;
 			}
 		}
 		else{ //y-axis longer than x-axis
 			if((bounds[1].y-bounds[0].y) >= (bounds[1].z-bounds[0].z)){ //y-axis longer than z-axis
-				return 01;
+				return 1;
 			}
 			else{ //z-axis longer than y-axis, and y-axis longer than x-axis
-				return 10;
+				return 2;
 			}
 		}
 	}
@@ -248,13 +296,13 @@ public class BoundingBox extends Geometry{
 	 * x = 00, y = 01, z = 10
 	 */
 	public float getCenterOfAxis(int splitPlane) {
-		if(splitPlane == 00){
+		if(splitPlane == 0){
 			return (bounds[1].x+bounds[0].x)/2;
 		}
-		else if(splitPlane == 01){
+		else if(splitPlane == 1){
 			return (bounds[1].y+bounds[0].y)/2;
 		}
-		else if(splitPlane == 10){
+		else if(splitPlane == 2){
 			return (bounds[1].z+bounds[0].z)/2;
 		}
 		else{
@@ -264,13 +312,13 @@ public class BoundingBox extends Geometry{
 	}
 
 	public float getMinOfAxis(int splitPlane) {
-		if(splitPlane == 00){
+		if(splitPlane == 0){
 			return bounds[0].x;
 		}
-		else if(splitPlane == 01){
+		else if(splitPlane == 1){
 			return bounds[0].y;
 		}
-		else if(splitPlane == 10){
+		else if(splitPlane == 2){
 			return bounds[0].z;
 		}
 		else{
@@ -280,13 +328,13 @@ public class BoundingBox extends Geometry{
 	}
 
 	public float getMaxOfAxis(int splitPlane) {
-		if(splitPlane == 00){
+		if(splitPlane == 0){
 			return bounds[1].x;
 		}
-		else if(splitPlane == 01){
+		else if(splitPlane == 1){
 			return bounds[1].y;
 		}
-		else if(splitPlane == 10){
+		else if(splitPlane == 2){
 			return bounds[1].z;
 		}
 		else{

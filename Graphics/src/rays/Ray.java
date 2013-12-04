@@ -92,4 +92,17 @@ public class Ray {
 	public int[] getSign() {
 		return sign;
 	}
+	
+	public float getInv_directionOfAxis(int axis){
+		if(axis == 00){
+			return inv_directionX;
+		}
+		if(axis == 01){
+			return inv_directionY;
+		}
+		if(axis == 10){
+			return inv_directionZ;
+		}
+		throw new IllegalArgumentException();
+	}
 }

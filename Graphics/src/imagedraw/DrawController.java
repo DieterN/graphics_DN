@@ -15,7 +15,7 @@ public abstract class DrawController {
 	protected final boolean ambient = true;
 	protected final float ambientFactor = 0.2f;
 	protected final boolean shading = true;
-	protected final boolean reflection = true;
+	protected final boolean reflection = false;
 	protected final int reflectionDepth = 1;
 	public static boolean accelerated = false;
 	public static boolean falseColorImage = false;
@@ -35,7 +35,7 @@ public abstract class DrawController {
 	}
 
 	private Color3f calculateColor(HitRecord hr, int i) {
-		Color3f color = new Color3f();
+		Color3f color = new Color3f(); //TODO :background?
 		if(hr != null){	
 			if(ambient){ // ambient
 				color.x = hr.getColor().x*ambientFactor;
@@ -180,6 +180,9 @@ public abstract class DrawController {
 	}
 	
 	public static void setCurrentPixel(int i){
+		if(i == 103928){
+			System.out.println("BREAK");
+		}
 		currentPixel = i;
 	}
 }

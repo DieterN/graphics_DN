@@ -1,14 +1,19 @@
 package acceleration.boundingIntervalHierarchy;
 
+import imagedraw.HitRecord;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import rays.Ray;
 import geometry.BoundingBox;
 import geometry.Geometry;
 
 public class BoundingIntervalHierarchy {
 
 	private Node rootNode; //box containing complete scene
+	private BoundingBox box;
+	private static final float epsilon = 0.05f;
 	
 	public BoundingIntervalHierarchy(List<? extends Geometry> geometry) {
 		calculateRootBoundingBox(geometry);
@@ -42,30 +47,16 @@ public class BoundingIntervalHierarchy {
 			if(box.getMaxZ() > maxZ){ maxZ = box.getMaxZ();}
 			i++;
 		}
-		
-		rootNode = new Node(new BoundingBox(minX-0.05f,maxX+0.05f,minY-0.05f,maxY+0.05f,minZ-0.05f,maxZ+0.05f),objects,0,geo.size()-1);
+		this.box = new BoundingBox(minX-epsilon,maxX+epsilon,minY-epsilon,maxY+epsilon,minZ-epsilon,maxZ+epsilon);
+		rootNode = new Node(box,objects);
 	}
 	
-//	/**
-//	 * Split the given node in 2 seperate nodes
-//	 */
-//	private void splitNode(Node node){
-//		if(node.getObjects().size() <= 1){
-//			System.out.println("Don't split, only 1 or less object left");
-//			node.setSplitPlane(11); //leaf
-//		}
-//		int splitPlane = node.getSplitPlane(); //plane to split, x=00, y=01, z=10
-//		float splitValue = node.getBox().getCenterOfAxis(splitPlane);
-//		List<BoundingBox> left = new ArrayList<BoundingBox>();
-//		List<BoundingBox> right = new ArrayList<BoundingBox>();
-//		for(BoundingBox b : node.getObjects()){ //split the boxes in this cell in left and right
-//			if(b.getCenterOfAxis(splitPlane) <= splitValue){
-//				left.add(b);
-//			}
-//			else{
-//				right.add(b);
-//			}
-//		}
-//		//calculate the splitPlanes for left and right, make new nodes and at them to node?
-//	}
+	public HitRecord hit(Ray ray){
+		HitRecord hr = null;
+		float[] t = this.box.getMinAndMaxForBIH(ray);
+		if(t != null){
+			hr = this.rootNode.hit(ray, t[0], t[1]);
+		}
+		return hr;
+	}
 }

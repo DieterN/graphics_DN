@@ -6,17 +6,17 @@ public class SplitInfo {
 	private float maxL;
 	private float minR;
 	private float maxR;
-	private int i;
-	private int j;
+	private int left;
+	private int right;
 	
-	public SplitInfo(float minL, float maxL, float minR, float maxR, int i,int j) {
+	public SplitInfo(float minL, float maxL, float minR, float maxR, int left, int right) {
 		super();
 		this.minL = minL;
 		this.maxL = maxL;
 		this.minR = minR;
 		this.maxR = maxR;
-		this.i = i;
-		this.j = j;
+		this.left = left;
+		this.right = right;
 	}
 
 	public float getMinL() {
@@ -51,19 +51,19 @@ public class SplitInfo {
 		this.maxR = maxR;
 	}
 
-	public int getI() {
-		return i;
+	public int getLeft() {
+		return left;
 	}
 
-	public void setI(int i) {
-		this.i = i;
+	public void setLeft(int left) {
+		this.left = left;
 	}
 
-	public int getJ() {
-		return j;
+	public int getRight() {
+		return right;
 	}
 
-	public void setJ(int j) {
-		this.j = j;
+	public void setRight(int right) {
+		this.right = right;
 	}
 }
