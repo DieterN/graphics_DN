@@ -16,7 +16,8 @@ public class Draw implements MouseListener{
 	}
 
 	private DrawController ic;
-//  bepaal of je object of Ray transformeert door het type IC Controller (set in Draw() constructor)
+    // bepaal of je object of Ray transformeert door het type IC Controller (set in Draw() constructor)
+	// je kan ook kiezen om met een CompactGrid of Bounding Interval Hierarchy te werken
 	private JFrame frame;
 	private CgPanel panel;
 	private Scene scene;
@@ -24,9 +25,9 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/sphere.sdl");
-//			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
-			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+			scene = sceneBuilder.loadScene("XML/basis.sdl");
+			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+//			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformRay(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 		}

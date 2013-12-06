@@ -4,16 +4,18 @@ import materials.Material;
 import mathematics.Color3f;
 import mathematics.Matrix4f;
 
-public abstract class ConcreteGeomerty extends Geometry{
+public abstract class ConcreteGeometry extends Geometry{
 	
 	protected String name;
 	protected Material material;
 	protected Color3f color;
 
-	public ConcreteGeomerty(String name) {
+	public ConcreteGeometry(String name) {
 		super();
 		this.name = name;
 	}
+	
+	public abstract ConcreteGeometry getInstance();
 	
 	public String getName() {
 		return name;

@@ -9,7 +9,7 @@ import mathematics.Point3f;
 public class Node {
 
 	private static final int nbOfObjectsInOneNode = 1;
-	private static final int maxNbOfSplits = 10;
+	private static final int maxNbOfSplits = 2;
 	private int splitPlane; //(0=x,1=y,2=z,3=leaf,-1=invalid)
 	private int indexFirstElement; //first object of this node in array
 	private int indexLastElement; //last object of this node in array
@@ -34,8 +34,7 @@ public class Node {
 		this.objects = objects;
 		int nbObjects = indexLastElement-indexFirstElement+1; //right is first element of this node, left is first element of this node
 		if(nbObjects <= 0) { 
-			//empty node --> shouldn't happen
-			System.out.println("Impossible empty node");
+			makeEmptyNode();
 		}
 		else if(nbObjects <= nbOfObjectsInOneNode || nbOfSplits >= maxNbOfSplits){ //min nbOfObjectsInNode or max nb splits reached
 			makeLeaf(box, objects,indexFirstElement,indexLastElement);
@@ -54,6 +53,17 @@ public class Node {
 		nodes[0] = null;
 		nodes[1] = null;
 		this.objects = objects;
+	}
+	
+	private void makeEmptyNode(){
+		this.splitPlane = 4; //empty
+		this.clipPlanes[0] = 0;
+		this.clipPlanes[1] = 0;
+		this.indexFirstElement = 0;
+		this.indexLastElement = 0;
+		nodes[0] = null;
+		nodes[1] = null;
+		this.objects = null;
 	}
 	
 	private void makeNormalNode(BoundingBox box, BoundingBox[] objects, int indexFirstElement, int indexLastElement, int nbOfSplits){
@@ -121,37 +131,40 @@ public class Node {
 
 	private void makeChildNodes(SplitInfo info, BoundingBox[] boxes, int nbOfSplits) {
 		int left = info.getLeft();
-		if(left > indexLastElement){ //left was first element of right box, so if left is greater than indexLastElement, than right box is empty
-			clipPlanes[0] = info.getMinL(); //minR en maxR are infinity --> special way
-			clipPlanes[1] = info.getMaxL(); //since we only have one node, we can clip left side too
-			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
-			nodes[1] = null;
-		}
-		else if(left <= indexFirstElement){ //left was first element of right box, so if left is equal to or smaller than indexFirstElement, left box is empty
-			clipPlanes[0] = info.getMinR(); //minL en maxL are infinity --> special way
-			clipPlanes[1] = info.getMaxR(); 
-			nodes[0] = null;
-			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
-		}
-		else{//both nodes are filled
+//		if(left > indexLastElement){ //left was first element of right box, so if left is greater than indexLastElement, than right box is empty
+//			clipPlanes[0] = info.getMinL(); //minR en maxR are infinity --> special way
+//			clipPlanes[1] = info.getMaxL(); //since we only have one node, we can clip left side too
+//			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
+//			nodes[1] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //this will become an empty node
+//		}
+//		else if(left <= indexFirstElement){ //left was first element of right box, so if left is equal to or smaller than indexFirstElement, left box is empty
+//			clipPlanes[0] = info.getMinR(); //minL en maxL are infinity --> special way
+//			clipPlanes[1] = info.getMaxR(); 
+//			nodes[0] = new Node(boxes[1],objects,indexFirstElement,left-1,nbOfSplits+1); //this will become an empty node
+//			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
+//		}
+//		else{//both nodes are filled
 			clipPlanes[0] = info.getMaxL();
 			clipPlanes[1] = info.getMinR(); 
 			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
 			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
-		}
+//		}
 	}
 
 	/****************
 	 *** HIT NODE ***
 	 ****************/
 	
-	//TODO : check
 	public HitRecord hit(Ray ray, float minHitT, float maxHitT){ 
 		//(minHitT needed for recursion, initialise this value to min hit of boundingbox containing this bounding interval hierarchy)
 		//(maxHitT needed for recursion, initialise this value to max hit of boundingbox containing this bounding interval hierarchy)
 		//check for leaf node first
 		if(splitPlane == 3){
 			return hitLeaf(ray,minHitT,maxHitT); //check for min, max, null is done in hitLeaf method
+		}
+		
+		if(splitPlane == 4){
+			return null; //empty node
 		}
 		//else : look at which childNodes of this node are hit
 		//do this by hitting the two clipping planes
@@ -164,38 +177,36 @@ public class Node {
 		
 		if(direction == 0){
 			//inverseDirection is infinity, so we can't see what is hit, just try intersecting both planes
-			if(nodes[0] != null && nodes[1] == null){ //if node has only one childnode, just hit that one
-				return nodes[0].hit(ray, minHitT, maxHitT);
-			}
+//			if(nodes[0] != null && nodes[1].getSplitPlane() == 4){ //if node has only one childnode, just hit that one
+//				return nodes[0].hit(ray, minHitT, maxHitT);
+//			}
 			return hitBothPlanes(ray, minHitT, maxHitT);
 		}
-		else{
-			if(nodes[0] != null && nodes[1] == null){
-				//the planes for this kind of nodes are other than the planes for a normal node, since we had infinity problems
-				if(maxHitT < tClipSmall || tClipLarge < minHitT){ //not hitting 
-					return null;
-				}
-				else{
-					return nodes[0].hit(ray, minHitT, maxHitT); //only this node is filled
-				}
-			}			
-			if(tClipSmall < minHitT){ //first plane isn't hit, since box hit is further than hit of this plane
-				if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
-					//trying to hit something but, ray goes between planes or something has been hit closer than last plane
-					return null;
-				}
-				else{ //going through last plane
-					return nodes[1-signOfRay].hit(ray, minHitT, maxHitT); //just hit last plane recursive with same parameters
-				}
+//		if(nodes[0] != null && nodes[1].getSplitPlane() == 4){
+//			//the planes for this kind of nodes are other than the planes for a normal node, since we had infinity problems
+//			if(maxHitT < tClipSmall || tClipLarge < minHitT){ //not hitting 
+//				return null;
+//			}
+//			else{
+//				return nodes[0].hit(ray, minHitT, maxHitT); //only this node is filled
+//			}
+//		}			
+		if(tClipSmall < minHitT){ //first plane isn't hit, since box hit is further than hit of this plane
+			if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
+				//trying to hit something but, ray goes between planes or something has been hit closer than last plane
+				return null;
 			}
-			else{ //going through first plane
-				if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
-					return nodes[signOfRay].hit(ray, minHitT, maxHitT); //just hit first plane recursive with same parameters
-				}
-				else{
-					return hitBothPlanes(ray, minHitT, maxHitT);
-				}				
+			else{ //going through last plane
+				return nodes[1-signOfRay].hit(ray, minHitT, maxHitT); //just hit last plane recursive with same parameters
 			}
+		}
+		else{ //going through first plane
+			if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
+				return nodes[signOfRay].hit(ray, minHitT, maxHitT); //just hit first plane recursive with same parameters
+			}
+			else{
+				return hitBothPlanes(ray, minHitT, maxHitT);
+			}				
 		}
 	}
 
@@ -228,5 +239,9 @@ public class Node {
 			}
 		}
 		return smallest;
+	}
+
+	private int getSplitPlane() {
+		return this.splitPlane;
 	}
 }

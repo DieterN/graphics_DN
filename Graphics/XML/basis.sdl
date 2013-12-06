@@ -8,29 +8,28 @@
    </Cameras>   
    
    <Lights>
-      <PointLight position="0 5 10" intensity="1" color="1 1 1" name="light0" />
+      <PointLight position="0 10 10" intensity="1" color="1 1 1" name="light0" />
       <PointLight position="10 10 0" intensity="1" color="1 1 1" name="light1" />
    </Lights>
    
    <Geometry>
    	   <Object fileName="sphere.obj" name="sphere" />
-   	   <Object fileName="sphere.obj" name="sphere2" />
    	   <Object fileName="plane.obj" name="plane" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.3 0.3 0.3" reflectiveFactor="0.2" name="dif1"/> 
-      <DiffuseMaterial color="0 1 0" reflectiveFactor="0.5" name="dif2"/> 
-      <PhongMaterial color="0.25 0.25 1" shininess="50" reflectiveFactor="0.3" name="phong1" />  
+      <DiffuseMaterial color="0.1 0.1 0.1" reflectiveFactor="0.2" name="dif1"/> 
+      <DiffuseMaterial color="0 1 0" reflectiveFactor="0.3" name="dif2"/> 
+      <PhongMaterial color="0.25 0.25 1" shininess="50" reflectiveFactor="0.4" name="phong1" />  
       <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
    </Materials>   
    
-   <Scene camera="perspectiveCam" lights="light0,light1" background="0.3 0.3 0.3">
-		<Translate vector="0 1 0">
-			<Shape geometry="sphere" material="dif2"/>
+   <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
+		<Translate vector="-2.5 0.980785 0">
+			<Shape geometry="sphere" material="lc1"/>
 		</Translate>
-		<Translate vector="5 1 0">
-			<Shape geometry="sphere2" material="phong1"/>
+		<Translate vector="2.5 0.980785 0">
+			<Shape geometry="sphere" material="dif2"/>
 		</Translate>
 		<Scale scale="80 80 80">
 			<Shape geometry="plane" material="dif1"/>

@@ -1,6 +1,7 @@
 package scenebuilder;
 
 import geometry.*;
+import imagedraw.DrawController;
 
 import java.util.*;
 
@@ -8,13 +9,13 @@ import mathematics.Matrix4f;
 
 public class GeometryGroup {
 	
-	private List<ConcreteGeomerty> geometry = new ArrayList<ConcreteGeomerty>();
+	private List<ConcreteGeometry> geometry = new ArrayList<ConcreteGeometry>();
 	private Matrix4f transformationMatrix;
 	private Matrix4f inverseTransformationMatrix;
 	private List<GeometryGroup> children = new ArrayList<GeometryGroup>();
 	private boolean closed = false;
 	
-	public GeometryGroup(ConcreteGeomerty geometry){
+	public GeometryGroup(ConcreteGeometry geometry){
 		addGeometry(geometry);
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
@@ -22,12 +23,21 @@ public class GeometryGroup {
 		this.inverseTransformationMatrix = matrix;// initialiseer op identiteit
 	}
 
-	public List<ConcreteGeomerty> getGeometry() {
+	public List<ConcreteGeometry> getGeometry() {
 		return geometry;
 	}
 
-	public void addGeometry(ConcreteGeomerty geometry) {
-			this.geometry.add(geometry);
+	public void addGeometry(ConcreteGeometry geometry) {
+		if(DrawController.useTrianglesInsteadOfMesh){ //TODO
+			if(geometry instanceof IndexedTriangleSet){
+				for(Triangle t : ((IndexedTriangleSet) geometry).getTriangles()){
+					this.geometry.add(t);
+				}
+			}
+		}
+		else{
+			this.geometry.add(geometry);			
+		}
 	}
 
 	public Matrix4f getTransformationMatrix() {

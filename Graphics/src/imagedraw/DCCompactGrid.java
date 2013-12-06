@@ -11,7 +11,11 @@ public class DCCompactGrid extends DrawController{
 	public DCCompactGrid(Scene scene){
 		super(scene);
 		accelerated = true; //set this to construct a grid in the IndexedTriangleSet
-		this.grid = new CompactGrid(scene.getUsedGeometryTransformed()); //TODO : hier stond scenegraph + time
+		long begintime = System.currentTimeMillis();
+		this.grid = new CompactGrid(scene.getUsedGeometryTransformed());
+		System.out.println("Building Compact Grid");
+		long endtime = System.currentTimeMillis();
+		System.out.println("Done in: " + (endtime - begintime) + " ms");
 	}
 	
 	@Override

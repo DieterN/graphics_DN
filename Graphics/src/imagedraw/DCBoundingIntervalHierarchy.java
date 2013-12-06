@@ -1,6 +1,7 @@
 package imagedraw;
 
 import acceleration.boundingIntervalHierarchy.BoundingIntervalHierarchy;
+import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import scenebuilder.Scene;
 
@@ -10,7 +11,12 @@ public class DCBoundingIntervalHierarchy extends DrawController{
 	
 	public DCBoundingIntervalHierarchy(Scene scene) {
 		super(scene);
-		bih = new BoundingIntervalHierarchy(scene.getUsedGeometryTransformed()); //time
+		useTrianglesInsteadOfMesh = true;
+		long begintime = System.currentTimeMillis();
+		bih = new BoundingIntervalHierarchy(scene.getUsedGeometryTransformed());
+		System.out.println("Building Bounding Interval Hierarchy");
+		long endtime = System.currentTimeMillis();
+		System.out.println("Done in: " + (endtime - begintime) + " ms");
 	}
 
 	@Override

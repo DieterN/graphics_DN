@@ -94,13 +94,13 @@ public class Ray {
 	}
 	
 	public float getInv_directionOfAxis(int axis){
-		if(axis == 00){
+		if(axis == 0){
 			return inv_directionX;
 		}
-		if(axis == 01){
+		if(axis == 1){
 			return inv_directionY;
 		}
-		if(axis == 10){
+		if(axis == 2){
 			return inv_directionZ;
 		}
 		throw new IllegalArgumentException();

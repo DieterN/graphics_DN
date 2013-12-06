@@ -3,7 +3,7 @@
 
 <Sdl>
    <Cameras>
-      <Camera position="0 5 80" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
+      <Camera position="0 10 0" direction="0 1 0" up="0 0 1" fovy="80" name="perspectiveCam" /> 
    </Cameras>   
    
    <Lights>
@@ -11,8 +11,7 @@
    </Lights>
    
    <Geometry>
-   	   <Sphere radius="5" name="sphere" />
-   	   <IndexedTriangleSet coordinates="0 0 0, 0 10 0, 10 0 0, 10 10 0" coordinateIndices="0, 3, 1, 0, 2, 3" name="index1" />
+   	   <Object fileName="sphere.obj" name="sphere" />
    </Geometry>
    
    <Materials>
@@ -23,9 +22,6 @@
    </Materials>   
    
    <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-		<Shape geometry="index1" material="lc1" />
-		<Translate vector="-10 -10 0">
-			<Shape geometry="sphere" material="dif2"/>
-		</Translate>
+		<Shape geometry="sphere" material="lc1" />
    </Scene>
 </Sdl>

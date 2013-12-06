@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE Sdl SYSTEM "sdl.dtd">
+
+<Sdl>
+   <Cameras>
+      <Camera position="0 0 30" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
+   </Cameras>   
+   
+   <Lights>
+      <PointLight position="-15 0 15" intensity="1" color="1 1 1" name="light0" />
+      <PointLight position="15 0 15" intensity="1" color="1 1 1" name="light1" />
+   </Lights>
+   
+   <Geometry>
+	   <Sphere radius="5" name="sphere" />
+   </Geometry>
+   
+   <Materials>
+      <DiffuseMaterial color="0.25 0.25 1" reflectiveFactor="0.2" name="dif1"/> 
+      <PhongMaterial color="0.25 0.5 0.25" shininess="50" reflectiveFactor="0.2" name="phong1" />  
+      <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.2" name="lc1" />   
+   </Materials>   
+   
+   <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
+      	<Translate vector="-10 -10 0">
+			<Shape geometry="sphere" material="dif1" />
+     	</Translate>
+		<Shape geometry="sphere" material="lc1" />
+   </Scene>
+</Sdl>

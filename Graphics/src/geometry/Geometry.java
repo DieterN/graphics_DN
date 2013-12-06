@@ -2,9 +2,6 @@ package geometry;
 
 import imagedraw.HitRecord;
 import rays.Ray;
-import materials.Material;
-import mathematics.Color3f;
-import mathematics.Matrix4f;
 
 public abstract class Geometry {
 

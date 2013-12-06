@@ -1,7 +1,7 @@
 package imagedraw;
 
 import rays.Ray;
-import geometry.ConcreteGeomerty;
+import geometry.ConcreteGeometry;
 import geometry.Geometry;
 import materials.Material;
 import mathematics.Color3f;
@@ -20,13 +20,13 @@ public class HitRecord {
 	private float t;
 	private Ray ray;
 	private Point3f hitPoint;
-	private ConcreteGeomerty geometry;
+	private ConcreteGeometry geometry;
 	private Material material;
 	private float reflectiveFactor;
 	private Color3f color;
 	private Vector4f normal;
 	
-	public HitRecord(float t, ConcreteGeomerty geometry, Ray ray, Point3f hitPoint, Vector4f normal){
+	public HitRecord(float t, ConcreteGeometry geometry, Ray ray, Point3f hitPoint, Vector4f normal){
 		this.t = t;
 		this.ray = ray;
 		this.geometry = geometry;
@@ -54,11 +54,11 @@ public class HitRecord {
 		this.hitPoint = hitPoint;
 	}
 	
-	public ConcreteGeomerty getGeometry() {
+	public ConcreteGeometry getGeometry() {
 		return geometry;
 	}
 	
-	public void setGeometry(ConcreteGeomerty geometry) {
+	public void setGeometry(ConcreteGeometry geometry) {
 		this.geometry = geometry;
 	}
 	

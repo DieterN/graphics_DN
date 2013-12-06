@@ -1,6 +1,6 @@
 package scenebuilder;
 
-import geometry.ConcreteGeomerty;
+import geometry.ConcreteGeometry;
 import geometry.Geometry;
 
 import java.util.*;
@@ -18,7 +18,7 @@ public class SceneGraph {
 		
 	}
 	
-	public void addGeometry(ConcreteGeomerty g){
+	public void addGeometry(ConcreteGeometry g){
 		if(geometryStack.isEmpty()){ // nieuwe groep, eerste element in sceneGraph, voeg toe als root, voeg transform toe
 			GeometryGroup geometry = new GeometryGroup(g);
 			if(!matrixStack.isEmpty()){
@@ -93,14 +93,14 @@ public class SceneGraph {
 		return graph;
 	}
 	
-	public List<ConcreteGeomerty> traverseTransformObject(){ //transformeer alle geometrie
+	public List<ConcreteGeometry> traverseTransformObject(){ //transformeer alle geometrie
 		ArrayList<GeometryGroup> graph = new ArrayList<GeometryGroup>();
-		ArrayList<ConcreteGeomerty> geometry = new ArrayList<ConcreteGeomerty>();
+		ArrayList<ConcreteGeometry> geometry = new ArrayList<ConcreteGeometry>();
 		for(GeometryGroup geo : roots){
 			graph.addAll(geo.getThisAndAllChildren());
 		}
 		for(GeometryGroup geo : graph){
-			for(ConcreteGeomerty g : geo.getGeometry()){
+			for(ConcreteGeometry g : geo.getGeometry()){
 				g.transform(geo.getTransformationMatrix());
 				geometry.add(g);
 			}

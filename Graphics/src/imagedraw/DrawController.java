@@ -13,12 +13,13 @@ public abstract class DrawController {
 
 	protected Scene scene;
 	protected final boolean ambient = true;
-	protected final float ambientFactor = 0.2f;
+	protected final float ambientFactor = 0.1f;
 	protected final boolean shading = true;
-	protected final boolean reflection = false;
-	protected final int reflectionDepth = 1;
+	protected final boolean reflection = true;
+	protected final int reflectionDepth = 2;
 	public static boolean accelerated = false;
 	public static boolean falseColorImage = false;
+	public static boolean useTrianglesInsteadOfMesh = false;
 	private static final int nx = 640; //number of pixels, x-direction
 	private static final int ny = 480; //number of pixels, y-direction
 	private static int[] intersectionsPerPixel; //countNumberOfIntersectionsForEveryPixel
@@ -55,7 +56,7 @@ public abstract class DrawController {
 			if(reflection){ //reflection
 				calculateReflection(hr, i, color);
 			}
-			// TODO : refraction + anti-aliasing
+			// TODO : refraction + anti-aliasing + soft shadows
 		}
 		Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
 		return rightColor;
@@ -180,9 +181,6 @@ public abstract class DrawController {
 	}
 	
 	public static void setCurrentPixel(int i){
-		if(i == 103928){
-			System.out.println("BREAK");
-		}
 		currentPixel = i;
 	}
 }

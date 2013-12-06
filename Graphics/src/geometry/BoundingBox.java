@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import acceleration.compactGrid.GridHitInfo;
-import mathematics.Matrix4f;
 import mathematics.Point3f;
 import mathematics.VectorOperations;
 import rays.Ray;

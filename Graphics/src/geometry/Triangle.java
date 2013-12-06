@@ -16,7 +16,7 @@ import mathematics.VectorOperations;
  * @author Dieter
  *
  */
-public class Triangle extends ConcreteGeomerty{
+public class Triangle extends ConcreteGeometry{
 
 	private Point3f[] points = new Point3f[3];
 	private Vector4f[] normals = new Vector4f[3];
@@ -28,6 +28,18 @@ public class Triangle extends ConcreteGeomerty{
 	public Triangle(Point3f[] points){
 		super("");
 		this.points = points;
+	}
+	
+	public Triangle(Point3f[] points, Vector4f[] normals, TexCoord2f[] texture){
+		super("");
+		this.points = points;
+		this.normals = normals;
+		this.texture = texture;
+	}
+
+	@Override
+	public ConcreteGeometry getInstance() {
+		return new Triangle(points,normals,texture);
 	}
 	
 	public Triangle(Point3f point1, Point3f point2, Point3f point3){

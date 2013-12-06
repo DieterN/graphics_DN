@@ -15,7 +15,7 @@ import mathematics.VectorOperations;
  * @author Dieter
  *
  */
-public class Sphere extends ConcreteGeomerty{
+public class Sphere extends ConcreteGeometry{
 
 	private Point3f middlePoint;
 	private float radius;
@@ -24,6 +24,11 @@ public class Sphere extends ConcreteGeomerty{
 		super(name);
 		this.middlePoint = new Point3f();
 		this.radius = radius;
+	}
+	
+	@Override
+	public ConcreteGeometry getInstance(){
+		return new Sphere(radius, name);
 	}
 	
 	@Override

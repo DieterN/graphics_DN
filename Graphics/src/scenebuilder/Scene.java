@@ -13,13 +13,13 @@ import imagedraw.*;
 public class Scene {
 	
 	private HashMap<String,Camera> cameras = new HashMap<String,Camera>();
-	private HashMap<String,ConcreteGeomerty> geometrics = new HashMap<String,ConcreteGeomerty>();
+	private HashMap<String,ConcreteGeometry> geometrics = new HashMap<String,ConcreteGeometry>();
 	private HashMap<String,Light> lights = new HashMap<String,Light>();
 	private HashMap<String,Material> materials = new HashMap<String,Material>();
 	
 	private Camera camera;
 	private List<Light> usedLights = new ArrayList<Light>();
-	private List<ConcreteGeomerty> usedGeometryTransformed = new ArrayList<ConcreteGeomerty>(); 
+	private List<ConcreteGeometry> usedGeometryTransformed = new ArrayList<ConcreteGeometry>(); 
 	
 	private SceneGraph scenegraph;
 	
@@ -37,11 +37,11 @@ public class Scene {
 		cameras.put(camera.getName(),camera);
 	}
 
-	public HashMap<String, ConcreteGeomerty> getGeometrics() {
+	public HashMap<String, ConcreteGeometry> getGeometrics() {
 		return geometrics;
 	}
 
-	public void addGeometry(ConcreteGeomerty geometry) {
+	public void addGeometry(ConcreteGeometry geometry) {
 		geometrics.put(geometry.getName(),geometry);
 	}
 
@@ -70,9 +70,8 @@ public class Scene {
 		camera = usedCamera;
 	}
 
-	public void addGeometryToSceneGraph(String geometryName) {
-		ConcreteGeomerty usedGeometry = geometrics.get(geometryName);
-		scenegraph.addGeometry(usedGeometry);
+	public void addGeometryToSceneGraph(ConcreteGeometry geometry) {
+		scenegraph.addGeometry(geometry);
 	}
 	
 	/**
@@ -115,7 +114,7 @@ public class Scene {
 		this.scenegraph = scenegraph;
 	}
 	
-	public List<ConcreteGeomerty> getUsedGeometryTransformed() {
+	public List<ConcreteGeometry> getUsedGeometryTransformed() {
 		if(this.usedGeometryTransformed.isEmpty()){
 			usedGeometryTransformed = scenegraph.traverseTransformObject();
 		}

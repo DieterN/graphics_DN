@@ -11,7 +11,7 @@ import rays.Ray;
 import materials.Material;
 import mathematics.*;
 
-public class IndexedTriangleSet extends ConcreteGeomerty{
+public class IndexedTriangleSet extends ConcreteGeometry{
 
 	private Point3f[] coordinates;
 	private Vector4f[] normals;
@@ -23,12 +23,32 @@ public class IndexedTriangleSet extends ConcreteGeomerty{
 	private CompactGrid grid;
 	private boolean usingGrid = false;
 	
-	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normal, TexCoord2f [] textureCoordinates, 
+	public IndexedTriangleSet(Point3f [] coordinates, Vector3f [] normals, TexCoord2f [] textureCoordinates, 
 								int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name){
 		super(name);
 		this.coordinates = coordinates;
 		this.coordinateIndices = coordinateIndices;
-		initialiseNormals(normal);
+		initialiseNormals(normals);
+		this.normalIndices = normalIndices;
+		this.textureCoordinates = textureCoordinates;
+		this.textureCoordinateIndices = textureCoordinateIndices;
+		this.calculateTriangles();
+		this.calculateNormals();
+		this.calculateTextures();
+	}
+	
+	@Override
+	public ConcreteGeometry getInstance(){
+		return new IndexedTriangleSet(coordinates, normals, textureCoordinates, 
+									  coordinateIndices, normalIndices, textureCoordinateIndices, name);
+	}
+	
+	private IndexedTriangleSet(Point3f [] coordinates, Vector4f [] normals, TexCoord2f [] textureCoordinates, 
+			int [] coordinateIndices, int [] normalIndices, int [] textureCoordinateIndices, String name){
+		super(name);
+		this.coordinates = coordinates;
+		this.coordinateIndices = coordinateIndices;
+		this.normals = normals;
 		this.normalIndices = normalIndices;
 		this.textureCoordinates = textureCoordinates;
 		this.textureCoordinateIndices = textureCoordinateIndices;
@@ -158,7 +178,7 @@ public class IndexedTriangleSet extends ConcreteGeomerty{
 		for(Triangle t : triangles){
 			if(!t.initialised){
 				t.initialiseBBParameters();
-			}//TODO : check formules nog is
+			}
 			 if(minX > t.getBox().getMinX()) {minX = t.getBox().getMinX(); }
 			 if(maxX < t.getBox().getMaxX()) {maxX = t.getBox().getMaxX(); }
 			 if(minY > t.getBox().getMinY()) {minY = t.getBox().getMinY(); }

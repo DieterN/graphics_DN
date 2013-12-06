@@ -5,12 +5,12 @@ import java.util.List;
 
 import rays.Ray;
 import scenebuilder.Scene;
-import geometry.ConcreteGeomerty;
+import geometry.ConcreteGeometry;
 import geometry.Geometry;
 
 public class DCTransformObject extends DrawController{
 
-	private List<ConcreteGeomerty> geometry = new ArrayList<ConcreteGeomerty>();
+	private List<ConcreteGeometry> geometry = new ArrayList<ConcreteGeometry>();
 	
 	public DCTransformObject(Scene scene){
 		super(scene);
@@ -53,7 +53,7 @@ public class DCTransformObject extends DrawController{
 		return hit; // true betekent dat er iets tussen zit, false wil dus zeggen verlicht
 	}
 
-	public List<ConcreteGeomerty> getGeometry() {
+	public List<ConcreteGeometry> getGeometry() {
 		return geometry;
 	}
 }
