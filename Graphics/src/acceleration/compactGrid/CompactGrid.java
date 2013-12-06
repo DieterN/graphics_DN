@@ -405,9 +405,6 @@ public class CompactGrid {
 		y = xyz[1];
 		z = xyz[2];
 		FirstHitRecord fhr = cell.firstGridHit(ray);
-		if(fhr == null){
-			System.out.println("Shouldn't come here --> initialiseRayHitParameters --> outside grid?");
-		}
 		return fhr;
 		}
 	

@@ -2,6 +2,7 @@ package materials;
 
 import lights.Light;
 import mathematics.Color3f;
+import mathematics.Point3f;
 import imagedraw.HitRecord;
 
 /**
@@ -24,12 +25,13 @@ public abstract class Material {
 	 * Diffuse shading for diffuse material
 	 * Phong shading for phong material
 	 * A combination of both shadings for linearCombinedMaterial
-	 * 
-	 * @param hr : hitRecord with information about ray-object hit
-	 * @param l : lightSource
-	 * @return resulting color of shading
 	 */
 	public abstract Color3f calculateShading(HitRecord hr, Light l);
+	
+	/**
+	 * Same as method above, but viewpoint is given too, needed for soft shadows
+	 */
+	public abstract Color3f calculateShading(HitRecord hr, Light l, Point3f position);
 	
 	public Color3f getColor() {
 		return color;

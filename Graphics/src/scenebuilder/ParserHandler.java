@@ -31,6 +31,9 @@ public interface ParserHandler
 
     public void startSpotLight(Point3f position, Vector3f direction, float angle, float intensity, Color3f color, String name) throws Exception;
     public void endSpotLight() throws Exception;
+    
+    public void startAreaLight(Point3f position, Point3f u, Point3f w, float intensity, Color3f color, String name) throws Exception;
+    public void endAreaLight() throws Exception;
 
     public void startGeometry() throws Exception;
     public void endGeometry() throws Exception;

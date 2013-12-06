@@ -3,6 +3,7 @@ package materials;
 import imagedraw.HitRecord;
 import lights.Light;
 import mathematics.Color3f;
+import mathematics.Point3f;
 
 
 /**
@@ -85,6 +86,19 @@ public class LinearCombinedMaterial extends Material{
 		Color3f resultColor = new Color3f();
 		Color3f material1Color = material1.calculateShading(hr, l);
 		Color3f material2Color = material2.calculateShading(hr, l);
+		float w1 = weight1/(weight1+weight2);
+		float w2 = weight2/(weight1+weight2);
+		resultColor.x += w1*material1Color.x + w2*material2Color.x;
+		resultColor.y += w1*material1Color.y + w2*material2Color.y;
+		resultColor.z += w1*material1Color.z + w2*material2Color.z;
+		return resultColor;
+	}
+
+	@Override
+	public Color3f calculateShading(HitRecord hr, Light l, Point3f viewPoint) {
+		Color3f resultColor = new Color3f();
+		Color3f material1Color = material1.calculateShading(hr, l, viewPoint);
+		Color3f material2Color = material2.calculateShading(hr, l, viewPoint);
 		float w1 = weight1/(weight1+weight2);
 		float w2 = weight2/(weight1+weight2);
 		resultColor.x += w1*material1Color.x + w2*material2Color.x;

@@ -241,6 +241,42 @@ public final class Parser extends DefaultHandler
                 if (echoHandler != null) echoHandler.startSpotLight(position, direction, angle, intensity, color, name);
                 if (    handler != null) handler.startSpotLight(position, direction, angle, intensity, color, name);
             }
+            // AreaLight element
+            else if (qName.equals("AreaLight"))
+            {
+                // parse position attribute
+                String positionString = attributes.getValue("position");
+                if (positionString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"position\".");
+                Point3f position = ParserUtils.parsePoint3f(positionString);
+                
+                // parse u attribute
+                String uString = attributes.getValue("u");
+                if (uString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"u\".");
+                Point3f u = ParserUtils.parsePoint3f(uString);
+                
+                // parse w attribute
+                String wString = attributes.getValue("w");
+                if (wString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"w\".");
+                Point3f w = ParserUtils.parsePoint3f(wString);
+
+                // parse intensity attribute
+                String intensityString = attributes.getValue("intensity");
+                if (intensityString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"intensity\".");
+                float intensity = ParserUtils.parseFloat(intensityString);
+
+                // parse color attribute
+                String colorString = attributes.getValue("color");
+                if (colorString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"color\".");
+                Color3f color = ParserUtils.parseColor3f(colorString);
+
+                // parse name attribute
+                String name = attributes.getValue("name");
+                if (name == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"name\".");
+
+                // call handler
+                if (echoHandler != null) echoHandler.startAreaLight(position, u, w, intensity, color, name);
+                if (    handler != null) handler.startAreaLight(position, u, w, intensity, color, name);
+            }
             // Geometry element
             else if (qName.equals("Geometry"))
             {
@@ -274,7 +310,7 @@ public final class Parser extends DefaultHandler
 
                 // parse height attribute
                 String heightString = attributes.getValue("height");
-                if (radiusString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"height\".");
+                if (heightString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"height\".");
                 float height = ParserUtils.parseFloat(heightString);
 
                 // parse capped attribute
@@ -300,7 +336,7 @@ public final class Parser extends DefaultHandler
 
                 // parse height attribute
                 String heightString = attributes.getValue("height");
-                if (radiusString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"height\".");
+                if (heightString == null) throw new ParseException("Element \"" + qName + "\" requires attribute \"height\".");
                 float height = ParserUtils.parseFloat(heightString);
 
                 // parse capped attribute
@@ -682,6 +718,13 @@ public final class Parser extends DefaultHandler
                 // call handler
                 if (echoHandler != null) echoHandler.endSpotLight();
                 if (    handler != null) handler.endSpotLight();
+            }
+            // AreaLight element
+            else if (qName.equals("AreaLight"))
+            {
+                // call handler
+                if (echoHandler != null) echoHandler.endAreaLight();
+                if (    handler != null) handler.endAreaLight();
             }
             // Geometry element
             else if (qName.equals("Geometry"))

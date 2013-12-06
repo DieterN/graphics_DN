@@ -137,6 +137,30 @@ public class EchoParserHandler implements ParserHandler
         indent--;
     }
 
+    public void startAreaLight(Point3f position, Point3f u, Point3f w, float intensity, Color3f color, String name) throws ParseException
+    {
+        indent++;
+        for (int i = 0; i < indent; i++) System.out.print(indentString);
+        System.out.println(
+            "<AreaLight"
+            + " position=\"" + ParserUtils.formatTuple3f(position) + "\""
+            + " u=\"" + u + "\""
+            + " w=\"" + w + "\""
+            + " intensity=\"" + intensity + "\""
+            + " color=\"" + ParserUtils.formatTuple3f(color) + "\""
+            + " name=\"" + name + "\""
+            + ">"
+        );
+
+    }
+
+    public void endAreaLight() throws ParseException
+    {
+        for (int i = 0; i < indent; i++) System.out.print(indentString);
+        System.out.println("</AreaLight>");
+        indent--;
+    }
+
     public void startGeometry() throws ParseException
     {
         indent++;

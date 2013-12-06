@@ -1,5 +1,7 @@
 package lights;
 
+import imagedraw.DrawController;
+import imagedraw.HitRecord;
 import mathematics.*;
 
 /**
@@ -33,5 +35,11 @@ public class SpotLight extends Light{
 
 	public void setAngle(float angle) {
 		this.angle = angle;
+	}
+
+	@Override
+	public Color3f calculateShading(HitRecord hr, DrawController dc) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

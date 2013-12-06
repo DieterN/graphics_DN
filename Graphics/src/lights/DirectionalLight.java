@@ -1,5 +1,7 @@
 package lights;
 
+import imagedraw.DrawController;
+import imagedraw.HitRecord;
 import mathematics.*;
 
 /**
@@ -23,5 +25,11 @@ public class DirectionalLight extends Light{
 
 	public void setDirection(Vector4f direction) {
 		this.direction = direction;
+	}
+
+	@Override
+	public Color3f calculateShading(HitRecord hr, DrawController dc) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

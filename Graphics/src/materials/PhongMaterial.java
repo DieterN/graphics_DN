@@ -3,6 +3,7 @@ package materials;
 import imagedraw.HitRecord;
 import lights.Light;
 import mathematics.Color3f;
+import mathematics.Point3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
@@ -65,5 +66,19 @@ public class PhongMaterial extends Material{
 			green = 1;
 		}
 		return new Color3f(red,blue,green);
+	}
+
+	@Override
+	public Color3f calculateShading(HitRecord hr, Light light, Point3f viewPoint) {
+		Vector4f n = hr.getNormal(); //normalized in HR
+		Vector4f l = VectorOperations.normalizeVector4f(VectorOperations.subtractPointfromPoint3f(viewPoint, hr.getHitPoint()));
+		Vector4f v = VectorOperations.invertVector4f(VectorOperations.normalizeVector4f(hr.getRay().getDirection()));
+		Vector4f h = VectorOperations.normalizeVector4f(VectorOperations.addVectors4f(v, l));
+		float n_times_h = VectorOperations.scalarProduct4f(n, h);
+		Color3f resultColor = new Color3f();
+		if(n_times_h>0){
+			resultColor = calculateShadingColor(n_times_h,hr,light);
+		}
+		return resultColor;
 	}
 }

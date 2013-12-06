@@ -32,7 +32,7 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/test.sdl");
+			scene = sceneBuilder.loadScene("XML/basis.sdl");
 			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!

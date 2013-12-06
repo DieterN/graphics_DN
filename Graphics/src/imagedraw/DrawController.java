@@ -18,11 +18,14 @@ public abstract class DrawController {
 	// Shading
 	protected final boolean shading = true;
 	// Reflection
-	protected final boolean reflection = false;
-	protected final int reflectionDepth = 2;
+	protected final boolean reflection = true;
+	protected final int reflectionDepth = 1;
 	// Anti-Aliasing
-	protected static final boolean antiAliasing = true;
-	protected static final int nbOfSamples = 3;
+	public static final boolean antiAliasing = true;
+	public static final int nbOfSamples = 5;
+	// Soft Shadow
+	public static final boolean softShadow = true;
+	public static final int nbOfShadowSamples = 5;
 	// Acceleration
 	public static boolean accelerated = false;
 	public static boolean useTrianglesInsteadOfMesh = false;
@@ -54,18 +57,16 @@ public abstract class DrawController {
 			}
 			if(shading){ //shading
 				for(Light l : scene.getUsedLights()){
-					if(!inShadow(hr,l)){
-						Color3f shadingColor = calculateShading(hr);
-						color.x += shadingColor.x;
-						color.y += shadingColor.y;
-						color.z += shadingColor.z;
-					}
+					Color3f lightColor = l.calculateShading(hr, this);
+					color.x += lightColor.x;
+					color.y += lightColor.y;
+					color.z += lightColor.z;
 				}
 			}
 			if(reflection){ //reflection
 				calculateReflection(hr, i, color);
 			}
-			// TODO : refraction + soft shadows
+			// TODO : refraction
 		}
 		Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
 		return rightColor;
@@ -101,14 +102,12 @@ public abstract class DrawController {
 	 */
 	public boolean inShadow(HitRecord hr, Light l) {
 		boolean inShadow = true; // in de schaduw tenzij er geen hit is bij bepaalde ray
-//		for(Light l : scene.getUsedLights()){
 		Vector4f direction = VectorOperations.subtractPointfromPoint3f(l.getPosition(), hr.getHitPoint()); //richting naar licht
 		Vector4f normalizedDirection = VectorOperations.normalizeVector4f(direction); // genormaliseerde richting naar licht
 		Ray ray = new ShadowRay(hr.getHitPoint(), normalizedDirection); // nieuwe SchaduwRay (aparte klasse voor epsilon)
 		if(!lookForShadowRayHit(ray)){
 			inShadow = false;
 		}
-//		}
 		return inShadow;
 	}
 	
@@ -127,16 +126,8 @@ public abstract class DrawController {
 	 * @param hr
 	 * @return
 	 */
-	public Color3f calculateShading(HitRecord hr){
-		Color3f result = new Color3f();
-		for(Light l : scene.getUsedLights()){
-			Color3f color = hr.getGeometry().getMaterial().calculateShading(hr, l);
-			result.x += color.x;
-			result.y += color.y;
-			result.z += color.z;
-		}
-		
-		return result;
+	public Color3f calculateShading(HitRecord hr, Light l){
+		return hr.getGeometry().getMaterial().calculateShading(hr, l);
 	}
 	
 	/**

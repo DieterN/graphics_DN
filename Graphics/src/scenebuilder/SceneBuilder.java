@@ -177,6 +177,16 @@ public class SceneBuilder implements ParserHandler
     {
     }
 
+    public void startAreaLight(Point3f position, Point3f u, Point3f w, float intensity, Color3f color, String name) throws Exception
+    {
+    	AreaLight al = new AreaLight(position, u, w, intensity, color, name);
+    	scene.addLight(al);
+    }
+
+    public void endAreaLight() throws Exception
+    {
+    }
+
     public void startGeometry() throws Exception
     {
     }

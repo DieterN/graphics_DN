@@ -3,6 +3,7 @@ package materials;
 import imagedraw.HitRecord;
 import lights.Light;
 import mathematics.Color3f;
+import mathematics.Point3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
@@ -26,6 +27,19 @@ public class DiffuseMaterial extends Material{
 	public Color3f calculateShading(HitRecord hr, Light light) {
 		Vector4f normal = hr.getNormal(); //normalized in HR
 		Vector4f toLight = VectorOperations.subtractPointfromPoint3f(light.getPosition(), hr.getHitPoint());
+		Vector4f normalizedToLight = VectorOperations.normalizeVector4f(toLight);
+		float n_times_l = VectorOperations.scalarProduct4f(normal, normalizedToLight);
+		Color3f resultColor = new Color3f();
+		if(n_times_l>0){
+			resultColor = calculateShadingColor(n_times_l,hr,light);
+		}
+		return resultColor;
+	}
+	
+	@Override
+	public Color3f calculateShading(HitRecord hr, Light light, Point3f viewPoint) {
+		Vector4f normal = hr.getNormal(); //normalized in HR
+		Vector4f toLight = VectorOperations.subtractPointfromPoint3f(viewPoint, hr.getHitPoint());
 		Vector4f normalizedToLight = VectorOperations.normalizeVector4f(toLight);
 		float n_times_l = VectorOperations.scalarProduct4f(normal, normalizedToLight);
 		Color3f resultColor = new Color3f();

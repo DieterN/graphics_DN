@@ -1,5 +1,7 @@
 package lights;
 
+import imagedraw.DrawController;
+import imagedraw.HitRecord;
 import mathematics.Color3f;
 import mathematics.Point3f;
 
@@ -14,7 +16,7 @@ public abstract class Light {
 	private float intensity;
 	private Color3f color;
 	private String name;
-	private Point3f position;
+	protected Point3f position;
 
 	public Light(Point3f point, float intensity, Color3f color, String name){
 		this.position = point;
@@ -22,6 +24,8 @@ public abstract class Light {
 		this.color = color;
 		this.name = name;
 	}
+	
+	public abstract Color3f calculateShading(HitRecord hr, DrawController dc);
 
 	public float getIntensity() {
 		return intensity;
