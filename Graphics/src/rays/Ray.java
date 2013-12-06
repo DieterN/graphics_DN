@@ -44,11 +44,11 @@ public class Ray {
 	 * @return
 	 */
 	
-	public static Ray getRay(PerspectiveCamera camera, int pixelX, int pixelY){
+	public static Ray getRay(PerspectiveCamera camera, float pixelX, float pixelY){
 		return new PerspectiveRay(camera, pixelX, pixelY);
 	}
 	
-	public static Ray getRay(OrthograpicCamera camera, int pixelX, int pixelY){
+	public static Ray getRay(OrthograpicCamera camera, float pixelX, float pixelY){
 		return new OrthograpicRay(camera, pixelX, pixelY);
 	}
 

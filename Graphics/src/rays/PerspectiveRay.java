@@ -25,7 +25,7 @@ public class PerspectiveRay extends Ray{
 	 * @param pixelX
 	 * @param pixelY
 	 */
-	protected PerspectiveRay(Camera camera, int pixelX, int pixelY) {
+	protected PerspectiveRay(Camera camera, float pixelX, float pixelY) {
 		super();
 		if(!(camera instanceof PerspectiveCamera)){
 			System.out.println("Camera should be Perspective");
@@ -41,7 +41,7 @@ public class PerspectiveRay extends Ray{
 		sign[2] = (inv_directionZ > 0) ? 0 : 1; //save 1 if inv_direction is negative
 	}
 		
-	private Vector4f computeViewingDirection(Camera camera, int i, int j){
+	private Vector4f computeViewingDirection(Camera camera, float i, float j){
 		Screen screen = camera.getScreen();
 		float l = screen.getL();
 		float r = screen.getR();
@@ -54,8 +54,8 @@ public class PerspectiveRay extends Ray{
 		Vector4f vVector = VectorOperations.normalizeVector4f(camera.getV());
 		Vector4f direction = VectorOperations.normalizeVector4f(camera.getViewDirection());
 		Vector4f d_times_D = VectorOperations.multiplyFloatandVector4f(distance, direction);
-		float u = (b + ((t-b)*(j + 0.5f))/ny);
-		float v = (l + ((r-l)*(i + 0.5f))/nx);
+		float u = (b + ((t-b)*j)/ny);
+		float v = (l + ((r-l)*i)/nx);
 		Vector4f u_times_u = VectorOperations.multiplyFloatandVector4f(u, uVector);	
 		Vector4f v_times_v = VectorOperations.multiplyFloatandVector4f(v, vVector);
 		Vector4f tempVector = VectorOperations.addVectors4f(u_times_u, v_times_v);

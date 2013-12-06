@@ -335,7 +335,18 @@ public class CompactGrid {
 		HitRecord result = null;
 		int cellNumber = calculateStartingCellNumber(ray); //calculate cellnumber where ray enters or starts
 		if(cellNumber >= 0){ //if cellnumber is greater than 0, a hit occured
-			initialiseRayHitParameters(ray, cellNumber); //initalise deltaT and nextT
+			FirstHitRecord fhr = initialiseRayHitParameters(ray, cellNumber); //initalise deltaT and nextT
+			if(fhr == null){
+				return null;
+			}
+			else{
+				nextTX = fhr.gettMaxX();
+				nextTY = fhr.gettMaxY();
+				nextTZ = fhr.gettMaxZ();
+				tDeltaX = fhr.gettMaxX()-fhr.gettMinX();
+				tDeltaY = fhr.gettMaxY()-fhr.gettMinY();
+				tDeltaZ = fhr.gettMaxZ()-fhr.gettMinZ();
+			}
 			result = traverse(cellNumber,ray); //start the recursive traversing grid method
 		}		
 		return result;
@@ -386,7 +397,7 @@ public class CompactGrid {
 		return cellNumber;
 	}
 
-	private void initialiseRayHitParameters(Ray ray, int cellNumber){
+	private FirstHitRecord initialiseRayHitParameters(Ray ray, int cellNumber){
 		Cell cell = mapCellNumberToCell(cellNumber);
 		initialiseSteps(ray);
 		int[] xyz = mapCellNumberToXYZ(cellNumber); //initialise xyz value of current cell
@@ -397,12 +408,7 @@ public class CompactGrid {
 		if(fhr == null){
 			System.out.println("Shouldn't come here --> initialiseRayHitParameters --> outside grid?");
 		}
-		nextTX = fhr.gettMaxX();
-		nextTY = fhr.gettMaxY();
-		nextTZ = fhr.gettMaxZ();
-		tDeltaX = fhr.gettMaxX()-fhr.gettMinX();
-		tDeltaY = fhr.gettMaxY()-fhr.gettMinY();
-		tDeltaZ = fhr.gettMaxZ()-fhr.gettMinZ();
+		return fhr;
 		}
 	
 	/**

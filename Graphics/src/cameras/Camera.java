@@ -43,7 +43,7 @@ public abstract class Camera {
 	 * we call this method here and give the kind of camera back.
 	 * By the dynamic type of the camera, we can then construct the ray
 	 */
-	public abstract Ray getRay(int pixelX, int pixelY);
+	public abstract Ray getRay(float pixelX, float pixelY);
 	
 	public Point3f getViewPoint() {
 		return viewPoint;

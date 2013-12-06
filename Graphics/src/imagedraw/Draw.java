@@ -2,6 +2,7 @@ package imagedraw;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -21,9 +22,9 @@ public class Draw implements MouseListener{
 		new Draw();
 	}
 
-	private DrawController ic;
     // bepaal of je object of Ray transformeert door het type IC Controller (set in Draw() constructor)
 	// je kan ook kiezen om met een CompactGrid of Bounding Interval Hierarchy te werken
+	private DrawController ic;
 	private JFrame frame;
 	private CgPanel panel;
 	private Scene scene;
@@ -31,7 +32,7 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/basis.sdl");
+			scene = sceneBuilder.loadScene("XML/test.sdl");
 			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
@@ -60,7 +61,12 @@ public class Draw implements MouseListener{
 		Color3f bgC = scene.getBackgroundColor();
 		panel.clear(bgC.x,bgC.y,bgC.z);
 		if(!(scene == null)){
-			drawScene();
+			if(DrawController.antiAliasing){
+				drawSceneAntiAlias();
+		    }
+			else{
+				drawScene();
+			}
 		}
 		else{
 			System.out.println("Scene is null!");
@@ -72,14 +78,15 @@ public class Draw implements MouseListener{
 		panel.saveImage("image.png");
 	}
 	
-	public void drawScene(){
+	private void drawScene(){
 		for(int i=0; i<DrawController.getNx(); i++){
 			if(i%20 == 0){
 				double percentage = (double) i/DrawController.getNx()*100;
 				System.out.println("Rendering... " + percentage + " %");
 			}
 			for(int j=0; j<DrawController.getNy(); j++){
-				Color3f color = ic.calculatePixelColor(i, j);
+				
+				Color3f color = ic.calculatePixelColor(i+0.5f, j+0.5f);
 				if(!DrawController.falseColorImage){
 					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
 				}
@@ -91,7 +98,40 @@ public class Draw implements MouseListener{
 		}
 	}
 	
-	public void drawFalseColorImage(){
+	private void drawSceneAntiAlias(){
+		for(int i=0; i<DrawController.getNx(); i++){
+			if(i%20 == 0){
+				double percentage = (double) i/DrawController.getNx()*100;
+				System.out.println("Rendering... " + percentage + " %");
+			}
+			for(int j=0; j<DrawController.getNy(); j++){
+				int n = DrawController.nbOfSamples;
+				Color3f color = new Color3f();
+				Random random = new Random();
+				for(int p=0; p<n ; p++){
+					for(int q=0; q<n ; q++){
+						Color3f pixelColor = ic.calculatePixelColor(i+((p+random.nextFloat())/n), j+((q+random.nextFloat())/n));
+						color.x += pixelColor.x;
+						color.y += pixelColor.y;
+						color.z += pixelColor.z;
+					}
+				}
+				color.x = (float) (color.x/Math.pow(n, 2));
+				color.y = (float) (color.y/Math.pow(n, 2));
+				color.z = (float) (color.z/Math.pow(n, 2));
+				
+				if(!DrawController.falseColorImage){
+					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
+				}
+				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image
+			}
+		}
+		if(DrawController.falseColorImage){
+			drawFalseColorImage();
+		}
+	}
+	
+	private void drawFalseColorImage(){
 		System.out.println("Generating false color image");
 		int[] pixels = DrawController.getIntersectionsPerPixel();
 		float maxIntersections = 0;
@@ -108,10 +148,10 @@ public class Draw implements MouseListener{
 			for(int j=0; j<DrawController.getNy(); j++){
 				Color3f color = new Color3f();
 				color.x = normalizedPixels[i+DrawController.getNx()*j];
-				if(color.x > 1){
-					color.x = 1;
-				}
-				panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden
+				color.y = normalizedPixels[i+DrawController.getNx()*j];
+				color.z = normalizedPixels[i+DrawController.getNx()*j];
+				Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
+				panel.drawPixel(i,DrawController.getNy()-j,rightColor.x,rightColor.y,rightColor.z); //ny-j, want y-as java loopt naar beneden
 			}
 			
 		}

@@ -18,7 +18,7 @@ public class OrthograpicCamera extends Camera{
 	}
 
 	@Override
-	public Ray getRay(int pixelX, int pixelY) {
+	public Ray getRay(float pixelX, float pixelY) {
 		return Ray.getRay(this,pixelX,pixelY);
 	}
 	

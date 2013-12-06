@@ -12,25 +12,34 @@ import scenebuilder.Scene;
 public abstract class DrawController {
 
 	protected Scene scene;
+	// Ambient
 	protected final boolean ambient = true;
-	protected final float ambientFactor = 0.1f;
+	protected final float ambientFactor = 0.2f;
+	// Shading
 	protected final boolean shading = true;
-	protected final boolean reflection = true;
+	// Reflection
+	protected final boolean reflection = false;
 	protected final int reflectionDepth = 2;
+	// Anti-Aliasing
+	protected static final boolean antiAliasing = true;
+	protected static final int nbOfSamples = 3;
+	// Acceleration
 	public static boolean accelerated = false;
-	public static boolean falseColorImage = false;
 	public static boolean useTrianglesInsteadOfMesh = false;
+	// False Color Image
+	public static final boolean falseColorImage = false;
+	public static int currentPixel = 0;
+	private static int[] intersectionsPerPixel; //countNumberOfIntersectionsForEveryPixel
+	
 	private static final int nx = 640; //number of pixels, x-direction
 	private static final int ny = 480; //number of pixels, y-direction
-	private static int[] intersectionsPerPixel; //countNumberOfIntersectionsForEveryPixel
-	public static int currentPixel = 0;
 	
 	public DrawController(Scene scene){
 		this.scene = scene;
 		intersectionsPerPixel = new int[nx*ny];
 	}
 	
-	public Color3f calculatePixelColor(int pixelX, int pixelY){
+	public Color3f calculatePixelColor(float pixelX, float pixelY){
 		HitRecord hr = lookForRayHit(pixelX,pixelY);
 		return calculateColor(hr,reflectionDepth);
 	}
@@ -56,7 +65,7 @@ public abstract class DrawController {
 			if(reflection){ //reflection
 				calculateReflection(hr, i, color);
 			}
-			// TODO : refraction + anti-aliasing + soft shadows
+			// TODO : refraction + soft shadows
 		}
 		Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
 		return rightColor;
@@ -69,7 +78,7 @@ public abstract class DrawController {
 	 * @param pixelY
 	 * @return
 	 */
-	public HitRecord lookForRayHit(int pixelX, int pixelY){
+	public HitRecord lookForRayHit(float pixelX, float pixelY){
 		Ray ray = scene.getCamera().getRay(pixelX, pixelY);
 		HitRecord hr = calculateHitRecord(ray);
 		return hr;		
