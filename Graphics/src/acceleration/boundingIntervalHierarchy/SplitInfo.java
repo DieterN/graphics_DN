@@ -1,5 +1,12 @@
 package acceleration.boundingIntervalHierarchy;
 
+/**
+ * Class representing info about splitting a Node in two parts.
+ * This info is needed later in the recursive construction of the childnodes.
+ * 
+ * @author Dieter
+ *
+ */
 public class SplitInfo {
 
 	private float minL;

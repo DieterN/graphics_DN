@@ -1,4 +1,5 @@
 package scenebuilder;
+
 public class ParseException extends Exception
 {
     public ParseException(String message)

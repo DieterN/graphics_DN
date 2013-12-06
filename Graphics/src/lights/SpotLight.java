@@ -2,6 +2,12 @@ package lights;
 
 import mathematics.*;
 
+/**
+ * Class representing a spot light.
+ * 
+ * @author Dieter
+ *
+ */
 public class SpotLight extends Light{
 
 	private Vector4f direction;

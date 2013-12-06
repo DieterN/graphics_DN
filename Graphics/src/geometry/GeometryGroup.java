@@ -1,12 +1,19 @@
-package scenebuilder;
-
-import geometry.*;
-import imagedraw.DrawController;
+package geometry;
 
 import java.util.*;
 
 import mathematics.Matrix4f;
 
+/**
+ * Class used in the scenegraph, it contains:
+ * - transformationmatrices, needed for raytracing
+ * - a list of contained geometry
+ * - a list with it's children in the scenegraph
+ * - boolean closed, needed for building the scenegraph
+ * 
+ * @author Dieter
+ *
+ */
 public class GeometryGroup {
 	
 	private List<ConcreteGeometry> geometry = new ArrayList<ConcreteGeometry>();
@@ -21,6 +28,21 @@ public class GeometryGroup {
 		matrix.setIdentity();
 		this.transformationMatrix = matrix; // initialiseer op identiteit
 		this.inverseTransformationMatrix = matrix;// initialiseer op identiteit
+	}	
+	
+	/**
+	 * Method needed for recursively travelling the scenegraph.
+	 * It returns itself and all its children and the children of those children ...
+	 */
+	public List<GeometryGroup> getThisAndAllChildren(){
+		ArrayList<GeometryGroup> result = new ArrayList<GeometryGroup>();
+		result.add(this);
+		if(!children.isEmpty()){
+			for(GeometryGroup geo : children){
+				result.addAll(geo.getThisAndAllChildren());
+			}
+		}
+		return result;
 	}
 
 	public List<ConcreteGeometry> getGeometry() {
@@ -28,16 +50,7 @@ public class GeometryGroup {
 	}
 
 	public void addGeometry(ConcreteGeometry geometry) {
-		if(DrawController.useTrianglesInsteadOfMesh){ //TODO
-			if(geometry instanceof IndexedTriangleSet){
-				for(Triangle t : ((IndexedTriangleSet) geometry).getTriangles()){
-					this.geometry.add(t);
-				}
-			}
-		}
-		else{
-			this.geometry.add(geometry);			
-		}
+		this.geometry.add(geometry);			
 	}
 
 	public Matrix4f getTransformationMatrix() {
@@ -70,16 +83,5 @@ public class GeometryGroup {
 
 	public void setClosed(boolean closed) {
 		this.closed = closed;
-	}		
-	
-	public List<GeometryGroup> getThisAndAllChildren(){
-		ArrayList<GeometryGroup> result = new ArrayList<GeometryGroup>();
-		result.add(this);
-		if(!children.isEmpty()){
-			for(GeometryGroup geo : children){
-				result.addAll(geo.getThisAndAllChildren());
-			}
-		}
-		return result;
-	}
+	}	
 }

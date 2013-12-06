@@ -4,6 +4,13 @@ import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import scenebuilder.Scene;
 
+/**
+ * Subclass of DrawController.
+ * If you choose this dynamic type, raytracing will be done using a Compact Grid.
+ * 
+ * @author Dieter
+ *
+ */
 public class DCCompactGrid extends DrawController{
 
 	private CompactGrid grid;

@@ -2,15 +2,19 @@ package geometry;
 
 import imagedraw.DrawController;
 import imagedraw.HitRecord;
-
 import java.util.List;
 import java.util.ArrayList;
-
 import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import materials.Material;
 import mathematics.*;
 
+/**
+ * Class representing a triangle mesh (indexed triangle set). 
+ * 
+ * @author Dieter
+ *
+ */
 public class IndexedTriangleSet extends ConcreteGeometry{
 
 	private Point3f[] coordinates;

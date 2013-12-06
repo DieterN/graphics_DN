@@ -8,8 +8,13 @@ import materials.*;
 import mathematics.Color3f;
 import mathematics.Matrix4f;
 import geometry.*;
-import imagedraw.*;
 
+/**
+ * Class representing a scene with objects.
+ * 
+ * @author Dieter
+ *
+ */
 public class Scene {
 	
 	private HashMap<String,Camera> cameras = new HashMap<String,Camera>();

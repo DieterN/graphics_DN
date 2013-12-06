@@ -4,6 +4,14 @@ import imagedraw.HitRecord;
 import lights.Light;
 import mathematics.Color3f;
 
+
+/**
+ * Class representing a linear combined material, this is a combination of
+ * two or more materials, that has the properties of both.
+ *  
+ * @author Dieter
+ *
+ */
 public class LinearCombinedMaterial extends Material{
 
 	private Material material1;

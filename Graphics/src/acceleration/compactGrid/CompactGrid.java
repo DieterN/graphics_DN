@@ -20,7 +20,7 @@ public class CompactGrid {
 	//the higher this number, the safer you map boxes to cells
 	//the lower this number, the less safer
 	//a lower number has the advantage of drawing faster
-	private float epsilon = 0.05f; //TODO
+	private float epsilon = 0.05f;
 	private int nbOfCellsX; //number of cells in x-direction
 	private int nbOfCellsY; //number of cells in y-direction
 	private int nbOfCellsZ; //number of cells in z-direction

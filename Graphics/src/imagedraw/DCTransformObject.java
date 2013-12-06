@@ -8,6 +8,15 @@ import scenebuilder.Scene;
 import geometry.ConcreteGeometry;
 import geometry.Geometry;
 
+
+/**
+ * Subclass of DrawController.
+ * If you choose this dynamic type, raytracing will be done by transforming all objects
+ * and sending rays against all of them for every pixel.
+ * 
+ * @author Dieter
+ *
+ */
 public class DCTransformObject extends DrawController{
 
 	private List<ConcreteGeometry> geometry = new ArrayList<ConcreteGeometry>();

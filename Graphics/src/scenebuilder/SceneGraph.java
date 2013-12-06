@@ -1,13 +1,23 @@
 package scenebuilder;
 
 import geometry.ConcreteGeometry;
-import geometry.Geometry;
+import geometry.GeometryGroup;
+import geometry.IndexedTriangleSet;
+import geometry.Triangle;
+import imagedraw.DrawController;
 
 import java.util.*;
 
 import mathematics.Matrix4f;
 import mathematics.MatrixOperations;
 
+/**
+ * Class used for building a scenegraph.
+ * After building, the scenegraph can be reconstructed using the list of roots.
+ * 
+ * @author Dieter
+ *
+ */
 public class SceneGraph {
 	
 	private List<GeometryGroup> roots = new ArrayList<GeometryGroup>();
@@ -102,6 +112,13 @@ public class SceneGraph {
 		for(GeometryGroup geo : graph){
 			for(ConcreteGeometry g : geo.getGeometry()){
 				g.transform(geo.getTransformationMatrix());
+				if(DrawController.useTrianglesInsteadOfMesh){
+					if(g instanceof IndexedTriangleSet){
+						for(Triangle t : ((IndexedTriangleSet) g).getTriangles()){
+							geometry.add(t);
+						}
+					}
+				}
 				geometry.add(g);
 			}
 		}

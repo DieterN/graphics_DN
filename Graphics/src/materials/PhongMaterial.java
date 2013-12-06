@@ -6,6 +6,14 @@ import mathematics.Color3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
+
+/**
+ * Class representing a phong material, if you hit an object of this material,
+ * a phong highlight will be calculated.
+ *  
+ * @author Dieter
+ *
+ */
 public class PhongMaterial extends Material{
 
 	private float shininess;

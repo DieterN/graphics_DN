@@ -19,6 +19,10 @@ import java.io.*;
 public class CgPanel extends JPanel  implements ComponentListener {
 
    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+/**
     * Construct a new CgPanel.
     */
    public CgPanel() {

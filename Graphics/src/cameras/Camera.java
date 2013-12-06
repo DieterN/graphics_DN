@@ -3,6 +3,13 @@ package cameras;
 import rays.Ray;
 import mathematics.*;
 
+/**
+ * Class representing a Camera, this is an abstract superclass that provides common
+ * camera fields and methods.
+ * 
+ * @author Dieter
+ *
+ */
 public abstract class Camera {
 	
 	protected Point3f viewPoint;
@@ -16,12 +23,6 @@ public abstract class Camera {
 
 	/**
 	 * Make a new camera in the given viewpoint, with the given parameters
-	 * 
-	 * @param viewpoint
-	 * @param u
-	 * @param w
-	 * @param fovy
-	 * @param name
 	 */
 	public Camera(Point3f viewPoint, Vector4f w, Vector4f u, float fovy, String name){
 		if(!(VectorOperations.scalarProduct4f(u, w) == 0)){
@@ -36,6 +37,13 @@ public abstract class Camera {
 		this.name = name;
     	this.screen = new Screen(fovy);
 	}
+	
+	/**
+	 * Sort of visitor pattern for ray. Since the ray depends on the type of camera,
+	 * we call this method here and give the kind of camera back.
+	 * By the dynamic type of the camera, we can then construct the ray
+	 */
+	public abstract Ray getRay(int pixelX, int pixelY);
 	
 	public Point3f getViewPoint() {
 		return viewPoint;
@@ -100,6 +108,4 @@ public abstract class Camera {
 	public void setScreen(Screen screen) {
 		this.screen = screen;
 	}
-	
-	public abstract Ray getRay(int pixelX, int pixelY);
 }

@@ -2,6 +2,12 @@ package lights;
 
 import mathematics.*;
 
+/**
+ * Class representing a directional light.
+ * 
+ * @author Dieter
+ *
+ */
 public class DirectionalLight extends Light{
 
 	private Vector4f direction;

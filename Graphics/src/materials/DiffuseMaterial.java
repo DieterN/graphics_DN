@@ -1,12 +1,18 @@
 package materials;
 
-
 import imagedraw.HitRecord;
 import lights.Light;
 import mathematics.Color3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
+/**
+ * Class representing a diffuse material, if you hit an object of this material,
+ * diffuse shading will be calculated.
+ *  
+ * @author Dieter
+ *
+ */
 public class DiffuseMaterial extends Material{
 	
 	public DiffuseMaterial(Color3f color, float reflectiveFactor, String name) {

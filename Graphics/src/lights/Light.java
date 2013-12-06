@@ -3,6 +3,12 @@ package lights;
 import mathematics.Color3f;
 import mathematics.Point3f;
 
+/**
+ * Superclass that contains information for all lights.
+ * 
+ * @author Dieter
+ *
+ */
 public abstract class Light {
 	
 	private float intensity;

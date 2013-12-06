@@ -1,18 +1,27 @@
 package imagedraw;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 import geometry.Geometry;
+import geometry.GeometryGroup;
 import mathematics.Matrix4f;
 import mathematics.MatrixOperations;
 import mathematics.Point3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 import rays.Ray;
-import scenebuilder.GeometryGroup;
 import scenebuilder.Scene;
 
+/**
+ * Subclass of DrawController.
+ * If you choose this dynamic type, raytracing will be done by transforming the ray for every pixel
+ * and intersecting it will all geometry.
+ * 
+ * @author Dieter
+ *
+ */
 public class DCTransformRay extends DrawController{
 
 	private List<GeometryGroup> geometry = new ArrayList<GeometryGroup>();

@@ -3,6 +3,16 @@ package acceleration.compactGrid;
 import rays.Ray;
 import mathematics.Point3f;
 
+/**
+ * Class representing a cell of the CompactGrid.
+ * This cell is only used when a the grid is hit for the first time:
+ * the cellnumber at which this hit occured is calculated and than this cell object is made
+ * Hit this cell with a ray and you'll get information about hitting this cell, all
+ * contained in an FirstHitRecord object.
+ * 
+ * @author Dieter
+ *
+ */
 public class Cell {
 
 	private Point3f[] bounds = new Point3f[2];
@@ -14,6 +24,53 @@ public class Cell {
 		this.cellNumber = cellNumber;
 	}
 
+	/**
+	 * Return if the parameters of hitting this cell, null if no hit, but this shouldn't occur.
+	 */
+	public FirstHitRecord firstGridHit(Ray ray) {
+		int[] sign = ray.getSign();
+		float invDirectionX = ray.getInv_directionX();
+		float invDirectionY = ray.getInv_directionY();
+		float originX = ray.getViewPoint().x;
+		float originY = ray.getViewPoint().y;
+		
+		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
+		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
+		float txmin = tmin;
+		float txmax = tmax;
+		float tymin = (bounds[sign[1]].y - originY) * invDirectionY;
+		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
+		//check if these two intervals overlap, if not, return null
+		if(tmin > tymax || tymin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tymin > tmin){
+			tmin = tymin;
+		}//and take the smallest max value
+		if(tymax < tmax){
+			tmax = tymax;
+		}
+		
+		float invDirectionZ = ray.getInv_directionZ();
+		float originZ = ray.getViewPoint().z;
+		
+		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
+		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
+		
+		//check if the three intervals overlap, if not, return null
+		if(tmin > tzmax || tzmin > tmax){
+			return null;
+		}//else take the greatest min value
+		if(tzmin > tmin){
+			tmin = tzmin;
+		}//and take the smallest max value
+		if(tzmax < tmax){
+			tmax = tzmax;
+		}
+		
+		return new FirstHitRecord(tmin, txmin, txmax, tymin, tymax, tzmin, tzmax);
+	}
+	
 	public float getMinX() {
 		return bounds[0].x;
 	}
@@ -69,73 +126,4 @@ public class Cell {
 	public void setCellNumber(int cellNumber) {
 		this.cellNumber = cellNumber;
 	}
-
-	public float[] getDeltas(Ray ray){
-		float[] t = new float[6];
-		int[] sign = ray.getSign();
-		float invDirectionX = ray.getInv_directionX();
-		float invDirectionY = ray.getInv_directionY();
-		float invDirectionZ = ray.getInv_directionZ();
-		float originX = ray.getViewPoint().x;
-		float originY = ray.getViewPoint().y;
-		float originZ = ray.getViewPoint().z;
-		
-		t[0] = (bounds[sign[0]].x - originX) * invDirectionX; //tMinX //take using sign the right value, so min and max are right
-		t[1] = (bounds[1-sign[0]].x - originX) * invDirectionX; //tMaxX
-		t[2] = (bounds[sign[1]].y - originY) * invDirectionY; //tMinY
-		t[3] = (bounds[1-sign[1]].y - originY) * invDirectionY; //tMaxY
-		t[4] = (bounds[sign[2]].z - originZ) * invDirectionZ; //tMinX
-		t[5] = (bounds[1-sign[2]].z - originZ) * invDirectionZ; //tMinX
-		
-		return t;
-	}
-	
-
-	/**
-	 * Return if this box is hit
-	 */
-	public FirstHitRecord firstGridHit(Ray ray) {
-		int[] sign = ray.getSign();
-		float invDirectionX = ray.getInv_directionX();
-		float invDirectionY = ray.getInv_directionY();
-		float originX = ray.getViewPoint().x;
-		float originY = ray.getViewPoint().y;
-		
-		float tmin = (bounds[sign[0]].x - originX) * invDirectionX; //take using sign the right value, so min and max are right
-		float tmax = (bounds[1-sign[0]].x - originX) * invDirectionX;
-		float txmin = tmin;
-		float txmax = tmax;
-		float tymin = (bounds[sign[1]].y - originY) * invDirectionY;
-		float tymax = (bounds[1-sign[1]].y - originY) * invDirectionY;
-		//check if these two intervals overlap, if not, return null
-		if(tmin > tymax || tymin > tmax){
-			return null;
-		}//else take the greatest min value
-		if(tymin > tmin){
-			tmin = tymin;
-		}//and take the smallest max value
-		if(tymax < tmax){
-			tmax = tymax;
-		}
-		
-		float invDirectionZ = ray.getInv_directionZ();
-		float originZ = ray.getViewPoint().z;
-		
-		float tzmin = (bounds[sign[2]].z - originZ) * invDirectionZ; 
-		float tzmax = (bounds[1-sign[2]].z - originZ) * invDirectionZ;
-		
-		//check if the three intervals overlap, if not, return null
-		if(tmin > tzmax || tzmin > tmax){
-			return null;
-		}//else take the greatest min value
-		if(tzmin > tmin){
-			tmin = tzmin;
-		}//and take the smallest max value
-		if(tzmax < tmax){
-			tmax = tzmax;
-		}
-		
-		return new FirstHitRecord(tmin, txmin, txmax, tymin, tymax, tzmin, tzmax);
-	}
-
 }

@@ -3,6 +3,12 @@ package geometry;
 import imagedraw.HitRecord;
 import rays.Ray;
 
+/**
+ * Abstract superclass of all geometry objects, all objects that can be hit in fact.
+ * 
+ * @author Dieter
+ *
+ */
 public abstract class Geometry {
 
 	protected BoundingBox box;

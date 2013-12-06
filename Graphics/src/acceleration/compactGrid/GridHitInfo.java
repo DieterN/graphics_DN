@@ -2,6 +2,13 @@ package acceleration.compactGrid;
 
 import mathematics.Point3f;
 
+/**
+ * This object is created when the bounding box around the whole compact grid was hit.
+ * The entrypoint, where the bounding box was entered and the distance are contained in this object.
+ * 
+ * @author Dieter
+ *
+ */
 public class GridHitInfo {
 
 	private Point3f entryPoint;

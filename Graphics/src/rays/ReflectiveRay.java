@@ -4,6 +4,12 @@ import mathematics.Point3f;
 import mathematics.Vector4f;
 import mathematics.VectorOperations;
 
+/**
+ * Class representing a reflective ray, epsilon is needed, cause otherwise you would have self reflectance.
+ * 
+ * @author Dieter
+ *
+ */
 public class ReflectiveRay extends Ray{
 
 	private final float epsilon = 0.05f; //TODO

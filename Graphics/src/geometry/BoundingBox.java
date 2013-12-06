@@ -10,6 +10,12 @@ import mathematics.Point3f;
 import mathematics.VectorOperations;
 import rays.Ray;
 
+/**
+ * Class representing a boundingbox around an geometry (this can be a list of boundingboxes too)
+ * 
+ * @author Dieter
+ *
+ */
 public class BoundingBox extends Geometry{
 
 	private Point3f[] bounds = new Point3f[2];

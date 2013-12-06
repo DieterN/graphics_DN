@@ -1,10 +1,16 @@
 package imagedraw;
 
 import acceleration.boundingIntervalHierarchy.BoundingIntervalHierarchy;
-import acceleration.compactGrid.CompactGrid;
 import rays.Ray;
 import scenebuilder.Scene;
 
+/**
+ * Subclass of DrawController.
+ * If you choose this dynamic type, raytracing will be done using a Bounding Interval Hierarchy.
+ * 
+ * @author Dieter
+ *
+ */
 public class DCBoundingIntervalHierarchy extends DrawController{
 
 	private BoundingIntervalHierarchy bih;

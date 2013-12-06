@@ -8,7 +8,13 @@ import javax.swing.JFrame;
 import scenebuilder.*;
 import mathematics.*;
 
-
+/**
+ * Basic class for drawing, all it's paramters are contained in the DrawController class.
+ * But you need to decide here which DrawController to use in the Draw() constructor !!!
+ *  
+ * @author Dieter
+ *
+ */
 public class Draw implements MouseListener{
 
 	public static void main(String[] args) {
@@ -77,7 +83,7 @@ public class Draw implements MouseListener{
 				if(!DrawController.falseColorImage){
 					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
 				}
-				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image //TODO check of dit wel klopt
+				DrawController.setCurrentPixel(i+DrawController.getNx()*j); //needed for false color image
 			}
 		}
 		if(DrawController.falseColorImage){

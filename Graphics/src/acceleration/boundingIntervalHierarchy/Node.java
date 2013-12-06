@@ -2,14 +2,24 @@ package acceleration.boundingIntervalHierarchy;
 
 import geometry.BoundingBox;
 import imagedraw.HitRecord;
-
 import rays.Ray;
 import mathematics.Point3f;
 
+/**
+ * Class representing a node in this bounding interval hierarchy.
+ * The hierarchy gives the parameters for the rootnode, than everything will be done here.
+ * The rootnode will be split recursively in to smaller nodes, till the NbOfObjects in one Node 
+ * or the maximum number of splits is reached.
+ * 
+ * The methods in this class are documented within the method self.
+ * 
+ * @author Dieter
+ *
+ */
 public class Node {
 
 	private static final int nbOfObjectsInOneNode = 1;
-	private static final int maxNbOfSplits = 2;
+	private static final int maxNbOfSplits = 8;
 	private int splitPlane; //(0=x,1=y,2=z,3=leaf,-1=invalid)
 	private int indexFirstElement; //first object of this node in array
 	private int indexLastElement; //last object of this node in array
@@ -56,7 +66,7 @@ public class Node {
 	}
 	
 	private void makeEmptyNode(){
-		this.splitPlane = 4; //empty
+		this.splitPlane = 4;
 		this.clipPlanes[0] = 0;
 		this.clipPlanes[1] = 0;
 		this.indexFirstElement = 0;
@@ -131,24 +141,10 @@ public class Node {
 
 	private void makeChildNodes(SplitInfo info, BoundingBox[] boxes, int nbOfSplits) {
 		int left = info.getLeft();
-//		if(left > indexLastElement){ //left was first element of right box, so if left is greater than indexLastElement, than right box is empty
-//			clipPlanes[0] = info.getMinL(); //minR en maxR are infinity --> special way
-//			clipPlanes[1] = info.getMaxL(); //since we only have one node, we can clip left side too
-//			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
-//			nodes[1] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //this will become an empty node
-//		}
-//		else if(left <= indexFirstElement){ //left was first element of right box, so if left is equal to or smaller than indexFirstElement, left box is empty
-//			clipPlanes[0] = info.getMinR(); //minL en maxL are infinity --> special way
-//			clipPlanes[1] = info.getMaxR(); 
-//			nodes[0] = new Node(boxes[1],objects,indexFirstElement,left-1,nbOfSplits+1); //this will become an empty node
-//			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
-//		}
-//		else{//both nodes are filled
-			clipPlanes[0] = info.getMaxL();
-			clipPlanes[1] = info.getMinR(); 
-			nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
-			nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
-//		}
+		clipPlanes[0] = info.getMaxL();
+		clipPlanes[1] = info.getMinR(); 
+		nodes[0] = new Node(boxes[0],objects,indexFirstElement,left-1,nbOfSplits+1); //recursively split this node further
+		nodes[1] = new Node(boxes[1],objects,left,indexLastElement,nbOfSplits+1); //recursively split this node further
 	}
 
 	/****************
@@ -163,12 +159,13 @@ public class Node {
 			return hitLeaf(ray,minHitT,maxHitT); //check for min, max, null is done in hitLeaf method
 		}
 		
+		//check empty node
 		if(splitPlane == 4){
 			return null; //empty node
 		}
 		//else : look at which childNodes of this node are hit
 		//do this by hitting the two clipping planes
-		int signOfRay = ray.getSign()[splitPlane];
+		int signOfRay = ray.getSign()[splitPlane]; //needed to know which childnode is hit first
 		float invDirection = ray.getInv_directionOfAxis(splitPlane);
 		float direction = ray.getDirection().getVectorValueOfAxis(splitPlane);
 		float viewPoint = ray.getViewPoint().getPointValueOfAxis(splitPlane);
@@ -177,20 +174,8 @@ public class Node {
 		
 		if(direction == 0){
 			//inverseDirection is infinity, so we can't see what is hit, just try intersecting both planes
-//			if(nodes[0] != null && nodes[1].getSplitPlane() == 4){ //if node has only one childnode, just hit that one
-//				return nodes[0].hit(ray, minHitT, maxHitT);
-//			}
-			return hitBothPlanes(ray, minHitT, maxHitT);
+			return hitBothNodes(ray, minHitT, maxHitT);
 		}
-//		if(nodes[0] != null && nodes[1].getSplitPlane() == 4){
-//			//the planes for this kind of nodes are other than the planes for a normal node, since we had infinity problems
-//			if(maxHitT < tClipSmall || tClipLarge < minHitT){ //not hitting 
-//				return null;
-//			}
-//			else{
-//				return nodes[0].hit(ray, minHitT, maxHitT); //only this node is filled
-//			}
-//		}			
 		if(tClipSmall < minHitT){ //first plane isn't hit, since box hit is further than hit of this plane
 			if(maxHitT < tClipLarge){ //not going through last plane, or hit closer
 				//trying to hit something but, ray goes between planes or something has been hit closer than last plane
@@ -205,12 +190,18 @@ public class Node {
 				return nodes[signOfRay].hit(ray, minHitT, maxHitT); //just hit first plane recursive with same parameters
 			}
 			else{
-				return hitBothPlanes(ray, minHitT, maxHitT);
+				return hitBothNodes(ray, minHitT, maxHitT);
 			}				
 		}
 	}
 
-	private HitRecord hitBothPlanes(Ray ray, float minHitT, float maxHitT) {
+	/**
+	 * Hit both child nodes of this node recursively.
+	 * Start with the closest node and if this is hit, give this parameter to the second when hitting that one.
+	 * You still need to hit the second, cause nodes may overlap.
+	 * By updating the paramter, you avoid doing to much hitting.
+	 */
+	private HitRecord hitBothNodes(Ray ray, float minHitT, float maxHitT) {
 		HitRecord result = null;
 		float smallest_t = maxHitT;
 		HitRecord left = nodes[0].hit(ray, minHitT, maxHitT);
@@ -225,6 +216,9 @@ public class Node {
 		return result;
 	}
 	
+	/**
+	 * Hit a leaf node, just hit all objects inside and return closest hit
+	 */
 	private HitRecord hitLeaf(Ray ray, float minHitT, float maxHitT){
 		HitRecord smallest = null;
 		float smallest_t = maxHitT;
@@ -239,9 +233,5 @@ public class Node {
 			}
 		}
 		return smallest;
-	}
-
-	private int getSplitPlane() {
-		return this.splitPlane;
 	}
 }

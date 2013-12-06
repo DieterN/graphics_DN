@@ -2,7 +2,6 @@ package imagedraw;
 
 import rays.Ray;
 import geometry.ConcreteGeometry;
-import geometry.Geometry;
 import materials.Material;
 import mathematics.Color3f;
 import mathematics.Point3f;

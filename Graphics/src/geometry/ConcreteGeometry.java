@@ -4,6 +4,12 @@ import materials.Material;
 import mathematics.Color3f;
 import mathematics.Matrix4f;
 
+/**
+ * Class extending geometry. It adds some methods that are useful for real objects, like a sphere.
+ * 
+ * @author Dieter
+ *
+ */
 public abstract class ConcreteGeometry extends Geometry{
 	
 	protected String name;

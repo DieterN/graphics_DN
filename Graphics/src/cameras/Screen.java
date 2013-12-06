@@ -2,6 +2,12 @@ package cameras;
 
 import imagedraw.DrawController;
 
+/**
+ * Class representing the screen in this raytracer, all rays pass through this screen.
+ * 
+ * @author Dieter
+ *
+ */
 public class Screen {
 
 	private float l; //left

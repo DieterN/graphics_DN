@@ -4,6 +4,12 @@ import lights.Light;
 import mathematics.Color3f;
 import imagedraw.HitRecord;
 
+/**
+ * Superclass for all materials.
+ * 
+ * @author Dieter
+ *
+ */
 public abstract class Material {
 
 	protected Color3f color;

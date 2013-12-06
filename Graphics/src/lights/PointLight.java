@@ -2,6 +2,12 @@ package lights;
 
 import mathematics.*;
 
+/**
+ * Class representing a point light.
+ * 
+ * @author Dieter
+ *
+ */
 public class PointLight extends Light{
 
 	

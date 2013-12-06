@@ -1,7 +1,16 @@
 package acceleration.compactGrid;
 
-import mathematics.Point3f;
-
+/**
+ * This class represents information about the first hit of the compact grid.
+ * This information is created by hitting a cell and contains information about:
+ * - the distance between the ray viewpoint and all planes of the cell
+ * - the closest hit of all hits
+ * 
+ * Note: this class could be replaced by a float[], but this is safer.
+ * 
+ * @author Dieter
+ *
+ */
 public class FirstHitRecord {
 
 	float hitT;
@@ -11,6 +20,7 @@ public class FirstHitRecord {
 	float tMaxY;
 	float tMinZ;
 	float tMaxZ;
+	
 	public FirstHitRecord(float hitT, float tMinX,
 			float tMaxX, float tMinY, float tMaxY, float tMinZ, float tMaxZ) {
 		this.hitT = hitT;
