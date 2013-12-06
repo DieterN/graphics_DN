@@ -22,7 +22,7 @@ public abstract class DrawController {
 	protected final int reflectionDepth = 1;
 	// Anti-Aliasing
 	public static final boolean antiAliasing = true;
-	public static final int nbOfSamples = 5;
+	public static final int nbOfSamples = 3;
 	// Soft Shadow
 	public static final boolean softShadow = true;
 	public static final int nbOfShadowSamples = 5;

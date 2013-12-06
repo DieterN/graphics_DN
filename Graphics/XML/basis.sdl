@@ -22,7 +22,7 @@
    
    <Materials>
       <DiffuseMaterial color="1 1 1" reflectiveFactor="0.1" name="dif1"/> 
-      <DiffuseMaterial color="0 1 0.3" reflectiveFactor="0.1" name="dif2"/> 
+      <DiffuseMaterial color="0.2 1 0.3" reflectiveFactor="0.1" name="dif2"/> 
       <DiffuseMaterial color="0.1 0.1 0.1" reflectiveFactor="0.9" name="mirror"/> 
       <PhongMaterial color="0.25 0.25 1" shininess="50" reflectiveFactor="0.4" name="phong1" />  
       <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
@@ -32,7 +32,7 @@
 		<Translate vector="-2.5 1 0">
 			<Shape geometry="sphere" material="lc1"/>
 		</Translate>
-		<Translate vector="4.5 1 0">
+		<Translate vector="4.5 0 0">
 			<Shape geometry="bunny" material="dif2"/>
 		</Translate>
 		<Translate vector="0 1 -2.5">
