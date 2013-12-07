@@ -13,6 +13,12 @@ import mathematics.Point3f;
 import mathematics.Vector4f;
 import rays.Ray;
 
+/**
+ * This class represents a compact grid acceleration structure.
+ * 
+ * @author Dieter
+ *
+ */
 public class CompactGrid {
 
 	private final int gridDensity = 8;
@@ -384,8 +390,13 @@ public class CompactGrid {
 		else{
 			GridHitInfo ghi = this.root.getEntryPoint(ray); //entryPoint = place where grid is hit
 			if(ghi != null){ //grid is hit
-				currentT = ghi.gettHit(); //t distance of grid hit
-				entryPoint = ghi.getEntryPoint();
+				if(ghi.gettHit() >= 0){
+					currentT = ghi.gettHit(); //t distance of grid hit
+					entryPoint = ghi.getEntryPoint();
+				}
+				else{
+					cellNumber = -3;
+				}
 			}
 			else{
 				cellNumber = -2;

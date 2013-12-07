@@ -16,6 +16,7 @@ public abstract class Material {
 	protected Color3f color;
 	protected String name;
 	protected float reflectiveFactor;
+	protected float refractiveCoefficient;
 	
 	public Material(){
 	}
@@ -55,6 +56,14 @@ public abstract class Material {
 
 	public void setReflectiveFactor(float reflectiveFactor) {
 		this.reflectiveFactor = reflectiveFactor;
+	}
+
+	public float getRefractiveCoefficient() {
+		return refractiveCoefficient;
+	}
+
+	public void setRefractiveCoefficient(float refractiveCoefficient) {
+		this.refractiveCoefficient = refractiveCoefficient;
 	}
 	
 }

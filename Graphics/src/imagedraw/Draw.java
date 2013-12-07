@@ -32,11 +32,11 @@ public class Draw implements MouseListener{
 	public Draw() {
 		try {
 			SceneBuilder sceneBuilder = new SceneBuilder();
-			scene = sceneBuilder.loadScene("XML/basis.sdl");
+			scene = sceneBuilder.loadScene("XML/test.sdl");
 			ic = new DCCompactGrid(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCBoundingIntervalHierarchy(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
 //			ic = new DCTransformObject(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
-//			ic = new DCTransformRay(scene); //DECIDE WHICH CONTROLLER TO USE!!!!!
+//			ic = new DCTransformRay(scene); //DECIDE WHICH CONTROLLER TO USE!!!!! (OUT OF USE)
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -85,7 +85,6 @@ public class Draw implements MouseListener{
 				System.out.println("Rendering... " + percentage + " %");
 			}
 			for(int j=0; j<DrawController.getNy(); j++){
-				
 				Color3f color = ic.calculatePixelColor(i+0.5f, j+0.5f);
 				if(!DrawController.falseColorImage){
 					panel.drawPixel(i,DrawController.getNy()-j,color.x,color.y,color.z); //ny-j, want y-as java loopt naar beneden 
@@ -148,8 +147,8 @@ public class Draw implements MouseListener{
 			for(int j=0; j<DrawController.getNy(); j++){
 				Color3f color = new Color3f();
 				color.x = normalizedPixels[i+DrawController.getNx()*j];
-				color.y = normalizedPixels[i+DrawController.getNx()*j];
-				color.z = normalizedPixels[i+DrawController.getNx()*j];
+//				color.y = normalizedPixels[i+DrawController.getNx()*j];
+//				color.z = normalizedPixels[i+DrawController.getNx()*j];
 				Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
 				panel.drawPixel(i,DrawController.getNy()-j,rightColor.x,rightColor.y,rightColor.z); //ny-j, want y-as java loopt naar beneden
 			}

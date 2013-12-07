@@ -22,6 +22,7 @@ public class HitRecord {
 	private ConcreteGeometry geometry;
 	private Material material;
 	private float reflectiveFactor;
+	private float refractiveCoefficient;
 	private Color3f color;
 	private Vector4f normal;
 	
@@ -32,6 +33,7 @@ public class HitRecord {
 		this.hitPoint = hitPoint;
 		this.material = geometry.getMaterial();
 		this.reflectiveFactor = material.getReflectiveFactor();
+		this.reflectiveFactor = material.getRefractiveCoefficient();
 		this.color = geometry.getMaterial().getColor();
 		Vector4f normalizedNormal = VectorOperations.normalizeVector4f(normal); //NORMALIZE
 		this.normal = normalizedNormal;
@@ -100,5 +102,13 @@ public class HitRecord {
 
 	public void setReflectiveFactor(float reflectiveFactor) {
 		this.reflectiveFactor = reflectiveFactor;
+	}
+
+	public float getRefractiveCoefficient() {
+		return refractiveCoefficient;
+	}
+
+	public void setRefractiveCoefficient(float refractiveCoefficient) {
+		this.refractiveCoefficient = refractiveCoefficient;
 	}
 }

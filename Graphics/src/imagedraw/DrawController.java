@@ -18,19 +18,22 @@ public abstract class DrawController {
 	// Shading
 	protected final boolean shading = true;
 	// Reflection
-	protected final boolean reflection = true;
+	protected final boolean reflection = false;
 	protected final int reflectionDepth = 1;
+	// Refraction
+	protected final boolean refraction = false;
+	protected final int refractionDepth = 1;
 	// Anti-Aliasing
-	public static final boolean antiAliasing = true;
+	public static final boolean antiAliasing = false;
 	public static final int nbOfSamples = 3;
 	// Soft Shadow
-	public static final boolean softShadow = true;
+	public static final boolean softShadow = false;
 	public static final int nbOfShadowSamples = 5;
 	// Acceleration
 	public static boolean accelerated = false;
 	public static boolean useTrianglesInsteadOfMesh = false;
 	// False Color Image
-	public static final boolean falseColorImage = false;
+	public static final boolean falseColorImage = true;
 	public static int currentPixel = 0;
 	private static int[] intersectionsPerPixel; //countNumberOfIntersectionsForEveryPixel
 	
@@ -44,10 +47,10 @@ public abstract class DrawController {
 	
 	public Color3f calculatePixelColor(float pixelX, float pixelY){
 		HitRecord hr = lookForRayHit(pixelX,pixelY);
-		return calculateColor(hr,reflectionDepth);
+		return calculateColor(hr,reflectionDepth,refractionDepth);
 	}
 
-	private Color3f calculateColor(HitRecord hr, int i) {
+	private Color3f calculateColor(HitRecord hr, int i, int j) {
 		Color3f color = new Color3f(); //TODO :background?
 		if(hr != null){	
 			if(ambient){ // ambient
@@ -64,9 +67,14 @@ public abstract class DrawController {
 				}
 			}
 			if(reflection){ //reflection
-				calculateReflection(hr, i, color);
+				calculateReflection(hr, i, j, color);
 			}
-			// TODO : refraction
+			if(refraction){ //refraction TODO
+				calculateRefraction(hr, i, j, color);
+			}
+		}
+		else{
+			color = scene.getBackgroundColor();
 		}
 		Color3f rightColor = Color3f.checkColorsGreaterThanOne(color);
 		return rightColor;
@@ -133,7 +141,7 @@ public abstract class DrawController {
 	/**
 	 * Reflective calculation; i = depth of reflection, color = calculated color till now
 	 */
-	public Color3f calculateReflection(HitRecord hr, int i, Color3f color){
+	public Color3f calculateReflection(HitRecord hr, int i, int j, Color3f color){
 		if(i==0){
 			return color;
 		}
@@ -146,9 +154,37 @@ public abstract class DrawController {
 		Ray ray = new ReflectiveRay(hr.getHitPoint(), normalizedDirection); // nieuwe ReflectiveRay (aparte klasse voor epsilon)
 		HitRecord hit = calculateHitRecord(ray);
 		if(hit == null){
+			return scene.getBackgroundColor(); //FIXME : return background color
+		}
+		Color3f reflectiveColor = calculateColor(hit, i-1, j);
+		float reflectiveFactor = hr.getReflectiveFactor();
+		color.x += reflectiveFactor*reflectiveColor.x;
+		color.y += reflectiveFactor*reflectiveColor.y;
+		color.z += reflectiveFactor*reflectiveColor.z;
+		return color;
+	}
+	
+	/**
+	 * Reflective calculation; j = depth of refraction, color = calculated color till now
+	 */
+	public Color3f calculateRefraction(HitRecord hr, int i, int j, Color3f color){
+		if(j==0){
+			return color;
+		}
+		//TODO : refractive index of air == 1?
+		Vector4f direction = hr.getRay().getDirection();
+		Vector4f normal = hr.getNormal();
+		float cos_theta = VectorOperations.getCornerBetweenVectors4f(normal, VectorOperations.invertVector4f(direction)); //TODO
+		Vector4f d_minus_n_times_cos_theta = VectorOperations.subtractVectors4f(direction, VectorOperations.multiplyFloatandVector4f(cos_theta, normal));
+		Vector4f numerator = VectorOperations.multiplyFloatandVector4f(1, normal); //air, first hit with object
+		Vector4f denominator = VectorOperations.multiplyFloatandVector4f((1/hr.getRefractiveCoefficient()), normal); //air, first hit with object
+		//TODO : verder afwerken, boek p305
+		Ray ray = new ReflectiveRay(hr.getHitPoint(), null); // nieuwe ReflectiveRay (aparte klasse voor epsilon)
+		HitRecord hit = calculateHitRecord(ray);
+		if(hit == null){
 			return new Color3f(); //return black
 		}
-		Color3f reflectiveColor = calculateColor(hit, i-1);
+		Color3f reflectiveColor = calculateColor(hit, i, j-1);
 		float reflectiveFactor = hr.getReflectiveFactor();
 		color.x += reflectiveFactor*reflectiveColor.x;
 		color.y += reflectiveFactor*reflectiveColor.y;

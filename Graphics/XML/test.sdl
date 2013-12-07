@@ -3,26 +3,47 @@
 
 <Sdl>
    <Cameras>
-      <Camera position="0 0 10" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
-      <Camera position="0 0 100" direction="0 0 1" up="0 1 0" fovy="60" name="orthographicCam" /> 
+      <Camera position="0 5 25" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
+      <Camera position="0 0 80" direction="0 0 1" up="0 1 0" fovy="60" name="orthographicCam" /> 
    </Cameras>   
    
    <Lights>
-      <PointLight position="-15 0 15" intensity="1" color="1 1 1" name="light0" />
-      <PointLight position="15 0 15" intensity="1" color="1 1 1" name="light1" />
+      <PointLight position="0 10 10" intensity="1" color="1 1 1" name="light0" />
+      <PointLight position="-10 20 0" intensity="1" color="1 1 1" name="light1" />
+      <PointLight position="10 10 0" intensity="1" color="1 1 1" name="light2" />
+      <PointLight position="10.5 10.5 0" intensity="1" color="1 1 1" name="light3" />
+      <AreaLight position="10 10 0" u="11 10 0" w="10 11 0" intensity="1" color="1 1 1" name="light4" />
    </Lights>
    
    <Geometry>
-   	   <Object fileName="sphere.obj" name="sphere" />
+   	   <Sphere radius="2" name="sphere" />
+   	   <Object fileName="plane.obj" name="plane" />
+   	   <Object fileName="cone.obj" name="cone" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.8 0.8 0.8" reflectiveFactor="0.2" name="dif1"/> 
-      <PhongMaterial color="0.25 0.5 0.25" shininess="50" reflectiveFactor="0.2" name="phong1" />  
-      <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.2" name="lc1" />   
+      <DiffuseMaterial color="0.5 0.9 0.5" reflectiveFactor="0.1" name="dif1"/> 
+      <DiffuseMaterial color="0.3 0.8 0.3" reflectiveFactor="0.1" name="dif2"/> 
+      <PhongMaterial color="0.3 0.8 0.3" shininess="30" reflectiveFactor="0.1" name="phong2"/> 
+      <DiffuseMaterial color="0.275 0.525 0.65" reflectiveFactor="0.1" name="dif3"/> 
+      <PhongMaterial color="0.275 0.525 0.65" shininess="80" reflectiveFactor="0.1" name="phong3"/> 
+      <DiffuseMaterial color="0.1 0.1 0.1" reflectiveFactor="0.9" name="mirror"/> 
+      <PhongMaterial color="0.25 0.25 1" shininess="50" reflectiveFactor="0.4" name="phong1" />  
+      <PhongMaterial color="0.1 0.7 0.1" shininess="50" reflectiveFactor="0.4" name="phong4" /> 
+      <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong4" weight2="0.5" name="lc1" />   
    </Materials>   
    
-   <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-		<Shape geometry="sphere" material="dif1" />
+   <Scene camera="perspectiveCam" lights="light1,light2" background="0.3 0.3 0.3">
+		<Translate vector="-4.5 2 0">
+			<Shape geometry="sphere" material="dif3"/>
+		</Translate>
+		<Translate vector="4.5 2 0">
+			<Scale scale="2 2 2">
+				<Shape geometry="cone" material="lc1"/>
+			</Scale>
+		</Translate>
+		<Scale scale="80 80 80">
+			<Shape geometry="plane" material="mirror"/>
+		</Scale>
    </Scene>
 </Sdl>

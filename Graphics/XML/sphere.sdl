@@ -3,7 +3,7 @@
 
 <Sdl>
    <Cameras>
-      <Camera position="0 10 0" direction="0 1 0" up="0 0 1" fovy="80" name="perspectiveCam" /> 
+      <Camera position="0 1 10" direction="0 0 1" up="0 1 0" fovy="80" name="perspectiveCam" /> 
    </Cameras>   
    
    <Lights>
@@ -12,16 +12,23 @@
    
    <Geometry>
    	   <Object fileName="sphere.obj" name="sphere" />
+   	   <Object fileName="plane.obj" name="plane" />
    </Geometry>
    
    <Materials>
-      <DiffuseMaterial color="0.3 0.3 0.3" reflectiveFactor="0.2" name="dif1"/> 
+      <DiffuseMaterial color="0.3 0.3 0.6" reflectiveFactor="0.2" name="dif1"/> 
       <DiffuseMaterial color="0 1 0" reflectiveFactor="0.5" name="dif2"/> 
+      <DiffuseMaterial color="0.1 0.1 0.1" reflectiveFactor="0.9" name="mirror"/> 
       <PhongMaterial color="0.25 0.25 1" shininess="50" reflectiveFactor="0.3" name="phong1" />  
       <LinearCombinedMaterial  material1="dif1" weight1="0.5" material2="phong1" weight2="0.5" name="lc1" />   
    </Materials>   
    
    <Scene camera="perspectiveCam" lights="light0" background="0.3 0.3 0.3">
-		<Shape geometry="sphere" material="lc1" />
+		<Translate vector="0 1 0">
+			<Shape geometry="sphere" material="dif1"/>
+		</Translate>
+		<Scale scale="80 80 80">
+			<Shape geometry="plane" material="mirror"/>
+		</Scale>
    </Scene>
 </Sdl>

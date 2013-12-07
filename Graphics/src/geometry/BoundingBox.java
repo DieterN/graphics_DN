@@ -157,14 +157,17 @@ public class BoundingBox extends Geometry{
 		if(tmin > tzmax || tzmin > tmax){
 			return false;
 		}//else take the greatest min value
-//		if(tzmin > tmin){
-//			tmin = tzmin;
-//		}//and take the smallest max value
-//		if(tzmax < tmax){
-//			tmax = tzmax;
-//		}
-		else{
+		if(tzmin > tmin){
+			tmin = tzmin;
+		}//and take the smallest max value
+		if(tzmax < tmax){
+			tmax = tzmax;
+		}
+		if(tmax >= 0){
 			return true;
+		}
+		else{
+			return false;
 		}
 	}
 	
